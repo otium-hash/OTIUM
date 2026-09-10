@@ -1,0 +1,1034 @@
+/* =========================================================
+OTIUM HOME
+Diseño reconstruido según referencia visual OTIUM
+
+CORRECCIÓN 20260908:
+
+* Carrusel independiente del buscador.
+* Buscador mantiene exactamente su diseño original.
+* Buscador ahora queda debajo del carrusel.
+* Imágenes originales del Hero mantienen object-fit: cover.
+* Banners configurados desde Firestore usan object-fit: contain.
+* No se modifica el diseño del resto del Home.
+  ========================================================= */
+
+:root {
+--otium-bg: #020a1d;
+--otium-bg-2: #061332;
+--otium-card: #07183d;
+--otium-border: rgba(87, 137, 255, .38);
+--otium-text: #ffffff;
+--otium-muted: #aab7d2;
+--otium-blue: #1598ff;
+--otium-cyan: #18d7e8;
+--otium-purple: #743cff;
+--otium-orange: #ff7149;
+--otium-pink: #ed477d;
+}
+
+* {
+  box-sizing: border-box;
+  }
+
+html {
+scroll-behavior: smooth;
+}
+
+body.otium-home {
+padding-top: 84px;
+margin: 0;
+min-height: 100vh;
+background:
+radial-gradient(circle at 10% 35%, rgba(15, 72, 180, .16), transparent 28%),
+radial-gradient(circle at 90% 55%, rgba(85, 45, 190, .14), transparent 25%),
+var(--otium-bg);
+color: var(--otium-text);
+font-family: "Inter", Arial, sans-serif;
+}
+
+body.otium-home main {
+padding-top: 0 !important;
+min-height: 0;
+}
+
+.otium-container {
+width: min(1370px, calc(100% - 48px));
+margin: 0 auto;
+}
+
+/* =========================================================
+HERO / CARRUSEL
+========================================================= */
+
+.home-hero {
+position: relative;
+min-height: 480px;
+height: 520px;
+overflow: hidden;
+background: #03091b;
+}
+
+.hero-slide {
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity .55s ease;
+background-position: center;
+background-size: cover;
+background-repeat: no-repeat;
+}
+
+.hero-slide.active {
+opacity: 1;
+}
+
+/* =========================================================
+IMÁGENES DEL CARRUSEL
+========================================================= */
+
+.hero-slide-image {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+object-fit: cover;
+object-position: center center;
+display: block;
+}
+
+/* =========================================================
+BANNERS DE FIRESTORE
+========================================================= */
+
+.hero-slide.hero-slide-banner .hero-slide-image {
+object-fit: contain;
+object-position: center center;
+width: 100%;
+height: 100%;
+background: #03091b;
+}
+
+.hero-slide.hero-slide-banner {
+background: #03091b;
+}
+
+.hero-slide.hero-slide-banner .hero-slide-overlay {
+z-index: 2;
+}
+
+/* =========================================================
+SLIDES ORIGINALES
+========================================================= */
+
+.hero-slide-1 {
+background-image: url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=2200&q=85");
+}
+
+.hero-slide-2 {
+background-image: url("https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=2200&q=85");
+}
+
+/* =========================================================
+OVERLAY ORIGINAL DEL HERO
+========================================================= */
+
+.hero-overlay {
+position: absolute;
+inset: 0;
+
+
+background:
+    linear-gradient(
+        90deg,
+        rgba(1, 7, 22, .94) 0%,
+        rgba(2, 10, 30, .77) 35%,
+        rgba(2, 10, 30, .24) 75%,
+        rgba(2, 10, 30, .5) 100%
+    ),
+    linear-gradient(
+        0deg,
+        rgba(2, 8, 25, .75),
+        transparent 52%
+    );
+
+
+}
+
+/* =========================================================
+CONTENIDO HERO
+========================================================= */
+
+.hero-content {
+position: relative;
+height: 100%;
+display: flex;
+align-items: center;
+z-index: 2;
+}
+
+.hero-copy {
+width: min(560px, 100%);
+margin-top: -30px;
+}
+
+.hero-eyebrow {
+display: block;
+margin-bottom: 14px;
+font-size: 13px;
+font-weight: 800;
+letter-spacing: .12em;
+color: #aebbd5;
+}
+
+.hero-copy h1 {
+margin: 0;
+font-size: clamp(48px, 5vw, 78px);
+line-height: .98;
+letter-spacing: -.045em;
+font-weight: 800;
+}
+
+.hero-copy h1 span {
+display: block;
+background: linear-gradient(90deg, #18c9e8, #278fff, #793bff);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+}
+
+.hero-copy p {
+max-width: 520px;
+margin: 22px 0 0;
+color: #e3e9f5;
+font-size: 18px;
+line-height: 1.6;
+}
+
+/* =========================================================
+CONTROLES DEL HERO
+========================================================= */
+
+.hero-arrow {
+position: absolute;
+top: 43%;
+z-index: 5;
+width: 46px;
+height: 46px;
+border: 1px solid rgba(255,255,255,.12);
+border-radius: 50%;
+color: #fff;
+background: rgba(4, 13, 35, .62);
+backdrop-filter: blur(8px);
+cursor: pointer;
+font-size: 35px;
+line-height: 1;
+}
+
+.hero-prev {
+left: 22px;
+}
+
+.hero-next {
+right: 22px;
+}
+
+.hero-arrow:hover {
+background: rgba(24, 151, 255, .55);
+}
+
+/* =========================================================
+PUNTOS DEL CARRUSEL
+========================================================= */
+
+.hero-dots {
+position: absolute;
+z-index: 5;
+left: 50%;
+bottom: 22px;
+transform: translateX(-50%);
+display: flex;
+gap: 8px;
+}
+
+.hero-dot {
+width: 9px;
+height: 9px;
+border: 0;
+border-radius: 50%;
+padding: 0;
+background: rgba(255,255,255,.42);
+cursor: pointer;
+}
+
+.hero-dot.active {
+width: 28px;
+border-radius: 20px;
+background: #fff;
+}
+
+/* =========================================================
+BUSCADOR
+--------
+
+IMPORTANTE:
+Ya NO es position:absolute.
+Ahora ocupa su propio espacio debajo del carrusel.
+
+Las clases internas del buscador permanecen iguales,
+por lo que su diseño visual no cambia.
+========================================================= */
+
+.hero-search-section {
+position: relative;
+z-index: 10;
+padding: 0 0 28px;
+background: var(--otium-bg);
+}
+
+.hero-search-wrap {
+position: relative;
+z-index: 10;
+width: min(1370px, calc(100% - 48px));
+margin: -1px auto 0;
+}
+
+.hero-search {
+display: grid;
+grid-template-columns: 1.65fr 1fr 1fr 185px;
+overflow: hidden;
+min-height: 62px;
+border: 1px solid rgba(255,255,255,.24);
+border-radius: 18px;
+background: rgba(255,255,255,.98);
+box-shadow: 0 18px 55px rgba(0,0,0,.3);
+}
+
+.search-field {
+display: flex;
+align-items: center;
+gap: 11px;
+padding: 0 19px;
+color: #7b8493;
+border-right: 1px solid #e1e5ec;
+}
+
+.search-field span {
+font-size: 22px;
+}
+
+.search-field input {
+width: 100%;
+border: 0;
+outline: 0;
+background: transparent;
+color: #172033;
+font: inherit;
+font-size: 14px;
+}
+
+.search-field input::placeholder {
+color: #7b8493;
+}
+
+.search-button {
+border: 0;
+margin: 8px;
+border-radius: 14px;
+color: #fff;
+font-weight: 800;
+font-size: 14px;
+cursor: pointer;
+background: linear-gradient(100deg, #7238e8, #158ef3);
+}
+
+.search-button:hover {
+filter: brightness(1.08);
+}
+
+/* =========================================================
+SECCIONES
+========================================================= */
+
+.home-section {
+padding: 30px 0;
+}
+
+.categories-section {
+padding-top: 34px;
+background: linear-gradient(180deg, #04102b, #030d24);
+}
+
+.featured-section {
+background: #020b20;
+padding-top: 24px;
+}
+
+.promotion-section {
+background: #020b20;
+padding-top: 12px;
+}
+
+.benefits-section {
+background: #020b20;
+padding-top: 8px;
+padding-bottom: 36px;
+}
+
+.sponsor-home-section {
+background: #030d24;
+}
+
+/* =========================================================
+ENCABEZADOS
+========================================================= */
+
+.section-heading {
+display: flex;
+align-items: flex-end;
+justify-content: space-between;
+gap: 20px;
+margin-bottom: 17px;
+}
+
+.section-kicker {
+display: block;
+margin-bottom: 5px;
+color: #7e9acb;
+font-size: 11px;
+font-weight: 800;
+letter-spacing: .12em;
+}
+
+.section-heading h2 {
+margin: 0;
+font-size: 25px;
+letter-spacing: -.025em;
+}
+
+.section-link {
+color: #d8e4ff;
+font-size: 13px;
+text-decoration: none;
+white-space: nowrap;
+}
+
+.section-link span {
+margin-left: 5px;
+font-size: 20px;
+vertical-align: -1px;
+}
+
+.section-link:hover {
+color: #24bfff;
+}
+
+/* =========================================================
+CATEGORÍAS
+========================================================= */
+
+.category-row {
+display: grid;
+grid-template-columns: repeat(8, 1fr);
+gap: 11px;
+}
+
+.category-card {
+position: relative;
+min-height: 100px;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+gap: 5px;
+padding: 12px;
+border: 1px solid rgba(99, 137, 220, .42);
+border-radius: 12px;
+color: #fff;
+text-decoration: none;
+background-color: #101a39;
+background-size: cover;
+background-position: center;
+transition: transform .22s ease, border-color .22s ease;
+}
+
+.category-card::before {
+content: "";
+position: absolute;
+inset: 0;
+background: linear-gradient(0deg, rgba(2,7,22,.95), rgba(2,7,22,.05));
+}
+
+.category-card > * {
+position: relative;
+z-index: 1;
+}
+
+.category-card:hover {
+transform: translateY(-3px);
+border-color: #3f9cff;
+}
+
+.category-icon {
+width: 30px;
+height: 30px;
+display: grid;
+place-items: center;
+border-radius: 9px;
+background: rgba(109,67,255,.9);
+font-size: 17px;
+font-weight: 800;
+}
+
+.category-card strong {
+font-size: 13px;
+line-height: 1.12;
+}
+
+.cat-concert {
+background-image: url("https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-theater {
+background-image: url("https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-food {
+background-image: url("https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-sport {
+background-image: url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-night {
+background-image: url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-market {
+background-image: url("https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-family {
+background-image: url("https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=500&q=75");
+}
+
+.cat-nature {
+background-image: url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=75");
+}
+
+/* =========================================================
+EVENTOS
+========================================================= */
+
+.featured-grid {
+display: grid;
+grid-template-columns: repeat(6, minmax(0, 1fr));
+gap: 12px;
+}
+
+.featured-card {
+min-width: 0;
+overflow: hidden;
+border: 1px solid rgba(93, 127, 197, .43);
+border-radius: 13px;
+background: linear-gradient(180deg, #0b1b3d, #06112a);
+transition: transform .2s ease, border-color .2s ease;
+}
+
+.featured-card:hover {
+transform: translateY(-3px);
+border-color: #3d8fff;
+}
+
+.event-image {
+position: relative;
+height: 145px;
+overflow: hidden;
+background: linear-gradient(135deg, #301d77, #0b6fd2);
+}
+
+.event-image img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+}
+
+.event-image::after {
+content: "";
+position: absolute;
+inset: 0;
+background: linear-gradient(0deg, rgba(2,8,25,.65), transparent 60%);
+}
+
+.event-fallback {
+height: 100%;
+display: grid;
+place-items: center;
+padding: 15px;
+text-align: center;
+font-size: 26px;
+font-weight: 800;
+letter-spacing: -.03em;
+}
+
+.event-heart {
+position: absolute;
+z-index: 3;
+top: 9px;
+right: 9px;
+width: 30px;
+height: 30px;
+display: grid;
+place-items: center;
+border: 1px solid rgba(255,255,255,.22);
+border-radius: 50%;
+background: rgba(3,9,25,.55);
+color: #fff;
+}
+
+.event-body {
+padding: 11px;
+}
+
+.event-date-row {
+display: flex;
+gap: 9px;
+align-items: center;
+margin-bottom: 8px;
+}
+
+.event-date {
+min-width: 37px;
+padding: 5px 4px;
+border-radius: 7px;
+text-align: center;
+background: #fff;
+color: #0b1630;
+font-size: 10px;
+font-weight: 800;
+}
+
+.event-title {
+margin: 0;
+color: #fff;
+font-size: 14px;
+line-height: 1.2;
+}
+
+.event-meta {
+margin-top: 6px;
+color: #8fa1c3;
+font-size: 10px;
+line-height: 1.4;
+}
+
+.event-category {
+color: #b8c8e6;
+font-size: 10px;
+}
+
+.event-price {
+margin-top: 9px;
+text-align: right;
+color: #fff;
+font-size: 13px;
+font-weight: 800;
+}
+
+.featured-loading {
+grid-column: 1 / -1;
+padding: 45px;
+border-radius: 15px;
+text-align: center;
+color: #91a3c7;
+background: #07152f;
+}
+
+/* =========================================================
+PROMOCIÓN
+========================================================= */
+
+.promotion-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+}
+
+.promotion-card {
+min-height: 112px;
+display: flex;
+align-items: center;
+gap: 17px;
+padding: 20px 23px;
+border: 1px solid rgba(99, 93, 228, .65);
+border-radius: 15px;
+background: linear-gradient(110deg, #271a65, #131c4c);
+}
+
+.promotion-brand {
+border-color: rgba(42, 128, 255, .55);
+background: linear-gradient(110deg, #10245a, #091d46);
+}
+
+.promotion-icon {
+flex: 0 0 56px;
+width: 56px;
+height: 56px;
+display: grid;
+place-items: center;
+border-radius: 50%;
+background: linear-gradient(145deg, #6842f3, #1d9dff);
+font-size: 27px;
+}
+
+.promotion-brand .promotion-icon {
+background: linear-gradient(145deg, #f6a62d, #ff7445);
+}
+
+.promotion-copy {
+flex: 1;
+}
+
+.promotion-copy h3 {
+margin: 0 0 6px;
+font-size: 17px;
+}
+
+.promotion-copy p {
+margin: 0;
+color: #b5c3dc;
+font-size: 12px;
+line-height: 1.5;
+}
+
+.promotion-button {
+flex: 0 0 auto;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+min-height: 40px;
+padding: 0 18px;
+border-radius: 22px;
+color: #fff;
+text-decoration: none;
+font-size: 12px;
+font-weight: 800;
+}
+
+.promotion-button.orange {
+background: linear-gradient(100deg, #ef5b75, #ff9b35);
+}
+
+.promotion-button.blue {
+background: linear-gradient(100deg, #7138e8, #158ef3);
+}
+
+/* =========================================================
+BENEFICIOS
+========================================================= */
+
+.benefits-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 1px;
+overflow: hidden;
+border-radius: 13px;
+background: rgba(69, 104, 170, .28);
+}
+
+.benefit {
+min-height: 92px;
+display: flex;
+align-items: center;
+gap: 14px;
+padding: 17px 20px;
+background: #071633;
+}
+
+.benefit-icon {
+flex: 0 0 38px;
+width: 38px;
+height: 38px;
+display: grid;
+place-items: center;
+color: #19c5ff;
+font-size: 21px;
+}
+
+.benefit:nth-child(4) .benefit-icon {
+color: #ed477d;
+}
+
+.benefit strong {
+display: block;
+margin-bottom: 4px;
+font-size: 12px;
+}
+
+.benefit span {
+display: block;
+color: #9cafce;
+font-size: 10px;
+line-height: 1.45;
+}
+
+/* =========================================================
+SPONSOR
+========================================================= */
+
+.sponsor-banner {
+min-height: 120px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 25px;
+padding: 25px 30px;
+border: 1px solid rgba(74, 126, 234, .5);
+border-radius: 16px;
+background:
+radial-gradient(circle at 75% 50%, rgba(69, 47, 192, .3), transparent 35%),
+#071633;
+}
+
+.sponsor-banner span {
+display: block;
+margin-bottom: 6px;
+color: #7f9acc;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: .13em;
+}
+
+.sponsor-banner strong {
+font-size: 21px;
+}
+
+/* =========================================================
+FOOTER
+========================================================= */
+
+.home-footer {
+padding: 40px 0;
+background: #010717;
+border-top: 1px solid rgba(77, 115, 190, .2);
+}
+
+.footer-content {
+display: grid;
+grid-template-columns: 1fr auto;
+gap: 20px;
+align-items: center;
+}
+
+.footer-content strong {
+font-size: 22px;
+}
+
+.footer-content p {
+margin: 5px 0 0;
+color: #7889a9;
+font-size: 12px;
+}
+
+.footer-links {
+display: flex;
+gap: 18px;
+}
+
+.footer-links a {
+color: #a8b8d4;
+font-size: 12px;
+text-decoration: none;
+}
+
+.footer-links a:hover {
+color: #fff;
+}
+
+.footer-content small {
+grid-column: 1 / -1;
+color: #5d6e8e;
+font-size: 10px;
+}
+
+/* =========================================================
+RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+
+.category-row {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.featured-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+
+}
+
+@media (max-width: 900px) {
+
+
+body.otium-home {
+    padding-top: 72px;
+}
+
+/*
+   El buscador conserva su diseño responsive original.
+*/
+.hero-search {
+    grid-template-columns: 1fr;
+    overflow: visible;
+    background: rgba(255,255,255,.98);
+    padding: 7px;
+}
+
+.search-field {
+    min-height: 48px;
+    border-right: 0;
+    border-bottom: 1px solid #e1e5ec;
+}
+
+.search-button {
+    min-height: 45px;
+    margin: 6px 0 0;
+}
+
+/*
+   El carrusel ya no necesita reservar espacio para
+   el buscador.
+*/
+.home-hero {
+    height: 640px;
+}
+
+/*
+   Los puntos permanecen dentro del carrusel.
+*/
+.hero-dots {
+    bottom: 18px;
+}
+
+/*
+   El buscador ahora está debajo del carrusel.
+*/
+.hero-search-section {
+    padding: 0 0 24px;
+}
+
+.hero-search-wrap {
+    width: min(100% - 28px, 1370px);
+    margin: 0 auto;
+}
+
+.promotion-grid {
+    grid-template-columns: 1fr;
+}
+
+.benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/*
+   Los banners de Firestore siempre se muestran completos.
+*/
+.hero-slide.hero-slide-banner .hero-slide-image {
+    object-fit: contain;
+}
+
+
+}
+
+@media (max-width: 650px) {
+
+
+.otium-container {
+    width: min(100% - 28px, 1370px);
+}
+
+.home-hero {
+    height: 670px;
+}
+
+.hero-copy {
+    margin-top: -80px;
+}
+
+.hero-copy h1 {
+    font-size: 48px;
+}
+
+.hero-copy p {
+    font-size: 15px;
+}
+
+.hero-arrow {
+    top: 33%;
+    width: 38px;
+    height: 38px;
+}
+
+.hero-prev {
+    left: 9px;
+}
+
+.hero-next {
+    right: 9px;
+}
+
+.hero-dots {
+    bottom: 18px;
+}
+
+.category-row {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.featured-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.benefits-grid {
+    grid-template-columns: 1fr;
+}
+
+.promotion-card {
+    flex-wrap: wrap;
+}
+
+.promotion-button {
+    width: 100%;
+}
+
+.sponsor-banner {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.footer-content {
+    grid-template-columns: 1fr;
+}
+
+.footer-links {
+    flex-wrap: wrap;
+}
+
+.footer-content small {
+    grid-column: auto;
+}
+
+/*
+   En móviles los banners de Firestore también se muestran
+   completos, sin recortes.
+*/
+.hero-slide.hero-slide-banner .hero-slide-image {
+    object-fit: contain;
+    object-position: center center;
+}
+
+
+}

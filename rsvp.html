@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmar asistencia | OTIUM</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:linear-gradient(135deg,#fff7f2,#fff,#f7f2ff);color:#102a43}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 15px}
+.card{width:100%;max-width:620px;background:#fff;padding:34px;border-radius:24px;box-shadow:0 18px 55px rgba(0,0,0,.12)}
+h1{margin:0 0 8px;font-size:30px}.subtitle{margin:0 0 24px;color:#667085}
+.event-box{padding:18px;background:#fff8f4;border-radius:14px;margin-bottom:24px}
+.event-box strong{display:block;font-size:19px;margin-bottom:8px}.event-box span{display:block;color:#667085;line-height:1.5}
+label{display:block;font-size:14px;font-weight:700;margin:16px 0 7px}
+input,select,textarea{width:100%;padding:12px 13px;border:1px solid #d0d5dd;border-radius:10px;font:inherit}
+textarea{min-height:100px;resize:vertical}
+.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choice input{display:none}.choice span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:52px;padding:8px;border:1px solid #d0d5dd;border-radius:10px;cursor:pointer;font-weight:700;font-size:13px}
+.choice input:checked+span{border-color:#ff7445;background:#fff1eb;color:#d84e22}
+button{width:100%;margin-top:22px;min-height:50px;border:0;border-radius:11px;background:#ff7445;color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
+.message{margin-top:16px;padding:12px;border-radius:10px;display:none}.success{display:block;background:#ecfdf3;color:#067647}.error{display:block;background:#fef3f2;color:#b42318}
+.hidden{display:none!important}
+@media(max-width:560px){.card{padding:24px}.choices{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="page">
+<section class="card">
+<h1>✅ Confirmar asistencia</h1>
+<p class="subtitle">Responde a la invitación y avisa al anfitrión.</p>
+
+<div id="eventBox" class="event-box">
+<strong id="eventName">Cargando evento...</strong>
+<span id="eventInfo"></span>
+</div>
+
+<form id="rsvpForm">
+<label for="guestName">Nombre *</label>
+<input id="guestName" required maxlength="100" placeholder="Tu nombre completo">
+
+<label>¿Asistirás? *</label>
+<div class="choices">
+<label class="choice"><input type="radio" name="attendance" value="si" required><span>✅ Sí, asistiré</span></label>
+<label class="choice"><input type="radio" name="attendance" value="no"><span>❌ No podré asistir</span></label>
+<label class="choice"><input type="radio" name="attendance" value="pendiente"><span>🤔 Aún no sé</span></label>
+</div>
+
+<label for="companions">Número de acompañantes</label>
+<input id="companions" type="number" min="0" max="20" value="0">
+
+<label for="guestMessage">Mensaje (opcional)</label>
+<textarea id="guestMessage" maxlength="500" placeholder="Escribe un mensaje para el anfitrión..."></textarea>
+
+<button id="submitButton" type="submit">Enviar confirmación</button>
+<div id="message" class="message"></div>
+</form>
+</section>
+</main>
+
+<script type="module">
+import { getEventById } from "./js/modules/database.js";
+import { firebaseConfig } from "./js/modules/firebase-config.js";
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const params=new URLSearchParams(location.search);
+const eventId=params.get("id");
+const app=getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+const form=document.getElementById("rsvpForm");
+const button=document.getElementById("submitButton");
+const message=document.getElementById("message");
+let eventData=null;
+
+function show(text,type="success"){
+    message.textContent=text;
+    message.className=`message ${type}`;
+}
+
+function formatDate(value){
+    if(!value)return "Fecha por confirmar";
+    const d=new Date(String(value).length===10?value+"T00:00:00":value);
+    return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+
+async function load(){
+    if(!eventId){
+        show("No se recibió el ID de la invitación.","error");
+        button.disabled=true;
+        return;
+    }
+    try{
+        eventData=await getEventById(eventId);
+        if(!eventData || !eventData.esInvitacion){
+            show("La invitación no existe o no está disponible.","error");
+            button.disabled=true;
+            return;
+        }
+        if(!eventData.permitirRSVP){
+            show("El anfitrión no tiene habilitada la confirmación de asistencia.","error");
+            button.disabled=true;
+            return;
+        }
+        document.getElementById("eventName").textContent=eventData.nombre||"Celebración";
+        document.getElementById("eventInfo").textContent=
+            `📅 ${formatDate(eventData.fecha)} · 🕐 ${eventData.hora||"Por confirmar"} · 📍 ${eventData.ciudad||eventData.ubicacion||"Por confirmar"}`;
+    }catch(error){
+        console.error("OTIUM RSVP:",error);
+        show("No fue posible cargar la invitación.","error");
+        button.disabled=true;
+    }
+}
+
+form.addEventListener("submit",async(e)=>{
+    e.preventDefault();
+    if(!eventData || !eventId)return;
+
+    const guestName=document.getElementById("guestName").value.trim();
+    const attendance=document.querySelector('input[name="attendance"]:checked')?.value;
+    const companions=Math.max(0,Math.min(20,Number(document.getElementById("companions").value)||0));
+    const guestMessage=document.getElementById("guestMessage").value.trim();
+
+    if(!guestName || !attendance){
+        show("Completa tu nombre y selecciona una respuesta.","error");
+        return;
+    }
+
+    button.disabled=true;
+    button.textContent="Guardando...";
+
+    try{
+        await addDoc(collection(db,"confirmaciones"),{
+            eventoId:eventId,
+            nombreInvitado:guestName,
+            asistencia:attendance,
+            acompanantes:attendance==="si"?companions:0,
+            mensaje:guestMessage,
+            fechaRespuesta:serverTimestamp()
+        });
+
+        form.reset();
+        document.getElementById("companions").value=0;
+        show("¡Tu confirmación fue registrada correctamente!","success");
+        button.textContent="Confirmación enviada ✓";
+    }catch(error){
+        console.error("OTIUM RSVP - Error:",error);
+        show("No se pudo registrar la confirmación. Revisa Firebase.","error");
+        button.disabled=false;
+        button.textContent="Enviar confirmación";
+    }
+});
+
+load();
+</script>
+</body>
+</html>

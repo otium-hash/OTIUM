@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Calendario | OTIUM
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+        /* ==========================================
+           ESPACIO PARA EL MENÚ FIJO
+        =========================================== */
+
+        .calendar-page {
+
+            padding-top: 120px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 60px;
+
+        }
+
+
+        /* ==========================================
+           ENCABEZADO DEL CALENDARIO
+        =========================================== */
+
+        .calendar-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 25px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .calendar-header h1 {
+
+            margin: 0;
+
+            min-width: 220px;
+
+            text-align: center;
+
+        }
+
+
+        .calendar-header button {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 10px 18px;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+        }
+
+
+        /* ==========================================
+           CONTENEDOR
+        =========================================== */
+
+        #calendarContainer {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+        }
+
+
+        /* ==========================================
+           CUADRÍCULA
+        =========================================== */
+
+        .calendar-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    7,
+                    minmax(0, 1fr)
+                );
+
+            gap: 8px;
+
+            width: 100%;
+
+        }
+
+
+        /* ==========================================
+           DÍAS DE LA SEMANA
+        =========================================== */
+
+        .calendar-weekday {
+
+            text-align: center;
+
+            font-weight: 700;
+
+            padding: 14px 5px;
+
+            border-radius: 8px;
+
+        }
+
+
+        /* ==========================================
+           DÍA
+        =========================================== */
+
+        .calendar-day {
+
+            min-height: 120px;
+
+            padding: 10px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            background: white;
+
+            overflow: hidden;
+
+        }
+
+
+        .calendar-day.empty {
+
+            background: transparent;
+
+            border: none;
+
+        }
+
+
+        .calendar-day-number {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .calendar-day.today {
+
+            border: 2px solid #333;
+
+        }
+
+
+        .calendar-day.has-events {
+
+            background: #f8f8f8;
+
+        }
+
+
+        /* ==========================================
+           EVENTOS
+        =========================================== */
+
+        .calendar-events {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+
+        .calendar-event {
+
+            display: block;
+
+            text-decoration: none;
+
+            padding: 6px;
+
+            border-radius: 6px;
+
+            overflow: hidden;
+
+        }
+
+
+        .calendar-event strong {
+
+            display: block;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .calendar-event span {
+
+            display: block;
+
+            font-size: 12px;
+
+            margin-top: 3px;
+
+        }
+
+
+        /* ==========================================
+           MÓVIL
+        =========================================== */
+
+        @media (max-width: 768px) {
+
+            .calendar-page {
+
+                padding-top: 110px;
+
+                padding-left: 8px;
+
+                padding-right: 8px;
+
+            }
+
+
+            .calendar-header {
+
+                gap: 10px;
+
+            }
+
+
+            .calendar-header h1 {
+
+                min-width: 150px;
+
+                font-size: 22px;
+
+            }
+
+
+            .calendar-header button {
+
+                padding: 8px 12px;
+
+            }
+
+
+            .calendar-grid {
+
+                gap: 4px;
+
+            }
+
+
+            .calendar-weekday {
+
+                font-size: 11px;
+
+                padding: 8px 2px;
+
+            }
+
+
+            .calendar-day {
+
+                min-height: 90px;
+
+                padding: 5px;
+
+            }
+
+
+            .calendar-day-number {
+
+                font-size: 15px;
+
+            }
+
+
+            .calendar-event {
+
+                font-size: 10px;
+
+                padding: 4px;
+
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .calendar-page {
+
+                padding-top: 105px;
+
+            }
+
+
+            .calendar-header h1 {
+
+                font-size: 18px;
+
+                min-width: 130px;
+
+            }
+
+
+            .calendar-day {
+
+                min-height: 70px;
+
+                padding: 3px;
+
+            }
+
+
+            .calendar-weekday {
+
+                font-size: 9px;
+
+            }
+
+
+            .calendar-day-number {
+
+                font-size: 13px;
+
+            }
+
+
+            .calendar-event {
+
+                font-size: 9px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         MENÚ GLOBAL OTIUM
+    =========================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- ==========================================
+         CALENDARIO
+    =========================================== -->
+
+    <main class="calendar-page">
+
+
+        <div class="calendar-header">
+
+
+            <button
+                id="previousMonth"
+                type="button">
+
+                ←
+
+            </button>
+
+
+            <h1
+                id="calendarMonth">
+
+                Cargando...
+
+            </h1>
+
+
+            <button
+                id="nextMonth"
+                type="button">
+
+                →
+
+            </button>
+
+
+        </div>
+
+
+        <div
+            id="calendarContainer">
+
+            <p>
+                Cargando calendario...
+            </p>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <footer>
+
+        <p>
+            © 2026 OTIUM
+        </p>
+
+    </footer>
+
+
+    <!-- ==========================================
+         MENÚ
+    =========================================== -->
+
+    <script
+    type="module"
+    src="js/menu.js?v=20260904">
+</script>
+
+
+    <!-- ==========================================
+         LOGIN
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- ==========================================
+         CALENDARIO
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/calendar.js">
+    </script>
+
+
+</body>
+
+</html>

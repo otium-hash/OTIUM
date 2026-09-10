@@ -1,0 +1,55 @@
+# =====================================================
+# OTIUM - GITIGNORE
+# =====================================================
+
+# Dependencias
+node_modules/
+functions/node_modules/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Claves y credenciales
+*.key
+*.pem
+*.p12
+*.pfx
+serviceAccountKey.json
+firebase-adminsdk-*.json
+
+# Firebase local
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Firebase Emulator
+.emulator/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Archivos generados
+*.tgz
+.yarn-integrity
+.dataconnect
+
+# Archivos de configuración local
+.vscode/
+.idea/
+
+# Sistema operativo
+Desktop.ini

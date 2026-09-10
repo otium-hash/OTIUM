@@ -1,0 +1,39 @@
+
+/* =====================================================
+   IMAGEN PREDETERMINADA OTIUM PARA EVENTOS SIN FOTO
+   No modifica el diseño del Home.
+===================================================== */
+
+.evento-imagen {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.evento-imagen-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.evento-imagen-img.default-event-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 28px;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+/* Para la imagen grande del detalle */
+#eventImage.default-event-image {
+    object-fit: contain;
+    padding: 40px;
+    box-sizing: border-box;
+    background: #ffffff;
+}

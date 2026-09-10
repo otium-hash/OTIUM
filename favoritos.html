@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<style>
+
+/* =====================================================
+   OTIUM - SOLO MIS FAVORITOS
+   NO AFECTA HOME NI MENU
+===================================================== */
+
+#favoritosContainer {
+    width: 100%;
+    max-width: 1100px;
+    margin: 25px auto 50px;
+    padding: 0 20px;
+
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+
+    gap: 20px;
+
+    align-items: start;
+}
+
+
+/* =====================================================
+   TARJETA FAVORITO
+===================================================== */
+
+#favoritosContainer .evento-card {
+
+    width: 100%;
+    min-width: 0;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* =====================================================
+   IMAGEN
+===================================================== */
+
+#favoritosContainer .evento-imagen {
+
+    width: 100%;
+
+    height: 115px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* Imagen real */
+
+#favoritosContainer
+.evento-imagen-img {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    max-width: 100%;
+
+    max-height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+/* =====================================================
+   LOGO OTIUM COMO IMAGEN POR DEFECTO
+===================================================== */
+
+#favoritosContainer
+.evento-imagen-img.default-event-image {
+
+    width: 58px !important;
+
+    height: 58px !important;
+
+    max-width: 58px !important;
+
+    max-height: 58px !important;
+
+    object-fit: contain !important;
+
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+#favoritosContainer
+.evento-card-content {
+
+    padding: 14px 16px 16px;
+
+    min-width: 0;
+
+}
+
+
+/* Título */
+
+#favoritosContainer
+.evento-card-content h3 {
+
+    margin: 0 0 9px;
+
+    font-size: 17px;
+
+    line-height: 1.3;
+
+    color: #102a43;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* Datos */
+
+#favoritosContainer
+.evento-card-content p {
+
+    margin: 5px 0;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    color: #475467;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* =====================================================
+   DESCRIPCIÓN
+===================================================== */
+
+#favoritosContainer
+.evento-descripcion {
+
+    margin-top: 9px !important;
+
+    color: #667085 !important;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+}
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+#favoritosContainer
+.event-actions {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 13px;
+
+    flex-wrap: wrap;
+
+}
+
+
+/* Botones */
+
+#favoritosContainer
+.event-actions button {
+
+    flex: 1 1 120px;
+
+    min-width: 0;
+
+    padding: 9px 10px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+/* Ver detalle */
+
+#favoritosContainer
+.detail-btn {
+
+    border: none;
+
+    background: #102a43;
+
+    color: #ffffff;
+
+}
+
+
+/* Quitar */
+
+#favoritosContainer
+.remove-favorite-btn {
+
+    border: 1px solid #d0d5dd;
+
+    background: #ffffff;
+
+    color: #b42318;
+
+}
+
+
+/* =====================================================
+   EVITAR DESBORDAMIENTO
+===================================================== */
+
+#favoritosContainer
+.evento-card * {
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media (max-width: 700px) {
+
+    #favoritosContainer {
+
+        grid-template-columns: 1fr;
+
+        padding:
+            0 12px 30px;
+
+        gap: 16px;
+
+    }
+
+
+    #favoritosContainer
+    .evento-imagen {
+
+        height: 105px;
+
+    }
+
+
+    #favoritosContainer
+    .evento-imagen-img.default-event-image {
+
+        width: 52px !important;
+
+        height: 52px !important;
+
+        max-width: 52px !important;
+
+        max-height: 52px !important;
+
+    }
+
+
+    #favoritosContainer
+    .evento-card-content {
+
+        padding:
+            13px 14px 15px;
+
+    }
+
+
+    #favoritosContainer
+    .event-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    #favoritosContainer
+    .event-actions button {
+
+        width: 100%;
+
+        flex: none;
+
+    }
+
+}
+
+</style>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Mis favoritos - OTIUM
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         MENÚ GLOBAL OTIUM
+    =========================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- ==========================================
+         CONTENIDO
+    =========================================== -->
+
+    <main class="event-detail-page">
+
+        <h1
+            style="margin-top:120px; margin-bottom:40px;">
+
+            ❤️ Mis favoritos
+
+        </h1>
+
+
+        <div id="favoritosContainer">
+
+            <p>
+                Cargando favoritos...
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <footer>
+
+        <p>
+            © 2026 OTIUM
+        </p>
+
+    </footer>
+
+
+    <!-- ==========================================
+         MENÚ GLOBAL
+    =========================================== -->
+
+    <script
+    type="module"
+    src="js/menu.js?v=20260904">
+</script>
+
+
+    <!-- ==========================================
+         LOGIN
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- ==========================================
+         FAVORITOS
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/favoritos.js">
+    </script>
+
+
+</body>
+
+</html>

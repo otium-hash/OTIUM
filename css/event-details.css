@@ -1,0 +1,591 @@
+/* =====================================================
+   OTIUM - DETALLE COMPLETO DEL EVENTO
+===================================================== */
+
+/* =====================================================
+   PÁGINA
+===================================================== */
+
+.event-detail-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+
+    /*
+     * El menú OTIUM es fijo y mide aproximadamente 70px.
+     * Dejamos espacio suficiente para que nunca tape
+     * el encabezado del detalle.
+     */
+    padding: 125px 25px 70px;
+
+    box-sizing: border-box;
+}
+
+/*
+ * Esta regla tiene prioridad sobre reglas antiguas
+ * de style.css que puedan afectar .event-detail-page.
+ */
+body.otium-page main.event-detail-page {
+    padding-top: 125px;
+    margin-top: 0;
+}
+
+/* =====================================================
+   TARJETA PRINCIPAL
+===================================================== */
+
+.event-detail-card {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 10px 35px rgba(15, 23, 42, 0.09);
+    overflow: hidden;
+}
+
+/* =====================================================
+   MENSAJES
+===================================================== */
+
+.event-message {
+    display: none;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.event-message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.event-message.warning {
+    display: block;
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.event-message.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* =====================================================
+   CARGANDO
+===================================================== */
+
+.event-loading {
+    padding: 70px 30px;
+    text-align: center;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.event-content {
+    padding: 0;
+}
+
+/* =====================================================
+   ENCABEZADO DEL EVENTO
+===================================================== */
+
+.event-detail-header {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 30px;
+
+    padding: 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #07152f,
+            #12365c
+        );
+
+    color: white;
+
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   IMAGEN DEL EVENTO
+===================================================== */
+
+.event-image-wrap {
+    width: 100%;
+    height: 210px;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    position: relative;
+}
+
+.event-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    display: block;
+
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* =====================================================
+   TEXTO DEL ENCABEZADO
+===================================================== */
+
+.event-header-copy {
+    min-width: 0;
+    align-self: center;
+}
+
+.event-category,
+.section-kicker {
+    display: inline-block;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    color: #1599ff;
+}
+
+.event-category {
+    color: #6fd2ff;
+    margin-bottom: 10px;
+}
+
+.event-detail-header h1 {
+    margin: 0 0 15px;
+
+    font-size:
+        clamp(
+            30px,
+            4vw,
+            48px
+        );
+
+    line-height: 1.08;
+
+    overflow-wrap: anywhere;
+}
+
+.event-header-meta {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px 20px;
+
+    color: #dbeafe;
+
+    font-size: 15px;
+}
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+.event-info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 14px;
+
+    padding: 28px 30px;
+
+    box-sizing: border-box;
+}
+
+.info-box {
+    min-height: 78px;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        #dbe3ee;
+
+    border-radius: 14px;
+
+    background: #f8fafc;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+.info-box-wide {
+    grid-column: 1 / -1;
+}
+
+.info-label {
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.1px;
+
+    color: #64748b;
+}
+
+.info-box strong {
+    color: #0f172a;
+
+    font-size: 15px;
+
+    line-height: 1.45;
+
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   SECCIONES
+===================================================== */
+
+.event-section {
+    margin: 0 30px;
+
+    padding: 28px 0;
+
+    border-top:
+        1px solid
+        #e2e8f0;
+
+    box-sizing: border-box;
+}
+
+.event-section h2 {
+    margin: 7px 0 15px;
+
+    color: #0f172a;
+
+    font-size: 22px;
+}
+
+.event-description {
+    margin: 0;
+
+    color: #334155;
+
+    font-size: 16px;
+
+    line-height: 1.75;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   ORGANIZADOR
+===================================================== */
+
+.organizer-section p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.organizer-section a {
+    color: #1264d8;
+}
+
+/* =====================================================
+   MAPA
+===================================================== */
+
+#eventMap {
+    width: 100%;
+    height: 380px;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        #dbe3ee;
+
+    background: #eef2f7;
+}
+
+#eventMap iframe {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+}
+
+/* =====================================================
+   ENLACES
+===================================================== */
+
+.secondary-link {
+    display: inline-block;
+
+    margin-top: 12px;
+
+    color: #1264d8;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.secondary-link:hover,
+.primary-link:hover {
+    text-decoration: underline;
+}
+
+/* =====================================================
+   INFORMACIÓN OFICIAL
+===================================================== */
+
+.event-link-section p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.primary-link {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+
+    padding:
+        11px 20px;
+
+    border-radius: 12px;
+
+    background: #1264d8;
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.event-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    padding:
+        25px 30px 30px;
+
+    background: #f8fafc;
+
+    box-sizing: border-box;
+}
+
+.action-button {
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        11px 18px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease,
+        background .2s ease;
+
+    box-sizing: border-box;
+}
+
+.action-button:hover {
+    transform: translateY(-1px);
+}
+
+.action-button.secondary {
+    background: #e9eef5;
+    color: #1e293b;
+}
+
+.action-button.favorite {
+    background: #ffffff;
+
+    color: #1264d8;
+
+    border:
+        1px solid
+        #bfd3f1;
+}
+
+.action-button.favorite.saved {
+    background: #e8f1ff;
+
+    border-color:
+        #1264d8;
+}
+
+.action-button.share {
+    background: #0f172a;
+    color: #ffffff;
+}
+
+.action-button.promote {
+    background: #ff7445;
+    color: #ffffff;
+}
+
+.action-button:disabled {
+    opacity: .55;
+
+    cursor: wait;
+
+    transform: none;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+
+    body.otium-page main.event-detail-page {
+        padding-top: 105px;
+    }
+
+    .event-detail-page {
+        padding:
+            105px 15px 50px;
+    }
+
+    .event-detail-header {
+        grid-template-columns: 1fr;
+
+        padding: 22px;
+    }
+
+    .event-image-wrap {
+        height: 220px;
+    }
+
+    .event-info-grid {
+        grid-template-columns: 1fr;
+
+        padding: 22px;
+    }
+
+    .info-box-wide {
+        grid-column: auto;
+    }
+
+    .event-section {
+        margin:
+            0 22px;
+    }
+
+    .event-actions {
+        padding: 22px;
+    }
+
+    .action-button {
+        width: 100%;
+    }
+}
+
+/* =====================================================
+   MÓVILES PEQUEÑOS
+===================================================== */
+
+@media (max-width: 500px) {
+
+    body.otium-page main.event-detail-page {
+        padding-top: 100px;
+    }
+
+    .event-detail-page {
+        padding:
+            100px 10px 40px;
+    }
+
+    .event-detail-header {
+        padding: 18px;
+    }
+
+    .event-detail-header h1 {
+        font-size: 30px;
+    }
+
+    .event-image-wrap {
+        height: 200px;
+    }
+
+    .event-info-grid {
+        padding: 18px;
+    }
+
+    .event-section {
+        margin:
+            0 18px;
+    }
+
+    .event-actions {
+        padding:
+            18px;
+    }
+
+    #eventMap {
+        height: 300px;
+    }
+}

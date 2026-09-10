@@ -1,0 +1,2481 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Mis avisos | OTIUM</title>
+
+    <meta
+        name="description"
+        content="Configura tus avisos personalizados de eventos en OTIUM.">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+        /* =====================================================
+           OTIUM - MIS AVISOS
+           Página independiente.
+           NO modifica el Home.
+        ===================================================== */
+
+
+        /* =====================================================
+           IMPORTANTE
+           El menú global es cargado por menu.js dentro de
+           #menuOTIUM.
+
+           Esta página NO debe posicionarse por encima del menú.
+        ===================================================== */
+
+        html,
+        body {
+
+            margin: 0;
+            padding: 0;
+
+        }
+
+
+        #menuOTIUM {
+
+            width: 100%;
+            position: relative;
+            z-index: 10000;
+
+        }
+
+
+        /*
+         * El contenido comienza después del menú.
+         * No usamos position: fixed ni top negativo.
+         */
+
+        main {
+
+            position: relative;
+            z-index: 1;
+
+        }
+
+
+        /* =====================================================
+           CONTENEDOR PRINCIPAL
+        ===================================================== */
+
+        .alerts-page {
+
+            width: 100%;
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 40px 20px 70px;
+
+            box-sizing: border-box;
+
+        }
+
+
+        /* =====================================================
+           ENCABEZADO
+        ===================================================== */
+
+        .alerts-header {
+
+            margin-bottom: 28px;
+
+        }
+
+
+        .alerts-header h1 {
+
+            margin: 0 0 8px;
+
+            color: #102a43;
+
+        }
+
+
+        .alerts-header p {
+
+            margin: 0;
+
+            color: #667085;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           MENSAJES
+        ===================================================== */
+
+        .alerts-message {
+
+            display: none;
+
+            margin-bottom: 20px;
+
+            padding: 15px 18px;
+
+            border-radius: 10px;
+
+            font-weight: 600;
+
+            line-height: 1.5;
+
+        }
+
+
+        .alerts-message.success {
+
+            display: block;
+
+            background: #d1fae5;
+
+            color: #065f46;
+
+        }
+
+
+        .alerts-message.error {
+
+            display: block;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+        }
+
+
+        .alerts-message.info {
+
+            display: block;
+
+            background: #eef4ff;
+
+            color: #1d4ed8;
+
+        }
+
+
+        .alerts-message.warning {
+
+            display: block;
+
+            background: #fff7ed;
+
+            color: #9a3412;
+
+        }
+
+
+        /* =====================================================
+           ESTADO DE LOGIN
+        ===================================================== */
+
+        .login-required {
+
+            display: none;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 35px 30px;
+
+            text-align: center;
+
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+
+        }
+
+
+        .login-required.visible {
+
+            display: block;
+
+        }
+
+
+        .login-required-icon {
+
+            font-size: 42px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .login-required h2 {
+
+            margin: 0 0 10px;
+
+            color: #102a43;
+
+        }
+
+
+        .login-required p {
+
+            margin: 0;
+
+            color: #667085;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           CONTENIDO
+        ===================================================== */
+
+        .alerts-content {
+
+            display: none;
+
+        }
+
+
+        .alerts-content.visible {
+
+            display: block;
+
+        }
+
+
+        /* =====================================================
+           TARJETA
+        ===================================================== */
+
+        .alerts-card {
+
+            background: #ffffff;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+
+        }
+
+
+        /* =====================================================
+           ESTADO GENERAL
+        ===================================================== */
+
+        .alerts-status {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 28px;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+            border: 1px solid #dbe3ec;
+
+        }
+
+
+        .alerts-status-text {
+
+            flex: 1;
+
+        }
+
+
+        .alerts-status-text h2 {
+
+            margin: 0 0 5px;
+
+            font-size: 18px;
+
+            color: #102a43;
+
+        }
+
+
+        .alerts-status-text p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .status-indicator {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 105px;
+
+            padding: 9px 14px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+        }
+
+
+        .status-indicator.active {
+
+            background: #d1fae5;
+
+            color: #065f46;
+
+        }
+
+
+        .status-indicator.inactive {
+
+            background: #f1f5f9;
+
+            color: #475467;
+
+        }
+
+
+        /* =====================================================
+           SWITCH
+        ===================================================== */
+
+        .switch {
+
+            position: relative;
+
+            display: inline-block;
+
+            width: 52px;
+
+            height: 28px;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .switch input {
+
+            opacity: 0;
+
+            width: 0;
+
+            height: 0;
+
+        }
+
+
+        .slider {
+
+            position: absolute;
+
+            inset: 0;
+
+            cursor: pointer;
+
+            background: #cbd5e1;
+
+            border-radius: 30px;
+
+            transition: 0.2s;
+
+        }
+
+
+        .slider::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 22px;
+
+            height: 22px;
+
+            left: 3px;
+
+            top: 3px;
+
+            background: #ffffff;
+
+            border-radius: 50%;
+
+            transition: 0.2s;
+
+            box-shadow: 0 2px 5px rgba(0,0,0,0.18);
+
+        }
+
+
+        .switch input:checked + .slider {
+
+            background: #10b981;
+
+        }
+
+
+        .switch input:checked + .slider::before {
+
+            transform: translateX(24px);
+
+        }
+
+
+        /* =====================================================
+           SECCIONES
+        ===================================================== */
+
+        .alert-section {
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border: 1px solid #dbe3ec;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .alert-section h3 {
+
+            margin: 0 0 6px;
+
+            color: #102a43;
+
+        }
+
+
+        .alert-section > p {
+
+            margin: 0 0 18px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           FORMULARIO
+        ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .form-group label {
+
+            font-weight: 600;
+
+            color: #102a43;
+
+        }
+
+
+        .form-group input,
+        .form-group select {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 12px 13px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            background: #ffffff;
+
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus {
+
+            outline: none;
+
+            border-color: #ff7445;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(255,116,69,0.12);
+
+        }
+
+
+        /* =====================================================
+           CHECKBOXES
+        ===================================================== */
+
+        .checkbox-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+        }
+
+
+        .checkbox-option {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 11px 12px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 9px;
+
+            background: #ffffff;
+
+            cursor: pointer;
+
+        }
+
+
+        .checkbox-option:hover {
+
+            border-color: #ff7445;
+
+        }
+
+
+        .checkbox-option input {
+
+            width: auto;
+
+            margin: 0;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .checkbox-option span {
+
+            color: #344054;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           EDAD
+        ===================================================== */
+
+        .age-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 15px;
+
+        }
+
+
+        .age-help {
+
+            margin-top: 8px;
+
+            color: #667085;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           ACCESO
+        ===================================================== */
+
+        .access-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 10px;
+
+        }
+
+
+        .access-option {
+
+            position: relative;
+
+        }
+
+
+        .access-option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+        }
+
+
+        .access-option label {
+
+            display: block;
+
+            padding: 13px 12px;
+
+            text-align: center;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #344054;
+
+        }
+
+
+        .access-option input:checked + label {
+
+            border-color: #ff7445;
+
+            background: #fff7ed;
+
+            color: #9a3412;
+
+        }
+
+
+        /* =====================================================
+           RESUMEN
+        ===================================================== */
+
+        .preferences-summary {
+
+            margin-top: 25px;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: #eef4ff;
+
+            border: 1px solid #c7d7fe;
+
+        }
+
+
+        .preferences-summary h3 {
+
+            margin: 0 0 8px;
+
+            color: #102a43;
+
+            font-size: 16px;
+
+        }
+
+
+        .preferences-summary p {
+
+            margin: 0;
+
+            color: #475467;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================================
+           BOTONES
+        ===================================================== */
+
+        .alerts-actions {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-top: 28px;
+
+        }
+
+
+        .save-alerts-button {
+
+            flex: 1;
+
+            padding: 14px 18px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #ff7445;
+
+            color: #ffffff;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        .save-alerts-button:hover {
+
+            background: #f45f30;
+
+        }
+
+
+        .save-alerts-button:disabled {
+
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .reset-alerts-button {
+
+            padding: 14px 18px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            color: #344054;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        .reset-alerts-button:hover {
+
+            border-color: #98a2b3;
+
+            background: #f8fafc;
+
+        }
+
+
+        /* =====================================================
+           NOTIFICACIONES PUSH
+        ===================================================== */
+
+        .push-notifications-box {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 18px;
+
+            padding: 16px;
+
+            border: 1px solid #dbe3ec;
+
+            border-radius: 12px;
+
+            background: #ffffff;
+
+        }
+
+
+        .push-notifications-info {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+
+        .push-notifications-info strong {
+
+            color: #102a43;
+
+            font-size: 14px;
+
+        }
+
+
+        .push-notifications-info span {
+
+            color: #667085;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .push-notifications-button {
+
+            flex-shrink: 0;
+
+            padding: 12px 16px;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            background: #102a43;
+
+            color: #ffffff;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        .push-notifications-button:hover {
+
+            background: #183d5d;
+
+        }
+
+
+        .push-notifications-button:disabled {
+
+            opacity: .65;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .push-notifications-button.enabled {
+
+            background: #10b981;
+
+        }
+
+
+        .push-notifications-button.denied {
+
+            background: #64748b;
+
+        }
+
+
+        /* =====================================================
+           AYUDA
+        ===================================================== */
+
+        .alerts-help {
+
+            margin-top: 22px;
+
+            padding: 15px 18px;
+
+            border-radius: 10px;
+
+            background: #fff7ed;
+
+            border: 1px solid #fed7aa;
+
+            color: #7c2d12;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================================
+           PRUEBA DEL MOTOR
+        ===================================================== */
+
+        .alerts-test {
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border: 1px solid #dbe3ec;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .alerts-test h3 {
+
+            margin: 0 0 6px;
+
+            color: #102a43;
+
+        }
+
+
+        .alerts-test-description {
+
+            margin: 0 0 18px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .test-alerts-button {
+
+            width: 100%;
+
+            padding: 13px 18px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #102a43;
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        .test-alerts-button:hover {
+
+            background: #183d5d;
+
+        }
+
+
+        .test-alerts-button:disabled {
+
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .alerts-test-status {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 12px 14px;
+
+            border-radius: 9px;
+
+            background: #eef4ff;
+
+            color: #1d4ed8;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .alerts-test-status.visible {
+
+            display: block;
+
+        }
+
+
+        /* =====================================================
+           RESULTADOS
+        ===================================================== */
+
+        .alerts-results {
+
+            display: none;
+
+            margin-top: 18px;
+
+        }
+
+
+        .alerts-results.visible {
+
+            display: block;
+
+        }
+
+
+        .alerts-results-header {
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .alerts-results-header h4 {
+
+            margin: 0 0 5px;
+
+            color: #102a43;
+
+            font-size: 16px;
+
+        }
+
+
+        .alerts-results-header p {
+
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 13px;
+
+        }
+
+
+        .alerts-results-list {
+
+            display: grid;
+
+            gap: 12px;
+
+        }
+
+
+        .alert-result-card {
+
+            padding: 16px;
+
+            border-radius: 12px;
+
+            border: 1px solid #dbe3ec;
+
+            background: #ffffff;
+
+        }
+
+
+        .alert-result-card h5 {
+
+            margin: 0 0 7px;
+
+            color: #102a43;
+
+            font-size: 16px;
+
+        }
+
+
+        .alert-result-meta {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            margin-bottom: 9px;
+
+        }
+
+
+        .alert-result-tag {
+
+            display: inline-flex;
+
+            padding: 5px 8px;
+
+            border-radius: 20px;
+
+            background: #f1f5f9;
+
+            color: #475467;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+
+        .alert-result-description {
+
+            margin: 0 0 9px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .alert-result-reason {
+
+            margin: 0;
+
+            padding-top: 9px;
+
+            border-top: 1px solid #edf2f7;
+
+            color: #9a3412;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .alerts-no-results {
+
+            padding: 18px;
+
+            border-radius: 10px;
+
+            background: #ffffff;
+
+            border: 1px solid #dbe3ec;
+
+            color: #667085;
+
+            text-align: center;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .alerts-page {
+
+                padding:
+                    30px 15px 50px;
+
+            }
+
+
+            .alerts-card {
+
+                padding: 20px;
+
+            }
+
+
+            .alerts-status {
+
+                align-items: flex-start;
+
+                flex-wrap: wrap;
+
+            }
+
+
+            .alerts-status-text {
+
+                width: 100%;
+
+            }
+
+
+            .form-grid,
+            .age-grid,
+            .checkbox-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .access-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .alerts-actions {
+
+                flex-direction: column;
+
+            }
+
+
+            .reset-alerts-button {
+
+                width: 100%;
+
+            }
+
+
+            .push-notifications-box {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .push-notifications-button {
+
+                width: 100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     MENÚ GLOBAL OTIUM
+====================================================== -->
+
+<div id="menuOTIUM"></div>
+
+
+<!-- =====================================================
+     CONTENIDO
+====================================================== -->
+
+<main>
+
+    <section class="alerts-page">
+
+
+        <!-- ENCABEZADO -->
+
+        <header class="alerts-header">
+
+            <h1>
+                🔔 Mis avisos
+            </h1>
+
+            <p>
+                Configura tus intereses y OTIUM podrá identificar
+                eventos que podrían ser de tu interés y avisarte
+                cuando encuentre coincidencias.
+            </p>
+
+        </header>
+
+
+        <!-- MENSAJE -->
+
+        <div
+            id="alertsMessage"
+            class="alerts-message">
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <section
+            id="loginRequired"
+            class="login-required">
+
+            <div class="login-required-icon">
+                🔔
+            </div>
+
+            <h2>
+                Inicia sesión para configurar tus avisos
+            </h2>
+
+            <p>
+                Tus preferencias de avisos se guardarán en tu
+                cuenta OTIUM y podrán utilizarse para detectar
+                nuevos eventos de interés.
+            </p>
+
+        </section>
+
+
+        <!-- CONTENIDO -->
+
+        <section
+            id="alertsContent"
+            class="alerts-content">
+
+
+            <div class="alerts-card">
+
+
+                <!-- ESTADO -->
+
+                <div class="alerts-status">
+
+                    <div class="alerts-status-text">
+
+                        <h2>
+                            Avisos personalizados
+                        </h2>
+
+                        <p>
+                            Activa o desactiva la detección de
+                            eventos según tus preferencias.
+                        </p>
+
+                    </div>
+
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            id="alertsEnabled">
+
+                        <span class="slider"></span>
+
+                    </label>
+
+
+                    <span
+                        id="alertsStatusIndicator"
+                        class="status-indicator inactive">
+
+                        Desactivados
+
+                    </span>
+
+                </div>
+
+
+                <!-- UBICACIÓN -->
+
+                <div class="alert-section">
+
+                    <h3>
+                        📍 Ubicación
+                    </h3>
+
+                    <p>
+                        Selecciona dónde quieres recibir avisos
+                        sobre eventos.
+                    </p>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="alertCity">
+                                Ciudad
+                            </label>
+
+                            <input
+                                type="text"
+                                id="alertCity"
+                                placeholder="Ej: Viña del Mar"
+                                autocomplete="address-level2">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="alertRegion">
+                                Región
+                            </label>
+
+                            <input
+                                type="text"
+                                id="alertRegion"
+                                placeholder="Ej: Valparaíso">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CATEGORÍAS -->
+
+                <div class="alert-section">
+
+                    <h3>
+                        🗂️ Categorías
+                    </h3>
+
+                    <p>
+                        Selecciona las categorías de eventos que
+                        te interesan.
+                    </p>
+
+
+                    <div
+                        id="categoriesContainer"
+                        class="checkbox-grid">
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Música">
+                            <span>Música</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Teatro">
+                            <span>Teatro</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Danza">
+                            <span>Danza</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Cine">
+                            <span>Cine</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Arte y cultura">
+                            <span>Arte y cultura</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Deportes">
+                            <span>Deportes</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Gastronomía">
+                            <span>Gastronomía</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Ferias y mercados">
+                            <span>Ferias y mercados</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Vida nocturna">
+                            <span>Vida nocturna</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Fiestas">
+                            <span>Fiestas</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Familiar">
+                            <span>Familiar</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Congresos y conferencias">
+                            <span>Congresos y conferencias</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Educación y formación">
+                            <span>Educación y formación</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Negocios y networking">
+                            <span>Negocios y networking</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Exposiciones">
+                            <span>Exposiciones</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Comunidad">
+                            <span>Comunidad</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Eventos particulares">
+                            <span>Eventos particulares</span>
+                        </label>
+
+
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="alertCategory" value="Otros">
+                            <span>Otros</span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUBCATEGORÍAS -->
+
+                <div class="alert-section">
+
+                    <h3>
+                        📑 Subcategorías
+                    </h3>
+
+                    <p>
+                        Opcionalmente puedes especificar tipos
+                        de eventos más concretos.
+                    </p>
+
+
+                    <div class="form-group">
+
+                        <label for="alertSubcategory">
+                            Subcategorías de interés
+                        </label>
+
+                        <select
+                            id="alertSubcategory"
+                            multiple
+                            size="6">
+                        </select>
+
+                    </div>
+
+
+                    <div class="age-help">
+
+                        Mantén presionada la tecla Ctrl
+                        (Windows) o Command (Mac) para seleccionar
+                        varias opciones.
+
+                    </div>
+
+                </div>
+
+
+                <!-- EDAD -->
+
+                <div class="alert-section">
+
+                    <h3>
+                        👤 Rango de edad
+                    </h3>
+
+                    <p>
+                        Úsalo para encontrar eventos apropiados
+                        para determinadas edades.
+                    </p>
+
+
+                    <div class="age-grid">
+
+                        <div class="form-group">
+
+                            <label for="alertAgeMin">
+                                Edad mínima
+                            </label>
+
+                            <input
+                                type="number"
+                                id="alertAgeMin"
+                                min="0"
+                                max="120"
+                                placeholder="Ej: 5">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="alertAgeMax">
+                                Edad máxima
+                            </label>
+
+                            <input
+                                type="number"
+                                id="alertAgeMax"
+                                min="0"
+                                max="120"
+                                placeholder="Ej: 9">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="age-help">
+
+                        Ejemplo: si ingresas
+                        <strong>5 a 9 años</strong>,
+                        OTIUM podrá identificar eventos cuyo rango
+                        de edad sea compatible con esas edades.
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACCESO -->
+
+                <div class="alert-section">
+
+                    <h3>
+                        🎟️ Tipo de acceso
+                    </h3>
+
+                    <p>
+                        Indica qué tipo de eventos quieres considerar.
+                    </p>
+
+
+                    <div class="access-grid">
+
+
+                        <div class="access-option">
+
+                            <input
+                                type="radio"
+                                id="accessBoth"
+                                name="alertAccess"
+                                value="ambos"
+                                checked>
+
+                            <label for="accessBoth">
+                                Todos
+                            </label>
+
+                        </div>
+
+
+                        <div class="access-option">
+
+                            <input
+                                type="radio"
+                                id="accessFreeOnly"
+                                name="alertAccess"
+                                value="gratis">
+
+                            <label for="accessFreeOnly">
+                                🆓 Gratis
+                            </label>
+
+                        </div>
+
+
+                        <div class="access-option">
+
+                            <input
+                                type="radio"
+                                id="accessPaidOnly"
+                                name="alertAccess"
+                                value="pagado">
+
+                            <label for="accessPaidOnly">
+                                🎟️ Pagados
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESUMEN -->
+
+                <div class="preferences-summary">
+
+                    <h3>
+                        🔎 Resumen de tus preferencias
+                    </h3>
+
+                    <p id="preferencesSummary">
+
+                        Configura tus preferencias para ver
+                        aquí un resumen.
+
+                    </p>
+
+                </div>
+
+
+                <!-- ACCIONES -->
+
+                <div class="alerts-actions">
+
+                    <button
+                        type="button"
+                        id="saveAlertsButton"
+                        class="save-alerts-button">
+
+                        Guardar preferencias
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="resetAlertsButton"
+                        class="reset-alerts-button">
+
+                        Restablecer
+
+                    </button>
+
+                </div>
+
+
+                <!-- PUSH -->
+
+                <div class="alert-section push-notifications-section">
+
+                    <h3>
+                        🔔 Notificaciones en tu dispositivo
+                    </h3>
+
+                    <p>
+                        Activa las notificaciones para que OTIUM
+                        pueda avisarte cuando encuentre nuevos
+                        eventos que coincidan con tus preferencias.
+                    </p>
+
+
+                    <div class="push-notifications-box">
+
+                        <div class="push-notifications-info">
+
+                            <strong id="pushNotificationTitle">
+                                Notificaciones desactivadas
+                            </strong>
+
+                            <span id="pushNotificationStatus">
+                                Activa las notificaciones para recibir
+                                avisos de OTIUM en este dispositivo.
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="enablePushNotificationsButton"
+                            class="push-notifications-button">
+
+                            🔔 Activar notificaciones
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AYUDA -->
+
+                <div class="alerts-help">
+
+                    <strong>
+                        ℹ️ Importante:
+                    </strong>
+
+                    Las preferencias se utilizan para identificar
+                    eventos que puedan ser de tu interés. Si activas
+                    las notificaciones de este dispositivo, OTIUM
+                    podrá enviarte avisos push cuando corresponda.
+
+                </div>
+
+
+                <!-- MOTOR -->
+
+                <div class="alerts-test">
+
+                    <h3>
+                        🔎 Probar mis avisos
+                    </h3>
+
+                    <p class="alerts-test-description">
+
+                        Comprueba qué eventos existentes en OTIUM
+                        coinciden actualmente con tus preferencias.
+                        Esta prueba no genera todavía una
+                        notificación.
+
+                    </p>
+
+
+                    <button
+                        type="button"
+                        id="testAlertsButton"
+                        class="test-alerts-button">
+
+                        Buscar eventos de interés
+
+                    </button>
+
+
+                    <div
+                        id="alertsTestStatus"
+                        class="alerts-test-status">
+                    </div>
+
+
+                    <div
+                        id="alertsResults"
+                        class="alerts-results">
+
+
+                        <div class="alerts-results-header">
+
+                            <h4>
+                                Eventos encontrados
+                            </h4>
+
+                            <p id="alertsResultsCount"></p>
+
+                        </div>
+
+
+                        <div
+                            id="alertsResultsList"
+                            class="alerts-results-list">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     MENÚ GLOBAL
+====================================================== -->
+
+<script
+    type="module"
+    src="js/menu.js?v=20260904">
+</script>
+
+
+<!-- =====================================================
+     LOGIN
+====================================================== -->
+
+<script
+    type="module"
+    src="js/login.js?v=20260904">
+</script>
+
+
+<!-- =====================================================
+     MIS AVISOS
+====================================================== -->
+
+<script
+    type="module"
+    src="js/mis-avisos.js?v=20260904">
+</script>
+
+
+<!-- =====================================================
+     NOTIFICACIONES PUSH
+====================================================== -->
+
+<script
+    type="module"
+    src="js/notificaciones-push.js?v=20260904">
+</script>
+
+
+<!-- =====================================================
+     MOTOR DE AVISOS
+====================================================== -->
+
+<script type="module">
+
+    import {
+        generarAvisos
+    } from "./js/motor-avisos.js?v=20260904";
+
+
+    const testButton =
+        document.getElementById(
+            "testAlertsButton"
+        );
+
+
+    const testStatus =
+        document.getElementById(
+            "alertsTestStatus"
+        );
+
+
+    const resultsContainer =
+        document.getElementById(
+            "alertsResults"
+        );
+
+
+    const resultsCount =
+        document.getElementById(
+            "alertsResultsCount"
+        );
+
+
+    const resultsList =
+        document.getElementById(
+            "alertsResultsList"
+        );
+
+
+    /* =================================================
+       ESCAPAR HTML
+    ================================================= */
+
+    function escaparHTML(valor) {
+
+        if (
+            valor === null ||
+            valor === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(valor)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    /* =================================================
+       FECHA
+    ================================================= */
+
+    function formatearFecha(fecha) {
+
+        if (!fecha) {
+
+            return "";
+
+        }
+
+
+        if (
+            typeof fecha === "object" &&
+            typeof fecha.toDate === "function"
+        ) {
+
+            try {
+
+                return fecha
+                    .toDate()
+                    .toLocaleDateString("es-CL");
+
+            } catch (error) {
+
+                return "";
+
+            }
+
+        }
+
+
+        const fechaJS =
+            new Date(fecha);
+
+
+        if (
+            !Number.isNaN(
+                fechaJS.getTime()
+            )
+        ) {
+
+            return fechaJS
+                .toLocaleDateString("es-CL");
+
+        }
+
+
+        return escaparHTML(fecha);
+
+    }
+
+
+    /* =================================================
+       RESULTADOS
+    ================================================= */
+
+    function mostrarResultados(avisos) {
+
+        resultsContainer
+            ?.classList
+            .add("visible");
+
+
+        if (resultsCount) {
+
+            resultsCount.textContent =
+                avisos.length === 1
+                    ? "Se encontró 1 evento que coincide con tus preferencias."
+                    : `Se encontraron ${avisos.length} eventos que coinciden con tus preferencias.`;
+
+        }
+
+
+        if (!resultsList) {
+
+            return;
+
+        }
+
+
+        if (avisos.length === 0) {
+
+            resultsList.innerHTML = `
+
+                <div class="alerts-no-results">
+
+                    No encontramos eventos que coincidan
+                    actualmente con tus preferencias.
+
+                    <br><br>
+
+                    Puedes probar ampliando la ciudad,
+                    categorías o rango de edad.
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        resultsList.innerHTML = avisos
+            .map(aviso => {
+
+                const titulo =
+                    escaparHTML(
+                        aviso.titulo ||
+                        aviso.nombre ||
+                        "Evento"
+                    );
+
+
+                const categoria =
+                    escaparHTML(
+                        aviso.categoria
+                    );
+
+
+                const ciudad =
+                    escaparHTML(
+                        aviso.ciudad
+                    );
+
+
+                const fecha =
+                    formatearFecha(
+                        aviso.fecha
+                    );
+
+
+                const descripcion =
+                    escaparHTML(
+                        aviso.descripcion
+                    );
+
+
+                const motivo =
+                    escaparHTML(
+                        aviso.motivo
+                    );
+
+
+                return `
+
+                    <article
+                        class="alert-result-card">
+
+                        <h5>
+                            ${titulo}
+                        </h5>
+
+
+                        <div
+                            class="alert-result-meta">
+
+                            ${
+                                categoria
+                                    ? `
+                                        <span
+                                            class="alert-result-tag">
+
+                                            ${categoria}
+
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+
+                            ${
+                                ciudad
+                                    ? `
+                                        <span
+                                            class="alert-result-tag">
+
+                                            📍 ${ciudad}
+
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+
+                            ${
+                                fecha
+                                    ? `
+                                        <span
+                                            class="alert-result-tag">
+
+                                            📅 ${fecha}
+
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+
+                        ${
+                            descripcion
+                                ? `
+                                    <p
+                                        class="alert-result-description">
+
+                                        ${descripcion}
+
+                                    </p>
+                                `
+                                : ""
+                        }
+
+
+                        ${
+                            motivo
+                                ? `
+                                    <p
+                                        class="alert-result-reason">
+
+                                        🔔 ${motivo}
+
+                                    </p>
+                                `
+                                : ""
+                        }
+
+                    </article>
+
+                `;
+
+            })
+            .join("");
+
+    }
+
+
+    /* =================================================
+       PROBAR MOTOR
+    ================================================= */
+
+    async function probarMotor() {
+
+        if (!testButton) {
+
+            return;
+
+        }
+
+
+        testButton.disabled = true;
+
+        testButton.textContent =
+            "Buscando eventos...";
+
+
+        resultsContainer
+            ?.classList
+            .remove("visible");
+
+
+        if (testStatus) {
+
+            testStatus.textContent =
+                "Consultando tus preferencias y buscando coincidencias en OTIUM...";
+
+            testStatus.classList.add(
+                "visible"
+            );
+
+        }
+
+
+        try {
+
+            const avisos =
+                await generarAvisos({
+                    recargarEventos: true
+                });
+
+
+            mostrarResultados(
+                avisos
+            );
+
+
+            if (testStatus) {
+
+                testStatus.textContent =
+                    avisos.length > 0
+                        ? "Búsqueda completada correctamente."
+                        : "Búsqueda completada. No se encontraron coincidencias.";
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "OTIUM: error ejecutando prueba del motor:",
+                error
+            );
+
+
+            if (testStatus) {
+
+                testStatus.textContent =
+                    "No fue posible ejecutar el motor de avisos. Revisa la consola para más información.";
+
+            }
+
+
+            resultsContainer
+                ?.classList
+                .remove("visible");
+
+        } finally {
+
+            testButton.disabled = false;
+
+            testButton.textContent =
+                "Buscar eventos de interés";
+
+        }
+
+    }
+
+
+    /* =================================================
+       EVENTO
+    ================================================= */
+
+    testButton?.addEventListener(
+        "click",
+        probarMotor
+    );
+
+</script>
+
+
+</body>
+
+</html>

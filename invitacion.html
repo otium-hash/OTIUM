@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación | OTIUM</title>
+    <style>
+        *{box-sizing:border-box}
+        body{
+            margin:0; min-height:100vh; font-family:Arial,sans-serif;
+            background:linear-gradient(135deg,#fff7f2,#fff,#f7f2ff);
+            color:#102a43;
+        }
+        .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 15px}
+        .card{
+            width:100%;max-width:650px;padding:45px 35px;text-align:center;
+            background:rgba(255,255,255,.97);border-radius:28px;
+            box-shadow:0 20px 60px rgba(0,0,0,.12)
+        }
+        .icon{font-size:64px;margin-bottom:12px}
+        .label{color:#ff7445;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+        h1{margin:12px 0;font-size:38px;line-height:1.15}
+        .host{margin:0 0 25px;color:#667085;font-size:18px}
+        .message{margin:25px 0;padding:22px;background:#fff8f4;border-radius:16px;color:#475467;line-height:1.7;white-space:pre-line}
+        .info{display:grid;gap:12px;margin:25px 0}
+        .info-item{padding:15px;background:#f8fafc;border-radius:12px}
+        .info-label{display:block;font-size:12px;color:#667085;margin-bottom:4px}
+        .info-value{font-size:16px;font-weight:700}
+        .actions{display:flex;flex-direction:column;gap:10px;margin-top:25px}
+        .button{
+            display:flex;align-items:center;justify-content:center;min-height:48px;
+            padding:12px 20px;border:0;border-radius:12px;background:#ff7445;
+            color:#fff;text-decoration:none;font-weight:700;cursor:pointer
+        }
+        .button.dark{background:#102a43}
+        .button.light{background:#eef2f6;color:#344054}
+        .footer{margin-top:30px;color:#98a2b3;font-size:13px}
+        .hidden{display:none!important}
+        .loading{text-align:center;padding:60px 20px}
+        @media(max-width:600px){.card{padding:35px 20px}h1{font-size:30px}}
+    </style>
+</head>
+<body>
+<main class="page">
+    <div id="loading" class="loading">Cargando invitación...</div>
+
+    <article id="card" class="card hidden">
+        <div id="icon" class="icon">🎉</div>
+        <div id="label" class="label">Estás invitado</div>
+        <h1 id="eventName">Celebración</h1>
+        <p id="host" class="host"></p>
+        <div id="message" class="message"></div>
+
+        <div class="info">
+            <div class="info-item">
+                <span class="info-label">📅 Fecha</span>
+                <span id="date" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">🕐 Hora</span>
+                <span id="time" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">📍 Lugar</span>
+                <span id="location" class="info-value"></span>
+            </div>
+        </div>
+
+        <div id="eventLinkBox" class="actions hidden">
+            <a id="eventLink" class="button light" target="_blank" rel="noopener noreferrer">
+                🔗 Información / entradas
+            </a>
+        </div>
+
+        <div id="rsvpBox" class="actions hidden">
+            <a id="rsvpButton" class="button">✅ Confirmar asistencia</a>
+        </div>
+
+        <div class="actions">
+            <button id="shareButton" class="button dark">📤 Compartir invitación</button>
+            <button id="copyButton" class="button light">🔗 Copiar enlace</button>
+            <a id="whatsappButton" class="button light" target="_blank" rel="noopener noreferrer">
+                💬 Compartir por WhatsApp
+            </a>
+        </div>
+
+        <div class="footer">Invitación creada con OTIUM</div>
+    </article>
+</main>
+
+<script type="module">
+import { getEventById } from "./js/modules/database.js";
+
+const id = new URLSearchParams(location.search).get("id");
+const $ = (id) => document.getElementById(id);
+
+const icons = {
+    cumpleanos:"🎂", aniversario:"💍", matrimonio:"💒",
+    "baby-shower":"👶", graduacion:"🎓", celebracion:"🎉", otro:"✨"
+};
+
+const labels = {
+    cumpleanos:"Estás invitado a mi cumpleaños",
+    aniversario:"Estás invitado a celebrar nuestro aniversario",
+    matrimonio:"Estás invitado a nuestro matrimonio",
+    "baby-shower":"Estás invitado a nuestro baby shower",
+    graduacion:"Estás invitado a celebrar nuestra graduación",
+    celebracion:"Estás invitado a celebrar",
+    otro:"Estás invitado"
+};
+
+function formatDate(value){
+    if(!value) return "Por confirmar";
+    const d = new Date(String(value).length === 10 ? value+"T00:00:00" : value);
+    if(Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+
+async function copyText(text){
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+        const ta=document.createElement("textarea");
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); ta.remove();
+    }
+}
+
+async function load(){
+    if(!id){
+        $("loading").textContent="No se encontró la invitación.";
+        return;
+    }
+
+    try{
+        const e=await getEventById(id);
+
+        if(!e || !e.esInvitacion){
+            $("loading").textContent="Esta invitación no existe o no está disponible.";
+            return;
+        }
+
+        const type=e.tipoEvento || "celebracion";
+        const url=location.href;
+        const title=e.nombre || "Invitación OTIUM";
+
+        $("icon").textContent=icons[type] || "🎉";
+        $("label").textContent=labels[type] || "Estás invitado";
+        $("eventName").textContent=title;
+        $("host").textContent=e.anfitrion ? `Una celebración de ${e.anfitrion}` : "";
+        $("message").textContent=e.mensajeInvitacion || "Te esperamos para celebrar juntos este día especial.";
+        $("date").textContent=formatDate(e.fecha);
+        $("time").textContent=e.hora || "Por confirmar";
+        $("location").textContent=e.direccion || e.ubicacion || e.ciudad || "Por confirmar";
+
+        if(e.linkEvento){
+            try{
+                const u=new URL(e.linkEvento);
+                if(u.protocol==="http:" || u.protocol==="https:"){
+                    $("eventLink").href=u.href;
+                    $("eventLinkBox").classList.remove("hidden");
+                }
+            }catch{}
+        }
+
+        if(e.permitirRSVP){
+            $("rsvpButton").href=`rsvp.html?id=${encodeURIComponent(id)}`;
+            $("rsvpBox").classList.remove("hidden");
+        }
+
+        const shareText =
+            `🎉 ${title}\n\n` +
+            `📅 ${formatDate(e.fecha)}\n` +
+            `🕐 ${e.hora || ""}\n` +
+            `📍 ${e.ciudad || ""}\n\n` +
+            `${e.mensajeInvitacion || ""}\n\n${url}`;
+
+        $("shareButton").addEventListener("click",async()=>{
+            if(navigator.share){
+                try{await navigator.share({title,text:shareText,url});}
+                catch{}
+            }else{
+                await copyText(url);
+                alert("Enlace de invitación copiado.");
+            }
+        });
+
+        $("copyButton").addEventListener("click",async()=>{
+            await copyText(url);
+            $("copyButton").textContent="✓ Enlace copiado";
+            setTimeout(()=>$("copyButton").textContent="🔗 Copiar enlace",2500);
+        });
+
+        $("whatsappButton").href="https://wa.me/?text="+encodeURIComponent(shareText);
+
+        $("loading").classList.add("hidden");
+        $("card").classList.remove("hidden");
+    }catch(error){
+        console.error("OTIUM - Error cargando invitación:",error);
+        $("loading").textContent="No fue posible cargar la invitación.";
+    }
+}
+
+load();
+</script>
+</body>
+</html>

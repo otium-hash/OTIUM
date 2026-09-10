@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación | OTIUM</title>
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f8fafc,#eef4ff);color:#102a43}
+        .page{min-height:100vh;padding:30px 15px 50px;display:flex;justify-content:center}
+        .card{width:100%;max-width:760px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 15px 45px rgba(16,42,67,.12)}
+        .header{padding:28px 20px 24px;text-align:center;background:#102a43;color:#fff}
+        .logo{font-size:28px;font-weight:900;letter-spacing:3px}
+        .subtitle{margin-top:8px;font-size:13px;opacity:.85;letter-spacing:1px;text-transform:uppercase}
+        .loading{padding:45px 20px;text-align:center;color:#667085}
+        .error{display:none;padding:45px 25px;text-align:center}
+        .error.visible{display:block}
+        .error h2{margin:0 0 10px;color:#991b1b}
+        .error p{margin:0;color:#667085;line-height:1.5}
+        .content{display:none;padding:35px 30px;text-align:center}
+        .content.visible{display:block}
+        .invitation-title{margin:0;font-size:34px;line-height:1.2;color:#102a43}
+        .event-name{margin:13px 0 0;color:#667085;font-size:16px;font-weight:700}
+        .message{max-width:600px;margin:22px auto 28px;color:#475467;line-height:1.7;font-size:15px;white-space:pre-line}
+        .details{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:25px}
+        .box{padding:18px 14px;border:1px solid #e4e7ec;border-radius:14px;background:#f8fafc}
+        .icon{font-size:23px;margin-bottom:7px}
+        .label{color:#667085;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+        .value{margin-top:5px;color:#102a43;font-size:15px;font-weight:700;line-height:1.4;word-break:break-word}
+        .access{margin-top:25px;padding:22px;border-radius:15px;border:1px solid #e4e7ec;background:#f8fafc}
+        .access h2{margin:0 0 12px;font-size:20px}
+        .access-value{font-size:17px;font-weight:800}
+        .access-price{margin-top:7px;color:#667085;font-size:14px}
+        .attendance{display:none;margin-top:25px;padding:23px;border-radius:15px;border:1px solid #a7f3d0;background:#ecfdf5}
+        .attendance.visible{display:block}
+        .attendance h2{margin:0 0 9px;color:#065f46;font-size:21px}
+        .attendance p{margin:0 0 18px;color:#047857;line-height:1.5;font-size:14px}
+        .button{display:inline-block;padding:13px 21px;border-radius:10px;background:#087443;color:#fff;text-decoration:none;font-size:14px;font-weight:800}
+        .event-link{display:none;margin-top:18px}
+        .event-link.visible{display:block}
+        .event-link .button{background:#ff7445}
+        .back{display:inline-block;margin-top:25px;color:#102a43;text-decoration:none;font-weight:700}
+        .footer{padding:20px;border-top:1px solid #e4e7ec;text-align:center;color:#98a2b3;font-size:12px;line-height:1.5}
+        @media(max-width:600px){.page{padding:12px 10px 35px}.card{border-radius:18px}.content{padding:28px 18px}.invitation-title{font-size:28px}.details{grid-template-columns:1fr}.header{padding:23px 15px}}
+    </style>
+</head>
+<body>
+<main class="page">
+<section class="card">
+    <header class="header">
+        <div class="logo">OTIUM</div>
+        <div class="subtitle">Invitación especial</div>
+    </header>
+
+    <div id="loading" class="loading">Cargando invitación...</div>
+
+    <div id="error" class="error">
+        <h2>No fue posible cargar la invitación</h2>
+        <p id="errorText">La invitación no está disponible.</p>
+        <a href="index.html" class="back">← Volver a OTIUM</a>
+    </div>
+
+    <div id="content" class="content">
+        <h1 id="invitationTitle" class="invitation-title"></h1>
+        <div id="eventName" class="event-name"></div>
+        <p id="invitationMessage" class="message"></p>
+
+        <div class="details">
+            <div class="box"><div class="icon">📅</div><div class="label">Fecha</div><div id="eventDate" class="value"></div></div>
+            <div class="box"><div class="icon">🕐</div><div class="label">Hora</div><div id="eventTime" class="value"></div></div>
+            <div class="box"><div class="icon">📍</div><div class="label">Ciudad</div><div id="eventCity" class="value"></div></div>
+            <div class="box"><div class="icon">📌</div><div class="label">Lugar</div><div id="eventLocation" class="value"></div></div>
+        </div>
+
+        <div class="access">
+            <h2>🎟️ Acceso</h2>
+            <div id="accessValue" class="access-value"></div>
+            <div id="accessPrice" class="access-price"></div>
+        </div>
+
+        <div id="attendance" class="attendance">
+            <h2>💚 Confirma tu asistencia</h2>
+            <p>El organizador solicita confirmación de asistencia para este evento.</p>
+            <a id="attendanceButton" class="button" target="_blank" rel="noopener noreferrer">Confirmar asistencia</a>
+        </div>
+
+        <div id="eventLink" class="event-link">
+            <a id="eventLinkButton" class="button" target="_blank" rel="noopener noreferrer">🎟️ Ver información / entradas</a>
+        </div>
+
+        <a href="index.html" class="back">← Volver a OTIUM</a>
+    </div>
+
+    <footer class="footer">
+        Invitación generada con OTIUM<br>
+        Descubre eventos, actividades y panoramas.
+    </footer>
+</section>
+</main>
+<script type="module" src="js/event-invitation-QR.js?v=20260831"></script>
+</body>
+</html>

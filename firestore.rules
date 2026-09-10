@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+
+    match /databases/{database}/documents {
+
+        match /eventos/{eventoId} {
+
+            // Los eventos pueden ser consultados públicamente
+            allow read: if true;
+
+            // Solo usuarios autenticados pueden crear eventos
+            // y el evento debe quedar asociado a su UID
+            allow create:
+                if request.auth != null
+                &&
+                request.resource.data.usuarioId ==
+                request.auth.uid;
+
+            // Solo el propietario puede modificar su evento
+            allow update:
+                if request.auth != null
+                &&
+                resource.data.usuarioId ==
+                request.auth.uid
+                &&
+                request.resource.data.usuarioId ==
+                resource.data.usuarioId;
+
+            // Solo el propietario puede eliminarlo
+            allow delete:
+                if request.auth != null
+                &&
+                resource.data.usuarioId ==
+                request.auth.uid;
+        }
+
+        match /favoritos/{favoritoId} {
+
+            allow read, create, update, delete:
+                if request.auth != null
+                &&
+                (
+                    resource.data.userId ==
+                    request.auth.uid
+                    ||
+                    request.resource.data.userId ==
+                    request.auth.uid
+                );
+        }
+    }
+}

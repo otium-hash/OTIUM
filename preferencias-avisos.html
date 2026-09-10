@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Mis avisos | OTIUM
+    </title>
+
+    <meta
+        name="description"
+        content="Configura tus preferencias para recibir avisos de eventos de interés en OTIUM.">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css?v=20260901">
+
+
+    <style>
+
+        /* =====================================================
+           OTIUM - PREFERENCIAS DE AVISOS
+        ===================================================== */
+
+        .alerts-page {
+
+            max-width:
+                1100px;
+
+            margin:
+                0 auto;
+
+            padding:
+                40px 20px 70px;
+
+        }
+
+
+        .alerts-header {
+
+            margin-bottom:
+                30px;
+
+        }
+
+
+        .alerts-kicker {
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .12em;
+
+            color:
+                #667085;
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        .alerts-header h1 {
+
+            margin:
+                0 0 10px;
+
+            font-size:
+                clamp(28px, 5vw, 42px);
+
+            color:
+                #102a43;
+
+        }
+
+
+        .alerts-header p {
+
+            max-width:
+                760px;
+
+            margin:
+                0;
+
+            color:
+                #667085;
+
+            line-height:
+                1.7;
+
+        }
+
+
+        /* =====================================================
+           MENSAJE
+        ===================================================== */
+
+        .alerts-message {
+
+            display:
+                none;
+
+            margin-bottom:
+                20px;
+
+            padding:
+                14px 16px;
+
+            border-radius:
+                12px;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        .alerts-message.show {
+
+            display:
+                block;
+
+        }
+
+
+        .alerts-message.success {
+
+            background:
+                #ecfdf3;
+
+            color:
+                #027a48;
+
+            border:
+                1px solid #abefc6;
+
+        }
+
+
+        .alerts-message.error {
+
+            background:
+                #fef3f2;
+
+            color:
+                #b42318;
+
+            border:
+                1px solid #fecdca;
+
+        }
+
+
+        .alerts-message.warning {
+
+            background:
+                #fffaeb;
+
+            color:
+                #b54708;
+
+            border:
+                1px solid #fedf89;
+
+        }
+
+
+        /* =====================================================
+           TARJETA PRINCIPAL
+        ===================================================== */
+
+        .alerts-card {
+
+            background:
+                #ffffff;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius:
+                20px;
+
+            padding:
+                30px;
+
+            box-shadow:
+                0 12px 30px rgba(16, 42, 67, .07);
+
+        }
+
+
+        /* =====================================================
+           CARGANDO
+        ===================================================== */
+
+        .alerts-loading {
+
+            padding:
+                40px 10px;
+
+            text-align:
+                center;
+
+            color:
+                #667085;
+
+        }
+
+
+        /* =====================================================
+           SECCIONES
+        ===================================================== */
+
+        .preference-section {
+
+            padding:
+                26px 0;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+        }
+
+
+        .preference-section:first-child {
+
+            padding-top:
+                0;
+
+        }
+
+
+        .preference-section:last-child {
+
+            border-bottom:
+                none;
+
+            padding-bottom:
+                0;
+
+        }
+
+
+        .preference-section h2 {
+
+            margin:
+                0 0 8px;
+
+            color:
+                #102a43;
+
+            font-size:
+                20px;
+
+        }
+
+
+        .preference-section p {
+
+            margin:
+                0 0 20px;
+
+            color:
+                #667085;
+
+            font-size:
+                14px;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        /* =====================================================
+           ACTIVAR AVISOS
+        ===================================================== */
+
+        .alert-toggle {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
+
+            padding:
+                18px;
+
+            background:
+                #f8fafc;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius:
+                14px;
+
+        }
+
+
+        .alert-toggle-copy {
+
+            flex:
+                1;
+
+        }
+
+
+        .alert-toggle-title {
+
+            display:
+                block;
+
+            margin-bottom:
+                4px;
+
+            font-weight:
+                700;
+
+            color:
+                #102a43;
+
+        }
+
+
+        .alert-toggle-description {
+
+            color:
+                #667085;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        /* =====================================================
+           SWITCH
+        ===================================================== */
+
+        .switch {
+
+            position:
+                relative;
+
+            width:
+                52px;
+
+            height:
+                30px;
+
+            flex:
+                0 0 auto;
+
+        }
+
+
+        .switch input {
+
+            opacity:
+                0;
+
+            width:
+                0;
+
+            height:
+                0;
+
+        }
+
+
+        .switch-slider {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            cursor:
+                pointer;
+
+            background:
+                #d0d5dd;
+
+            border-radius:
+                999px;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .switch-slider::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                22px;
+
+            height:
+                22px;
+
+            left:
+                4px;
+
+            top:
+                4px;
+
+            background:
+                #ffffff;
+
+            border-radius:
+                50%;
+
+            transition:
+                .2s;
+
+            box-shadow:
+                0 1px 3px rgba(0,0,0,.2);
+
+        }
+
+
+        .switch input:checked +
+        .switch-slider {
+
+            background:
+                #102a43;
+
+        }
+
+
+        .switch input:checked +
+        .switch-slider::before {
+
+            transform:
+                translateX(22px);
+
+        }
+
+
+        /* =====================================================
+           OPCIONES
+        ===================================================== */
+
+        .options-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(180px, 1fr)
+                );
+
+            gap:
+                12px;
+
+        }
+
+
+        .option-item {
+
+            position:
+                relative;
+
+        }
+
+
+        .option-item input {
+
+            position:
+                absolute;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+
+        }
+
+
+        .option-item label {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            min-height:
+                52px;
+
+            padding:
+                12px 14px;
+
+            border:
+                1px solid #d0d5dd;
+
+            border-radius:
+                12px;
+
+            background:
+                #ffffff;
+
+            color:
+                #344054;
+
+            font-size:
+                14px;
+
+            font-weight:
+                600;
+
+            cursor:
+                pointer;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .option-item label:hover {
+
+            border-color:
+                #98a2b3;
+
+            background:
+                #f8fafc;
+
+        }
+
+
+        .option-item input:checked +
+        label {
+
+            background:
+                #eef4f8;
+
+            border-color:
+                #102a43;
+
+            color:
+                #102a43;
+
+        }
+
+
+        /* =====================================================
+           ACCIONES
+        ===================================================== */
+
+        .alerts-actions {
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                12px;
+
+            margin-top:
+                30px;
+
+            flex-wrap:
+                wrap;
+
+        }
+
+
+        .alerts-button {
+
+            border:
+                none;
+
+            border-radius:
+                10px;
+
+            padding:
+                13px 20px;
+
+            font-family:
+                inherit;
+
+            font-size:
+                14px;
+
+            font-weight:
+                700;
+
+            cursor:
+                pointer;
+
+            transition:
+                .2s;
+
+        }
+
+
+        .alerts-button.primary {
+
+            background:
+                #102a43;
+
+            color:
+                #ffffff;
+
+        }
+
+
+        .alerts-button.primary:hover {
+
+            background:
+                #183b5c;
+
+        }
+
+
+        .alerts-button.secondary {
+
+            background:
+                #f2f4f7;
+
+            color:
+                #344054;
+
+            border:
+                1px solid #d0d5dd;
+
+        }
+
+
+        .alerts-button.secondary:hover {
+
+            background:
+                #e4e7ec;
+
+        }
+
+
+        .alerts-button:disabled {
+
+            opacity:
+                .6;
+
+            cursor:
+                not-allowed;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (
+            max-width: 700px
+        ) {
+
+            .alerts-page {
+
+                padding:
+                    25px 14px 50px;
+
+            }
+
+
+            .alerts-card {
+
+                padding:
+                    20px;
+
+                border-radius:
+                    16px;
+
+            }
+
+
+            .alert-toggle {
+
+                align-items:
+                    flex-start;
+
+            }
+
+
+            .options-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .alerts-actions {
+
+                flex-direction:
+                    column;
+
+            }
+
+
+            .alerts-button {
+
+                width:
+                    100%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="otium-page">
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ===================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- =====================================================
+         CONTENIDO
+    ===================================================== -->
+
+    <main class="alerts-page">
+
+
+        <header class="alerts-header">
+
+            <div class="alerts-kicker">
+                PERSONALIZACIÓN
+            </div>
+
+            <h1>
+                Mis avisos
+            </h1>
+
+            <p>
+                Configura qué tipos de eventos te interesan
+                para que OTIUM pueda avisarte cuando encuentre
+                nuevas actividades que coincidan con tus preferencias.
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             MENSAJE
+        ================================================== -->
+
+        <div
+            id="alertsMessage"
+            class="alerts-message"
+            role="status"
+            aria-live="polite">
+        </div>
+
+
+        <!-- =================================================
+             TARJETA
+        ================================================== -->
+
+        <section class="alerts-card">
+
+
+            <!-- =================================================
+                 CARGANDO
+            ================================================== -->
+
+            <div
+                id="alertsLoading"
+                class="alerts-loading">
+
+                Cargando tus preferencias...
+
+            </div>
+
+
+            <!-- =================================================
+                 FORMULARIO
+            ================================================== -->
+
+            <form
+                id="alertsForm"
+                style="display:none;">
+
+
+                <!-- =============================================
+                     ACTIVAR
+                ============================================== -->
+
+                <section
+                    class="preference-section">
+
+                    <div class="alert-toggle">
+
+                        <div class="alert-toggle-copy">
+
+                            <span
+                                class="alert-toggle-title">
+
+                                Activar avisos personalizados
+
+                            </span>
+
+                            <span
+                                class="alert-toggle-description">
+
+                                Permite que OTIUM te muestre
+                                avisos cuando existan nuevos
+                                eventos que coincidan con tus intereses.
+
+                            </span>
+
+                        </div>
+
+
+                        <label class="switch">
+
+                            <input
+                                type="checkbox"
+                                id="alertsActive">
+
+                            <span
+                                class="switch-slider">
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     CATEGORÍAS
+                ============================================== -->
+
+                <section
+                    class="preference-section">
+
+                    <h2>
+                        ¿Qué te interesa?
+                    </h2>
+
+                    <p>
+                        Selecciona una o varias categorías.
+                    </p>
+
+
+                    <div
+                        id="categoriesOptions"
+                        class="options-grid">
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-ninos"
+                                value="Niños">
+
+                            <label for="cat-ninos">
+                                👶 Niños
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-musica"
+                                value="Música">
+
+                            <label for="cat-musica">
+                                🎵 Música
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-teatro"
+                                value="Teatro">
+
+                            <label for="cat-teatro">
+                                🎭 Teatro
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-cultura"
+                                value="Cultura">
+
+                            <label for="cat-cultura">
+                                🎨 Cultura
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-deportes"
+                                value="Deportes">
+
+                            <label for="cat-deportes">
+                                ⚽ Deportes
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-familia"
+                                value="Familia">
+
+                            <label for="cat-familia">
+                                🎉 Familia
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-ferias"
+                                value="Ferias">
+
+                            <label for="cat-ferias">
+                                🛍️ Ferias
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-gastronomia"
+                                value="Gastronomía">
+
+                            <label for="cat-gastronomia">
+                                🍽️ Gastronomía
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-aire-libre"
+                                value="Aire libre">
+
+                            <label for="cat-aire-libre">
+                                🌳 Aire libre
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-educacion"
+                                value="Educación">
+
+                            <label for="cat-educacion">
+                                🎓 Educación
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="cat-otros"
+                                value="Otros">
+
+                            <label for="cat-otros">
+                                ✨ Otros
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     EDADES
+                ============================================== -->
+
+                <section
+                    class="preference-section">
+
+                    <h2>
+                        Rango de edad
+                    </h2>
+
+                    <p>
+                        Selecciona las edades que te interesan.
+                    </p>
+
+
+                    <div class="options-grid">
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-0-4"
+                                value="0-4">
+
+                            <label for="age-0-4">
+                                👶 0–4 años
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-5-9"
+                                value="5-9">
+
+                            <label for="age-5-9">
+                                🧒 5–9 años
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-10-14"
+                                value="10-14">
+
+                            <label for="age-10-14">
+                                👦 10–14 años
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-15-17"
+                                value="15-17">
+
+                            <label for="age-15-17">
+                                🧑 15–17 años
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-adultos"
+                                value="Adultos">
+
+                            <label for="age-adultos">
+                                🧑 Adultos
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="age-todas"
+                                value="Todas">
+
+                            <label for="age-todas">
+                                👨‍👩‍👧 Todas las edades
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     REGIÓN
+                ============================================== -->
+
+                <section
+                    class="preference-section">
+
+                    <h2>
+                        Región
+                    </h2>
+
+                    <p>
+                        Selecciona las regiones donde quieres
+                        encontrar eventos.
+                    </p>
+
+
+                    <div class="options-grid">
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-metropolitana"
+                                value="Región Metropolitana">
+
+                            <label for="region-metropolitana">
+                                📍 Región Metropolitana
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-valparaiso"
+                                value="Valparaíso">
+
+                            <label for="region-valparaiso">
+                                📍 Valparaíso
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-biobio"
+                                value="Biobío">
+
+                            <label for="region-biobio">
+                                📍 Biobío
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-la-araucania"
+                                value="La Araucanía">
+
+                            <label for="region-la-araucania">
+                                📍 La Araucanía
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-los-lagos"
+                                value="Los Lagos">
+
+                            <label for="region-los-lagos">
+                                📍 Los Lagos
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-coquimbo"
+                                value="Coquimbo">
+
+                            <label for="region-coquimbo">
+                                📍 Coquimbo
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-maule"
+                                value="Maule">
+
+                            <label for="region-maule">
+                                📍 Maule
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-ohiggins"
+                                value="O'Higgins">
+
+                            <label for="region-ohiggins">
+                                📍 O'Higgins
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-nuble"
+                                value="Ñuble">
+
+                            <label for="region-nuble">
+                                📍 Ñuble
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-los-rios"
+                                value="Los Ríos">
+
+                            <label for="region-los-rios">
+                                📍 Los Ríos
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-magallanes"
+                                value="Magallanes">
+
+                            <label for="region-magallanes">
+                                📍 Magallanes
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="region-arica"
+                                value="Arica y Parinacota">
+
+                            <label for="region-arica">
+                                📍 Arica y Parinacota
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     CIUDADES
+                ============================================== -->
+
+                <section
+                    class="preference-section">
+
+                    <h2>
+                        Ciudades
+                    </h2>
+
+                    <p>
+                        Opcionalmente puedes seleccionar ciudades
+                        específicas.
+                    </p>
+
+
+                    <div class="options-grid">
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-santiago"
+                                value="Santiago">
+
+                            <label for="city-santiago">
+                                📍 Santiago
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-valparaiso"
+                                value="Valparaíso">
+
+                            <label for="city-valparaiso">
+                                📍 Valparaíso
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-vina"
+                                value="Viña del Mar">
+
+                            <label for="city-vina">
+                                📍 Viña del Mar
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-concepcion"
+                                value="Concepción">
+
+                            <label for="city-concepcion">
+                                📍 Concepción
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-temuco"
+                                value="Temuco">
+
+                            <label for="city-temuco">
+                                📍 Temuco
+                            </label>
+
+                        </div>
+
+
+                        <div class="option-item">
+
+                            <input
+                                type="checkbox"
+                                id="city-puerto-montt"
+                                value="Puerto Montt">
+
+                            <label for="city-puerto-montt">
+                                📍 Puerto Montt
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =============================================
+                     ACCIONES
+                ============================================== -->
+
+                <div class="alerts-actions">
+
+                    <button
+                        type="button"
+                        id="cancelAlertsButton"
+                        class="alerts-button secondary">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="saveAlertsButton"
+                        class="alerts-button primary">
+
+                        Guardar preferencias
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ===================================================== -->
+
+    <script src="js/menu.js"></script>
+
+
+    <!-- =====================================================
+         LOGIN
+    ===================================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- =====================================================
+         PREFERENCIAS DE AVISOS
+    ===================================================== -->
+
+    <script
+        type="module"
+        src="js/preferencias-avisos.js?v=20260901">
+    </script>
+
+
+</body>
+
+</html>

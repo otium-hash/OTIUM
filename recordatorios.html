@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+    Mis recordatorios | OTIUM
+</title>
+
+<meta
+    name="description"
+    content="Consulta y administra tus recordatorios de eventos en OTIUM.">
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+<link
+    rel="stylesheet"
+    href="css/style.css?v=20260831">
+
+
+<style>
+
+    /* =====================================================
+       OTIUM
+       MIS RECORDATORIOS
+    ===================================================== */
+
+    .reminders-page {
+
+        max-width:
+            1180px;
+
+        margin:
+            0 auto;
+
+        padding:
+            110px 24px 60px;
+
+    }
+
+
+    /* =====================================================
+       ENCABEZADO
+    ===================================================== */
+
+    .reminders-header {
+
+        margin-bottom:
+            32px;
+
+    }
+
+
+    .reminders-kicker {
+
+        display:
+            inline-block;
+
+        margin-bottom:
+            8px;
+
+        font-size:
+            12px;
+
+        font-weight:
+            800;
+
+        letter-spacing:
+            .12em;
+
+        color:
+            #64748b;
+
+    }
+
+
+    .reminders-header h1 {
+
+        margin:
+            0 0 10px;
+
+        font-size:
+            clamp(30px, 5vw, 44px);
+
+        line-height:
+            1.1;
+
+        color:
+            #102a43;
+
+    }
+
+
+    .reminders-header p {
+
+        margin:
+            0;
+
+        max-width:
+            700px;
+
+        color:
+            #64748b;
+
+        font-size:
+            16px;
+
+        line-height:
+            1.6;
+
+    }
+
+
+    /* =====================================================
+       MENSAJES
+    ===================================================== */
+
+    .reminders-message {
+
+        display:
+            none;
+
+        margin-bottom:
+            24px;
+
+        padding:
+            14px 18px;
+
+        border-radius:
+            10px;
+
+        font-size:
+            14px;
+
+        line-height:
+            1.5;
+
+    }
+
+
+    .reminders-message.visible {
+
+        display:
+            block;
+
+    }
+
+
+    .reminders-message.error {
+
+        background:
+            #fef2f2;
+
+        color:
+            #b91c1c;
+
+        border:
+            1px solid #fecaca;
+
+    }
+
+
+    .reminders-message.warning {
+
+        background:
+            #fff7ed;
+
+        color:
+            #c2410c;
+
+        border:
+            1px solid #fed7aa;
+
+    }
+
+
+    .reminders-message.success {
+
+        background:
+            #f0fdf4;
+
+        color:
+            #15803d;
+
+        border:
+            1px solid #bbf7d0;
+
+    }
+
+
+    /* =====================================================
+       CARGANDO
+    ===================================================== */
+
+    .reminders-loading {
+
+        padding:
+            50px 20px;
+
+        text-align:
+            center;
+
+        color:
+            #64748b;
+
+    }
+
+
+    /* =====================================================
+       VACÍO
+    ===================================================== */
+
+    .reminders-empty {
+
+        display:
+            none;
+
+        padding:
+            60px 25px;
+
+        text-align:
+            center;
+
+        background:
+            #ffffff;
+
+        border:
+            1px solid #e5e7eb;
+
+        border-radius:
+            18px;
+
+        box-shadow:
+            0 8px 30px rgba(15, 23, 42, .06);
+
+    }
+
+
+    .reminders-empty.visible {
+
+        display:
+            block;
+
+    }
+
+
+    .reminders-empty-icon {
+
+        font-size:
+            46px;
+
+        margin-bottom:
+            15px;
+
+    }
+
+
+    .reminders-empty h2 {
+
+        margin:
+            0 0 10px;
+
+        color:
+            #102a43;
+
+    }
+
+
+    .reminders-empty p {
+
+        margin:
+            0 auto 24px;
+
+        max-width:
+            520px;
+
+        color:
+            #64748b;
+
+        line-height:
+            1.6;
+
+    }
+
+
+    .reminders-empty a {
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        padding:
+            12px 20px;
+
+        border-radius:
+            10px;
+
+        background:
+            #102a43;
+
+        color:
+            #ffffff;
+
+        text-decoration:
+            none;
+
+        font-weight:
+            700;
+
+    }
+
+
+    .reminders-empty a:hover {
+
+        background:
+            #183b5c;
+
+    }
+
+
+    /* =====================================================
+       LISTA
+    ===================================================== */
+
+    .reminders-list {
+
+        display:
+            grid;
+
+        grid-template-columns:
+            repeat(
+                auto-fit,
+                minmax(300px, 1fr)
+            );
+
+        gap:
+            20px;
+
+    }
+
+
+    /* =====================================================
+       TARJETA
+    ===================================================== */
+
+    .reminder-card {
+
+        background:
+            #ffffff;
+
+        border:
+            1px solid #e5e7eb;
+
+        border-radius:
+            18px;
+
+        padding:
+            22px;
+
+        box-shadow:
+            0 8px 30px rgba(15, 23, 42, .06);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+
+    }
+
+
+    .reminder-card:hover {
+
+        transform:
+            translateY(-2px);
+
+        box-shadow:
+            0 12px 34px rgba(15, 23, 42, .10);
+
+    }
+
+
+    /* =====================================================
+       CABECERA TARJETA
+    ===================================================== */
+
+    .reminder-card-top {
+
+        display:
+            flex;
+
+        align-items:
+            flex-start;
+
+        justify-content:
+            space-between;
+
+        gap:
+            14px;
+
+        margin-bottom:
+            18px;
+
+    }
+
+
+    .reminder-card-icon {
+
+        width:
+            46px;
+
+        height:
+            46px;
+
+        flex:
+            0 0 46px;
+
+        display:
+            flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        border-radius:
+            12px;
+
+        background:
+            #fff4e8;
+
+        font-size:
+            22px;
+
+    }
+
+
+    .reminder-card-title {
+
+        flex:
+            1;
+
+    }
+
+
+    .reminder-card-title h2 {
+
+        margin:
+            0;
+
+        font-size:
+            20px;
+
+        line-height:
+            1.3;
+
+        color:
+            #102a43;
+
+    }
+
+
+    .reminder-card-title .reminder-status {
+
+        display:
+            inline-block;
+
+        margin-top:
+            7px;
+
+        font-size:
+            11px;
+
+        font-weight:
+            800;
+
+        text-transform:
+            uppercase;
+
+        letter-spacing:
+            .06em;
+
+        color:
+            #c2410c;
+
+    }
+
+
+    /* =====================================================
+       DATOS
+    ===================================================== */
+
+    .reminder-data {
+
+        display:
+            grid;
+
+        gap:
+            11px;
+
+        margin-bottom:
+            20px;
+
+    }
+
+
+    .reminder-data-row {
+
+        display:
+            flex;
+
+        align-items:
+            flex-start;
+
+        gap:
+            10px;
+
+        color:
+            #475569;
+
+        font-size:
+            14px;
+
+        line-height:
+            1.5;
+
+    }
+
+
+    .reminder-data-icon {
+
+        width:
+            22px;
+
+        flex:
+            0 0 22px;
+
+    }
+
+
+    .reminder-data strong {
+
+        color:
+            #334155;
+
+    }
+
+
+    /* =====================================================
+       ACCIONES
+    ===================================================== */
+
+    .reminder-actions {
+
+        display:
+            flex;
+
+        flex-wrap:
+            wrap;
+
+        gap:
+            10px;
+
+        padding-top:
+            16px;
+
+        border-top:
+            1px solid #eef0f3;
+
+    }
+
+
+    .reminder-action {
+
+        display:
+            inline-flex;
+
+        align-items:
+            center;
+
+        justify-content:
+            center;
+
+        min-height:
+            40px;
+
+        padding:
+            9px 14px;
+
+        border-radius:
+            9px;
+
+        border:
+            1px solid #d0d5dd;
+
+        background:
+            #ffffff;
+
+        color:
+            #102a43;
+
+        text-decoration:
+            none;
+
+        font-size:
+            13px;
+
+        font-weight:
+            700;
+
+        cursor:
+            pointer;
+
+    }
+
+
+    .reminder-action:hover {
+
+        background:
+            #f8fafc;
+
+    }
+
+
+    .reminder-action.delete {
+
+        color:
+            #b91c1c;
+
+        border-color:
+            #fecaca;
+
+    }
+
+
+    .reminder-action.delete:hover {
+
+        background:
+            #fef2f2;
+
+    }
+
+
+    .reminder-action:disabled {
+
+        opacity:
+            .6;
+
+        cursor:
+            not-allowed;
+
+    }
+
+
+    /* =====================================================
+       CONTADOR
+    ===================================================== */
+
+    .reminders-count {
+
+        margin-bottom:
+            18px;
+
+        color:
+            #64748b;
+
+        font-size:
+            14px;
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (
+        max-width: 700px
+    ) {
+
+        .reminders-page {
+
+            padding:
+                95px 16px 40px;
+
+        }
+
+
+        .reminders-list {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+
+        .reminder-card {
+
+            padding:
+                18px;
+
+        }
+
+
+        .reminder-actions {
+
+            flex-direction:
+                column;
+
+        }
+
+
+        .reminder-action {
+
+            width:
+                100%;
+
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body class="otium-page">
+
+```
+<!-- =====================================================
+     MENÚ GLOBAL
+===================================================== -->
+
+<div id="menuOTIUM"></div>
+
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
+<main class="reminders-page">
+
+
+    <!-- =================================================
+         ENCABEZADO
+    ================================================== -->
+
+    <header class="reminders-header">
+
+        <span class="reminders-kicker">
+            OTIUM
+        </span>
+
+        <h1>
+            Mis recordatorios
+        </h1>
+
+        <p>
+            Aquí encontrarás los eventos que has marcado
+            para recordar. Puedes revisar sus datos o
+            eliminar un recordatorio cuando quieras.
+        </p>
+
+    </header>
+
+
+    <!-- =================================================
+         MENSAJES
+    ================================================== -->
+
+    <div
+        id="remindersMessage"
+        class="reminders-message"
+        role="status"
+        aria-live="polite">
+    </div>
+
+
+    <!-- =================================================
+         CARGANDO
+    ================================================== -->
+
+    <div
+        id="remindersLoading"
+        class="reminders-loading">
+
+        Cargando tus recordatorios...
+
+    </div>
+
+
+    <!-- =================================================
+         CONTADOR
+    ================================================== -->
+
+    <div
+        id="remindersCount"
+        class="reminders-count"
+        style="display:none;">
+    </div>
+
+
+    <!-- =================================================
+         LISTA
+    ================================================== -->
+
+    <section
+        id="remindersList"
+        class="reminders-list">
+    </section>
+
+
+    <!-- =================================================
+         SIN RECORDATORIOS
+    ================================================== -->
+
+    <section
+        id="remindersEmpty"
+        class="reminders-empty">
+
+        <div class="reminders-empty-icon">
+            🔔
+        </div>
+
+        <h2>
+            No tienes recordatorios
+        </h2>
+
+        <p>
+            Cuando encuentres un evento que quieras recordar,
+            pulsa el botón <strong>“Crear recordatorio”</strong>
+            en su página de detalle.
+        </p>
+
+        <a href="eventos.html">
+            Explorar eventos
+        </a>
+
+    </section>
+
+
+</main>
+
+
+<!-- =====================================================
+     MENÚ GLOBAL
+===================================================== -->
+
+<script
+    src="js/menu.js">
+</script>
+
+
+<!-- =====================================================
+     AUTENTICACIÓN
+===================================================== -->
+
+<script
+    type="module"
+    src="js/login.js">
+</script>
+
+
+<!-- =====================================================
+     RECORDATORIOS
+===================================================== -->
+
+<script
+    type="module"
+    src="js/recordatorios.js?v=20260903">
+</script>
+```
+
+</body>
+
+</html>

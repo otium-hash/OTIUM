@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Invitación | OTIUM
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #102a43;
+        }
+
+        .invitation-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 15px;
+        }
+
+        .invitation-card {
+            width: 100%;
+            max-width: 720px;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+        }
+
+        /* =====================================================
+           ENCABEZADO
+        ===================================================== */
+
+        .invitation-header {
+            padding: 28px 25px 20px;
+            text-align: center;
+            background: #102a43;
+            color: #ffffff;
+        }
+
+        .otium-logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .invitation-label {
+            margin-top: 12px;
+            font-size: 13px;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* =====================================================
+           IMAGEN
+        ===================================================== */
+
+        .invitation-image-container {
+            display: none;
+            width: 100%;
+        }
+
+        .invitation-image-container.visible {
+            display: block;
+        }
+
+        #eventImage {
+            display: block;
+            width: 100%;
+            max-height: 390px;
+            object-fit: cover;
+        }
+
+        /* =====================================================
+           CONTENIDO
+        ===================================================== */
+
+        .invitation-content {
+            padding: 35px 30px;
+            text-align: center;
+        }
+
+        .event-type {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: #fff1eb;
+            color: #c2410c;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .invitation-content h1 {
+            margin: 0 0 15px;
+            font-size: 32px;
+            line-height: 1.2;
+            color: #102a43;
+        }
+
+        .event-description {
+            margin: 0 auto 25px;
+            max-width: 580px;
+            color: #667085;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* =====================================================
+           DATOS
+        ===================================================== */
+
+        .event-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 25px 0;
+        }
+
+        .detail-box {
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px solid #e4e7ec;
+            border-radius: 13px;
+        }
+
+        .detail-icon {
+            font-size: 22px;
+            margin-bottom: 7px;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: #667085;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            margin-top: 5px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #102a43;
+            word-break: break-word;
+        }
+
+        /* =====================================================
+           ACCESO
+        ===================================================== */
+
+        .access-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e4e7ec;
+        }
+
+        .access-box h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .access-value {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .access-price {
+            margin-top: 6px;
+            color: #667085;
+        }
+
+        /* =====================================================
+           CONFIRMACIÓN
+        ===================================================== */
+
+        .attendance-box {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 14px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        .attendance-box.visible {
+            display: block;
+        }
+
+        .attendance-box h2 {
+            margin: 0 0 8px;
+            color: #065f46;
+            font-size: 20px;
+        }
+
+        .attendance-box p {
+            margin: 0 0 18px;
+            color: #047857;
+            line-height: 1.5;
+        }
+
+        .attendance-button {
+            display: inline-block;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background: #087443;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .attendance-button:hover {
+            background: #065f46;
+        }
+
+        /* =====================================================
+           ENLACE EVENTO
+        ===================================================== */
+
+        .event-link-box {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .event-link-box.visible {
+            display: block;
+        }
+
+        .event-link-button {
+            display: inline-block;
+            padding: 13px 20px;
+            border-radius: 10px;
+            background: #ff7445;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .event-link-button:hover {
+            background: #f45f30;
+        }
+
+        /* =====================================================
+           ERROR / CARGANDO
+        ===================================================== */
+
+        .loading-message,
+        .error-message {
+            padding: 40px 25px;
+            text-align: center;
+        }
+
+        .error-message {
+            display: none;
+            color: #991b1b;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .loading-message.hidden {
+            display: none;
+        }
+
+        .error-message h2 {
+            margin-top: 0;
+        }
+
+        /* =====================================================
+           PIE
+        ===================================================== */
+
+        .invitation-footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e4e7ec;
+            color: #98a2b3;
+            font-size: 12px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 10px;
+            color: #102a43;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .invitation-page {
+                padding: 15px;
+            }
+
+            .invitation-content {
+                padding: 28px 20px;
+            }
+
+            .invitation-content h1 {
+                font-size: 27px;
+            }
+
+            .event-details {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="invitation-page">
+
+        <section class="invitation-card">
+
+
+            <!-- =================================================
+                 CABECERA
+            ================================================== -->
+
+            <header class="invitation-header">
+
+                <div class="otium-logo">
+                    OTIUM
+                </div>
+
+                <div class="invitation-label">
+                    Invitación especial
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 IMAGEN
+            ================================================== -->
+
+            <div
+                id="invitationImageContainer"
+                class="invitation-image-container">
+
+                <img
+                    id="eventImage"
+                    alt="Imagen del evento">
+
+            </div>
+
+
+            <!-- =================================================
+                 CARGANDO
+            ================================================== -->
+
+            <div
+                id="loadingMessage"
+                class="loading-message">
+
+                Cargando invitación...
+
+            </div>
+
+
+            <!-- =================================================
+                 ERROR
+            ================================================== -->
+
+            <div
+                id="errorMessage"
+                class="error-message">
+
+                <h2>
+                    No fue posible cargar la invitación
+                </h2>
+
+                <p id="errorText">
+                    El evento no existe o no está disponible.
+                </p>
+
+                <a
+                    href="index.html"
+                    class="back-button">
+
+                    ← Volver a OTIUM
+
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 CONTENIDO
+            ================================================== -->
+
+            <div
+                id="invitationContent"
+                class="invitation-content"
+                style="display:none;">
+
+
+                <div
+                    id="eventType"
+                    class="event-type">
+                </div>
+
+
+                <h1
+                    id="eventName">
+                </h1>
+
+
+                <p
+                    id="eventDescription"
+                    class="event-description">
+                </p>
+
+
+                <!-- =================================================
+                     DATOS DEL EVENTO
+                ================================================== -->
+
+                <div class="event-details">
+
+
+                    <div class="detail-box">
+
+                        <div class="detail-icon">
+                            📅
+                        </div>
+
+                        <div class="detail-label">
+                            Fecha
+                        </div>
+
+                        <div
+                            id="eventDate"
+                            class="detail-value">
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <div class="detail-icon">
+                            🕐
+                        </div>
+
+                        <div class="detail-label">
+                            Hora
+                        </div>
+
+                        <div
+                            id="eventTime"
+                            class="detail-value">
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <div class="detail-icon">
+                            📍
+                        </div>
+
+                        <div class="detail-label">
+                            Ciudad
+                        </div>
+
+                        <div
+                            id="eventCity"
+                            class="detail-value">
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-box">
+
+                        <div class="detail-icon">
+                            📌
+                        </div>
+
+                        <div class="detail-label">
+                            Ubicación
+                        </div>
+
+                        <div
+                            id="eventAddress"
+                            class="detail-value">
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     ACCESO
+                ================================================== -->
+
+                <div class="access-box">
+
+                    <h2>
+                        🎟️ Acceso
+                    </h2>
+
+                    <div
+                        id="accessValue"
+                        class="access-value">
+                    </div>
+
+                    <div
+                        id="accessPrice"
+                        class="access-price">
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     CONFIRMACIÓN
+                ================================================== -->
+
+                <div
+                    id="attendanceBox"
+                    class="attendance-box">
+
+                    <h2>
+                        💚 Confirma tu asistencia
+                    </h2>
+
+                    <p>
+                        El organizador solicita confirmación
+                        de asistencia para este evento.
+                    </p>
+
+                    <a
+                        id="attendanceButton"
+                        class="attendance-button"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        Confirmar asistencia
+
+                    </a>
+
+                </div>
+
+
+                <!-- =================================================
+                     ENLACE EVENTO
+                ================================================== -->
+
+                <div
+                    id="eventLinkBox"
+                    class="event-link-box">
+
+                    <a
+                        id="eventLinkButton"
+                        class="event-link-button"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer">
+
+                        🎟️ Ver información / entradas
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PIE
+            ================================================== -->
+
+            <footer class="invitation-footer">
+
+                Invitación generada con OTIUM
+
+                <br>
+
+                Descubre eventos, actividades y panoramas.
+
+            </footer>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FIREBASE
+    ====================================================== -->
+
+    <script type="module">
+
+        import {
+            getEventById
+        } from "./js/modules/database.js";
+
+
+        /* =====================================================
+           ELEMENTOS
+        ===================================================== */
+
+        const loadingMessage =
+            document.getElementById(
+                "loadingMessage"
+            );
+
+
+        const errorMessage =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        const errorText =
+            document.getElementById(
+                "errorText"
+            );
+
+
+        const invitationContent =
+            document.getElementById(
+                "invitationContent"
+            );
+
+
+        const imageContainer =
+            document.getElementById(
+                "invitationImageContainer"
+            );
+
+
+        const eventImage =
+            document.getElementById(
+                "eventImage"
+            );
+
+
+        /* =====================================================
+           OBTENER ID
+        ===================================================== */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const eventId =
+            params.get(
+                "id"
+            );
+
+
+        /* =====================================================
+           INICIO
+        ===================================================== */
+
+        cargarInvitacion();
+
+
+        /* =====================================================
+           CARGAR EVENTO
+        ===================================================== */
+
+        async function cargarInvitacion() {
+
+            if (!eventId) {
+
+                mostrarError(
+                    "No se proporcionó el ID del evento."
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                console.log(
+                    "OTIUM - Cargando invitación:",
+                    eventId
+                );
+
+
+                const evento =
+                    await getEventById(
+                        eventId
+                    );
+
+
+                console.log(
+                    "OTIUM - Evento encontrado:",
+                    evento
+                );
+
+
+                if (!evento) {
+
+                    mostrarError(
+                        "El evento no existe o ya no está disponible."
+                    );
+
+                    return;
+
+                }
+
+
+                mostrarEvento(
+                    evento
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error cargando invitación:",
+                    error
+                );
+
+
+                mostrarError(
+                    "Ocurrió un error al cargar la información del evento."
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MOSTRAR EVENTO
+        ===================================================== */
+
+        function mostrarEvento(
+            evento
+        ) {
+
+            const nombre =
+                evento.nombre ||
+                evento.title ||
+                "Evento";
+
+
+            const categoria =
+                evento.categoria ||
+                evento.category ||
+                "";
+
+
+            const tipo =
+                evento.tipoEvento ||
+                evento.tipo ||
+                "publico";
+
+
+            const fecha =
+                evento.fecha ||
+                evento.date ||
+                "";
+
+
+            const hora =
+                evento.hora ||
+                evento.time ||
+                "";
+
+
+            const ciudad =
+                evento.ciudad ||
+                evento.city ||
+                "";
+
+
+            const direccion =
+                evento.direccion ||
+                evento.ubicacion ||
+                evento.address ||
+                "";
+
+
+            const descripcion =
+                evento.descripcion ||
+                evento.description ||
+                "";
+
+
+            document.getElementById(
+                "eventName"
+            ).textContent =
+                nombre;
+
+
+            document.getElementById(
+                "eventType"
+            ).textContent =
+                tipo === "particular"
+                    ? "🔒 Evento particular"
+                    : "🌎 Evento público";
+
+
+            document.getElementById(
+                "eventDescription"
+            ).textContent =
+                descripcion;
+
+
+            document.getElementById(
+                "eventDate"
+            ).textContent =
+                fecha ||
+                "Por confirmar";
+
+
+            document.getElementById(
+                "eventTime"
+            ).textContent =
+                hora ||
+                "Por confirmar";
+
+
+            document.getElementById(
+                "eventCity"
+            ).textContent =
+                ciudad ||
+                "Por confirmar";
+
+
+            document.getElementById(
+                "eventAddress"
+            ).textContent =
+                direccion ||
+                "Por confirmar";
+
+
+            /* =================================================
+               ACCESO
+            ================================================== */
+
+            const acceso =
+                evento.entradaGratuita === true ||
+                evento.ticketing?.modalidad === "gratuita";
+
+
+            const accessValue =
+                document.getElementById(
+                    "accessValue"
+                );
+
+
+            const accessPrice =
+                document.getElementById(
+                    "accessPrice"
+                );
+
+
+            if (acceso) {
+
+                accessValue.textContent =
+                    "🆓 Entrada gratuita";
+
+                accessPrice.textContent =
+                    "";
+
+            } else {
+
+                accessValue.textContent =
+                    "🎟️ Entrada pagada";
+
+                const precio =
+                    evento.precio ||
+                    evento.ticketing?.precio ||
+                    "";
+
+                accessPrice.textContent =
+                    precio
+                        ? `Precio: ${precio}`
+                        : "Consulta el precio con el organizador.";
+
+            }
+
+
+            /* =================================================
+               CONFIRMACIÓN
+            ================================================== */
+
+            const asistencia =
+                evento.asistencia ||
+                {};
+
+
+            const requiereConfirmacion =
+                asistencia.requiereConfirmacion === true;
+
+
+            const attendanceBox =
+                document.getElementById(
+                    "attendanceBox"
+                );
+
+
+            const attendanceButton =
+                document.getElementById(
+                    "attendanceButton"
+                );
+
+
+            if (
+                tipo === "particular" &&
+                requiereConfirmacion
+            ) {
+
+                const enlace =
+                    asistencia.urlConfirmacion ||
+                    "";
+
+
+                if (enlace) {
+
+                    attendanceButton.href =
+                        enlace;
+
+                    attendanceBox.classList.add(
+                        "visible"
+                    );
+
+                }
+
+            }
+
+
+            /* =================================================
+               ENLACE DEL EVENTO
+            ================================================== */
+
+            const enlaceEvento =
+                evento.enlaceEvento ||
+                evento.ticketing?.urlExterna ||
+                "";
+
+
+            const eventLinkBox =
+                document.getElementById(
+                    "eventLinkBox"
+                );
+
+
+            const eventLinkButton =
+                document.getElementById(
+                    "eventLinkButton"
+                );
+
+
+            if (enlaceEvento) {
+
+                eventLinkButton.href =
+                    enlaceEvento;
+
+                eventLinkBox.classList.add(
+                    "visible"
+                );
+
+            }
+
+
+            /* =================================================
+               IMAGEN
+            ================================================== */
+
+            const imagen =
+                evento.imagen ||
+                evento.imagenUrl ||
+                evento.imageUrl ||
+                evento.fotoUrl ||
+                "";
+
+
+            if (imagen) {
+
+                eventImage.src =
+                    imagen;
+
+                imageContainer.classList.add(
+                    "visible"
+                );
+
+            }
+
+
+            /* =================================================
+               MOSTRAR
+            ================================================= */
+
+            loadingMessage.classList.add(
+                "hidden"
+            );
+
+
+            invitationContent.style.display =
+                "block";
+
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        function mostrarError(
+            mensaje
+        ) {
+
+            loadingMessage.classList.add(
+                "hidden"
+            );
+
+
+            invitationContent.style.display =
+                "none";
+
+
+            errorText.textContent =
+                mensaje;
+
+
+            errorMessage.classList.add(
+                "visible"
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        OTIUM - Detalle del evento
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+
+    <style>
+
+        /* ==========================================
+           ESPACIO PARA EL MENÚ FIJO
+        =========================================== */
+
+        .event-detail-page {
+
+            padding-top: 110px;
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==========================================
+           TARJETA DEL EVENTO
+        =========================================== */
+
+        .event-detail-card {
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         MENÚ GLOBAL OTIUM
+    =========================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- ==========================================
+         CONTENIDO PRINCIPAL
+    =========================================== -->
+
+    <main class="event-detail-page">
+
+
+        <div
+            id="eventoDetalle"
+            class="event-detail-card">
+
+
+            <div class="event-loading">
+
+                <h2>
+                    Cargando evento...
+                </h2>
+
+                <p>
+                    Por favor espera un momento.
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+    <!-- ==========================================
+         MENÚ GLOBAL OTIUM
+    =========================================== -->
+
+    <script
+        src="js/menu.js">
+    </script>
+
+
+    <!-- ==========================================
+         LOGIN / GOOGLE
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- ==========================================
+         DETALLE DEL EVENTO
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/evento.js">
+    </script>
+
+
+</body>
+
+</html>

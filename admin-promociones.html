@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>OTIUM Ads - Administración</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+        .ads-admin {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+        }
+
+        .ads-admin-header {
+            margin-bottom: 30px;
+        }
+
+        .ads-admin-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .ads-admin-header p {
+            color: #666;
+        }
+
+        .ads-stats {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .ads-stat {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.08);
+        }
+
+        .ads-stat span {
+            display: block;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .ads-stat strong {
+            font-size: 30px;
+        }
+
+        .ads-toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .ads-filter {
+            padding: 11px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .ads-table-container {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow:
+                0 5px 25px rgba(0,0,0,.08);
+
+            overflow-x: auto;
+        }
+
+        .ads-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        .ads-table th,
+        .ads-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .ads-table th {
+            background: #f7f7f7;
+            font-size: 14px;
+        }
+
+        .ads-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ads-event-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .ads-small {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .ads-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .ads-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .ads-badge.active {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .ads-badge.expired {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .ads-badge.rejected {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .ads-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ads-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 9px 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .ads-btn-confirm {
+            background: #198754;
+            color: white;
+        }
+
+        .ads-btn-expire {
+            background: #6c757d;
+            color: white;
+        }
+
+        .ads-btn-view {
+            background: #eee;
+            color: #333;
+        }
+
+        .ads-btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .ads-empty {
+            padding: 50px;
+            text-align: center;
+            color: #777;
+        }
+
+        .ads-message {
+            margin-bottom: 20px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .ads-message.show {
+            display: block;
+        }
+
+        .ads-message.error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .ads-message.success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .ads-loading {
+            padding: 40px;
+            text-align: center;
+        }
+
+        @media (max-width: 800px) {
+
+            .ads-stats {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .ads-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .ads-admin {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- MENÚ GLOBAL -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <main class="ads-admin">
+
+        <div class="ads-admin-header">
+
+            <h1>
+                Administración OTIUM Ads
+            </h1>
+
+            <p>
+                Gestiona las promociones publicitarias
+                de los eventos.
+            </p>
+
+        </div>
+
+
+        <div
+            id="adsMessage"
+            class="ads-message">
+        </div>
+
+
+        <!-- ESTADÍSTICAS -->
+
+        <section class="ads-stats">
+
+            <div class="ads-stat">
+
+                <span>
+                    Pendientes de pago
+                </span>
+
+                <strong id="statPending">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="ads-stat">
+
+                <span>
+                    Activas
+                </span>
+
+                <strong id="statActive">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="ads-stat">
+
+                <span>
+                    Vencidas
+                </span>
+
+                <strong id="statExpired">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="ads-stat">
+
+                <span>
+                    Total promociones
+                </span>
+
+                <strong id="statTotal">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- FILTROS -->
+
+        <div class="ads-toolbar">
+
+            <select
+                id="statusFilter"
+                class="ads-filter">
+
+                <option value="todos">
+                    Todas
+                </option>
+
+                <option value="pendiente_pago">
+                    Pendientes de pago
+                </option>
+
+                <option value="activa">
+                    Activas
+                </option>
+
+                <option value="vencida">
+                    Vencidas
+                </option>
+
+            </select>
+
+
+            <button
+                id="refreshAds"
+                class="ads-btn ads-btn-view">
+
+                Actualizar
+
+            </button>
+
+        </div>
+
+
+        <!-- TABLA -->
+
+        <div class="ads-table-container">
+
+            <div
+                id="adsLoading"
+                class="ads-loading">
+
+                Cargando promociones...
+
+            </div>
+
+
+            <table
+                id="adsTable"
+                class="ads-table"
+                style="display:none;">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Evento
+                        </th>
+
+                        <th>
+                            Usuario
+                        </th>
+
+                        <th>
+                            Plan
+                        </th>
+
+                        <th>
+                            Pago
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Vigencia
+                        </th>
+
+                        <th>
+                            Acciones
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="adsTableBody">
+                </tbody>
+
+            </table>
+
+
+            <div
+                id="adsEmpty"
+                class="ads-empty"
+                style="display:none;">
+
+                No existen promociones para mostrar.
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- LEAFLET NO ES NECESARIO AQUÍ -->
+
+
+    <!-- MENÚ -->
+
+    <script src="js/menu.js"></script>
+
+
+    <!-- ADMIN ADS -->
+
+    <script
+        type="module"
+        src="js/admin-promociones.js">
+    </script>
+
+</body>
+
+</html>

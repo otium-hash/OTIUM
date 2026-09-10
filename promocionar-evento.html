@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promocionar evento | OTIUM</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/promocionar-evento.css">
+</head>
+<body>
+<div id="menuOTIUM"></div>
+<main class="ads-page">
+<section class="ads-heading">
+<p class="eyebrow">OTIUM ADS</p>
+<h1>Promociona tu evento</h1>
+<p class="subtitle">Haz que tu evento tenga mayor visibilidad dentro de OTIUM.</p>
+</section>
+<section class="event-summary" aria-label="Evento seleccionado">
+<div class="event-summary-icon" aria-hidden="true"><span>◎</span></div>
+<div class="event-summary-content">
+<span class="summary-label">EVENTO SELECCIONADO</span>
+<h2 id="eventName">Cargando evento...</h2>
+<div class="event-meta"><span id="eventCity">📍 Cargando...</span><span class="meta-separator">|</span><span id="eventDate">📅 Cargando...</span></div>
+</div>
+</section>
+<section class="plans-section">
+<div class="plans-heading">
+<p class="eyebrow">ELIGE TU PLAN</p>
+<h2>Selecciona cómo quieres promocionar tu evento</h2>
+<p>Tu promoción aparecerá en el carrusel publicitario de OTIUM.</p>
+</div>
+<div class="plans-grid">
+<article class="plan-card plan-basic">
+<div class="plan-icon">☆</div><p class="plan-kicker">OTIUM ADS</p><h3>BÁSICO</h3>
+<div class="plan-price">$2.990</div><div class="plan-duration">7 días</div><div class="plan-divider"></div>
+<ul class="plan-benefits"><li>Mayor visibilidad</li><li>Presencia en el carrusel</li><li>7 días de duración</li></ul>
+<button type="button" class="plan-button" data-plan="basico">Elegir Básico</button>
+</article>
+<article class="plan-card plan-featured">
+<div class="featured-badge">MÁS ELEGIDO</div><div class="plan-icon">🚀</div><p class="plan-kicker">OTIUM ADS</p><h3>DESTACADO</h3>
+<div class="plan-price">$5.990</div><div class="plan-duration">15 días</div><div class="plan-divider"></div>
+<ul class="plan-benefits"><li>Mayor exposición</li><li>Aparición destacada</li><li>Mejor posición</li><li>15 días de duración</li></ul>
+<button type="button" class="plan-button" data-plan="destacado">Elegir Destacado</button>
+</article>
+<article class="plan-card plan-premium">
+<div class="plan-icon">♛</div><p class="plan-kicker">OTIUM ADS</p><h3>PREMIUM</h3>
+<div class="plan-price">$9.990</div><div class="plan-duration">30 días</div><div class="plan-divider"></div>
+<ul class="plan-benefits"><li>Máxima visibilidad</li><li>Mayor exposición</li><li>Prioridad en destacados</li><li>30 días de duración</li></ul>
+<button type="button" class="plan-button" data-plan="premium">Elegir Premium</button>
+</article>
+<article class="plan-card plan-custom">
+<div class="plan-icon">◇</div><p class="plan-kicker">OTIUM ADS</p><h3>PERSONALIZADO</h3>
+<div class="plan-price plan-price-custom">Monto libre</div><div class="plan-duration">Duración a definir</div><div class="plan-divider"></div>
+<ul class="plan-benefits"><li>Elige el monto que deseas invertir</li><li>Duración personalizada</li><li>Atención especial</li></ul>
+<button type="button" id="customPaymentButton" class="plan-button" data-plan="personalizado">Elegir campaña personalizada</button>
+</article>
+</div>
+</section>
+<div id="promotionMessage" class="promotion-message" role="status" aria-live="polite"></div>
+<section class="secure-payment"><div class="secure-icon">✓</div><div><h3>Pago seguro con Mercado Pago</h3><p>Al seleccionar un plan, tu solicitud quedará registrada como pendiente de pago y serás enviado a Mercado Pago.</p><p>La promoción se activará una vez confirmado el pago.</p></div></section>
+<div class="back-container"><a href="my-events.html" class="back-link">← Volver a mis eventos</a></div>
+</main>
+<script src="js/menu.js"></script>
+<script type="module" src="js/promocionar-evento.js"></script>
+    <!-- ==========================================
+         LOGIN
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+</body>
+</html>

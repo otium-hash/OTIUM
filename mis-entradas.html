@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+    Mis entradas | OTIUM
+</title>
+
+<meta
+    name="description"
+    content="Consulta tus entradas para eventos en OTIUM.">
+
+
+<!-- =====================================================
+     FUENTES
+===================================================== -->
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+
+<!-- =====================================================
+     CSS GLOBAL
+===================================================== -->
+
+<link
+    rel="stylesheet"
+    href="css/style.css?v=20260904">
+
+
+<style>
+
+    /* =====================================================
+       OTIUM
+       MIS ENTRADAS
+
+       Esta página NO modifica el Home.
+
+       El menú global es generado por menu.js
+       dentro de #menuOTIUM.
+    ===================================================== */
+
+
+    /* =====================================================
+       CONTENEDOR DEL MENÚ GLOBAL
+    ===================================================== */
+
+    #menuOTIUM {
+
+        width: 100%;
+
+        position: relative;
+
+        z-index: 10000;
+
+    }
+
+
+    /* =====================================================
+       CUERPO DE LA PÁGINA
+    ===================================================== */
+
+    html,
+    body {
+
+        margin: 0;
+
+        padding: 0;
+
+    }
+
+
+    body.otium-page {
+
+        min-height: 100vh;
+
+    }
+
+
+    /* =====================================================
+       CONTENIDO
+
+       No utilizar aquí un padding superior de 120px,
+       porque el menú global ya ocupa su propio espacio.
+    ===================================================== */
+
+    .tickets-page {
+
+        width: 100%;
+
+        max-width: 900px;
+
+        margin: 0 auto;
+
+        padding:
+            40px 24px 70px;
+
+        box-sizing: border-box;
+
+    }
+
+
+    /* =====================================================
+       ENCABEZADO
+    ===================================================== */
+
+    .tickets-header {
+
+        margin-bottom: 35px;
+
+    }
+
+
+    .tickets-kicker {
+
+        display: inline-block;
+
+        margin-bottom: 8px;
+
+        font-size: 12px;
+
+        font-weight: 800;
+
+        letter-spacing: .12em;
+
+        color: #64748b;
+
+    }
+
+
+    .tickets-header h1 {
+
+        margin:
+            0 0 12px;
+
+        font-size:
+            clamp(
+                30px,
+                5vw,
+                44px
+            );
+
+        line-height: 1.1;
+
+        color: #102a43;
+
+    }
+
+
+    .tickets-header p {
+
+        margin: 0;
+
+        max-width: 650px;
+
+        color: #64748b;
+
+        font-size: 16px;
+
+        line-height: 1.6;
+
+    }
+
+
+    /* =====================================================
+       TARJETA PRINCIPAL
+    ===================================================== */
+
+    .tickets-card {
+
+        padding:
+            55px 35px;
+
+        text-align: center;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e5e7eb;
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 10px 35px
+            rgba(
+                15,
+                23,
+                42,
+                .07
+            );
+
+    }
+
+
+    /* =====================================================
+       ICONO
+    ===================================================== */
+
+    .tickets-icon {
+
+        width: 70px;
+
+        height: 70px;
+
+        margin:
+            0 auto 22px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        border-radius: 18px;
+
+        background: #fff4e8;
+
+        font-size: 34px;
+
+    }
+
+
+    /* =====================================================
+       TÍTULO TARJETA
+    ===================================================== */
+
+    .tickets-card h2 {
+
+        margin:
+            0 0 12px;
+
+        color: #102a43;
+
+        font-size: 27px;
+
+    }
+
+
+    /* =====================================================
+       DESCRIPCIÓN
+    ===================================================== */
+
+    .tickets-card p {
+
+        max-width: 600px;
+
+        margin:
+            0 auto 25px;
+
+        color: #64748b;
+
+        line-height: 1.65;
+
+    }
+
+
+    /* =====================================================
+       PRÓXIMAMENTE
+    ===================================================== */
+
+    .tickets-coming {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding:
+            11px 20px;
+
+        border-radius: 10px;
+
+        background: #fff4e8;
+
+        color: #c2410c;
+
+        font-size: 13px;
+
+        font-weight: 800;
+
+        letter-spacing: .04em;
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (
+        max-width: 700px
+    ) {
+
+        .tickets-page {
+
+            padding:
+                30px 16px 45px;
+
+        }
+
+
+        .tickets-card {
+
+            padding:
+                40px 22px;
+
+        }
+
+
+        .tickets-card h2 {
+
+            font-size: 24px;
+
+        }
+
+    }
+
+
+</style>
+
+</head>
+
+
+<body class="otium-page">
+
+
+<!-- =====================================================
+     MENÚ GLOBAL OTIUM
+===================================================== -->
+
+<div id="menuOTIUM"></div>
+
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
+<main class="tickets-page">
+
+
+    <!-- =================================================
+         ENCABEZADO
+    ================================================== -->
+
+    <header class="tickets-header">
+
+
+        <span class="tickets-kicker">
+
+            OTIUM
+
+        </span>
+
+
+        <h1>
+
+            Mis entradas
+
+        </h1>
+
+
+        <p>
+
+            Aquí podrás consultar las entradas que
+            compres para tus eventos.
+
+        </p>
+
+
+    </header>
+
+
+    <!-- =================================================
+         TARJETA
+    ================================================== -->
+
+    <section class="tickets-card">
+
+
+        <div class="tickets-icon">
+
+            🎫
+
+        </div>
+
+
+        <h2>
+
+            Venta de entradas próximamente
+
+        </h2>
+
+
+        <p>
+
+            OTIUM está preparando esta función.
+            Próximamente podrás comprar entradas
+            para eventos directamente desde la
+            plataforma y consultar tus entradas
+            desde este espacio.
+
+        </p>
+
+
+        <div class="tickets-coming">
+
+            PRÓXIMAMENTE
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- =====================================================
+     MENÚ GLOBAL
+
+     IMPORTANTE:
+     menu.js utiliza import/export.
+     Por eso DEBE cargarse como módulo.
+===================================================== -->
+
+<script
+    type="module"
+    src="js/menu.js?v=20260904">
+</script>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<script
+    type="module"
+    src="js/login.js?v=20260904">
+</script>
+
+
+</body>
+
+</html>

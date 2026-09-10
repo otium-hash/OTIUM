@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmaciones | OTIUM</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#102a43}
+main{max-width:1050px;margin:0 auto;padding:35px 18px 70px}
+.header{margin-bottom:25px}.header h1{margin:0 0 7px}.header p{margin:0;color:#667085}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+.stat{background:#fff;border-radius:14px;padding:18px;box-shadow:0 5px 20px rgba(0,0,0,.06)}
+.stat strong{display:block;font-size:25px}.stat span{color:#667085;font-size:13px}
+.event{background:#fff;padding:20px;border-radius:15px;margin-bottom:18px;box-shadow:0 5px 20px rgba(0,0,0,.06)}
+.event h2{margin:0 0 6px}.event p{margin:4px 0;color:#667085}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;margin-top:15px}.table th,.table td{text-align:left;padding:12px;border-bottom:1px solid #eaecf0;white-space:nowrap}.table th{font-size:12px;text-transform:uppercase;color:#667085}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700}.si{background:#ecfdf3;color:#067647}.no{background:#fef3f2;color:#b42318}.pendiente{background:#fffaeb;color:#b54708}
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.button{display:inline-flex;align-items:center;justify-content:center;padding:11px 16px;border-radius:10px;text-decoration:none;background:#102a43;color:#fff;font-weight:700}.light{background:#eef2f6;color:#344054}
+.message{padding:20px;background:#fff;border-radius:14px;color:#667085}
+@media(max-width:700px){.summary{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<main>
+<header class="header">
+<h1>👥 Confirmaciones</h1>
+<p>Consulta las respuestas de tus invitados.</p>
+</header>
+
+<div id="content" class="message">Cargando confirmaciones...</div>
+</main>
+
+<script type="module">
+import { auth } from "./js/modules/auth.js";
+import { getEventById } from "./js/modules/database.js";
+import { firebaseConfig } from "./js/modules/firebase-config.js";
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const eventId=new URLSearchParams(location.search).get("id");
+const content=document.getElementById("content");
+
+function esc(v){
+    return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function badge(value){
+    const map={si:["Sí, asistirá","si"],no:["No asistirá","no"],pendiente:["Pendiente","pendiente"]};
+    const [text,cls]=map[value]||["Pendiente","pendiente"];
+    return `<span class="badge ${cls}">${text}</span>`;
+}
+
+onAuthStateChanged(auth,async(user)=>{
+    if(!user){
+        content.innerHTML=`<p>Debes iniciar sesión para ver las confirmaciones.</p><div class="actions"><a class="button" href="index.html">Ir a OTIUM</a></div>`;
+        return;
+    }
+    if(!eventId){
+        content.textContent="No se recibió el ID del evento.";
+        return;
+    }
+
+    try{
+        const event=await getEventById(eventId);
+        if(!event){
+            content.textContent="No se encontró el evento.";
+            return;
+        }
+        const owner=event.usuarioId||event.userId||"";
+        if(String(owner)!==String(user.uid)){
+            content.textContent="No tienes permiso para ver las confirmaciones de este evento.";
+            return;
+        }
+
+        const snap=await getDocs(query(collection(db,"confirmaciones"),where("eventoId","==",eventId)));
+        const rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+        const yes=rows.filter(r=>r.asistencia==="si");
+        const no=rows.filter(r=>r.asistencia==="no");
+        const pending=rows.filter(r=>r.asistencia==="pendiente");
+        const companions=yes.reduce((sum,r)=>sum+(Number(r.acompanantes)||0),0);
+
+        content.innerHTML=`
+            <section class="event">
+                <h2>${esc(event.nombre||"Evento")}</h2>
+                <p>📅 ${esc(event.fecha||"")} · 🕐 ${esc(event.hora||"")}</p>
+                <p>📍 ${esc(event.ciudad||event.ubicacion||"")}</p>
+                <div class="actions">
+                    <a class="button" href="invitacion.html?id=${encodeURIComponent(eventId)}">Ver invitación</a>
+                    <a class="button light" href="my-events.html">Volver a mis eventos</a>
+                </div>
+            </section>
+
+            <section class="summary">
+                <div class="stat"><strong>${yes.length}</strong><span>Confirmados</span></div>
+                <div class="stat"><strong>${no.length}</strong><span>No asistirán</span></div>
+                <div class="stat"><strong>${pending.length}</strong><span>Pendientes</span></div>
+                <div class="stat"><strong>${companions}</strong><span>Acompañantes</span></div>
+            </section>
+
+            <section class="event">
+                <h2>Lista de invitados</h2>
+                ${rows.length?`
+                <div class="table-wrap">
+                <table class="table">
+                <thead><tr><th>Invitado</th><th>Respuesta</th><th>Acompañantes</th><th>Mensaje</th></tr></thead>
+                <tbody>
+                ${rows.map(r=>`
+                    <tr>
+                        <td>${esc(r.nombreInvitado)}</td>
+                        <td>${badge(r.asistencia)}</td>
+                        <td>${r.asistencia==="si"?Number(r.acompanantes||0):0}</td>
+                        <td>${esc(r.mensaje||"")}</td>
+                    </tr>`).join("")}
+                </tbody>
+                </table>
+                </div>`:`<p>Aún no hay confirmaciones.</p>`}
+            </section>
+        `;
+    }catch(error){
+        console.error("OTIUM confirmaciones:",error);
+        content.textContent="No fue posible cargar las confirmaciones.";
+    }
+});
+</script>
+</body>
+</html>

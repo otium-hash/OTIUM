@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Mis eventos | OTIUM
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+
+    <!-- =====================================================
+         ESTILOS ESPECÍFICOS DE MIS EVENTOS
+         Se colocan aquí para evitar conflictos con el CSS
+         general de OTIUM.
+    ====================================================== -->
+
+    <style>
+
+        /* =================================================
+           CONTENIDO
+        ================================================= */
+
+        main {
+
+            padding-top: 100px !important;
+
+            min-height:
+                calc(100vh - 100px);
+
+        }
+
+
+        .my-events-page {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding:
+                45px 30px 80px;
+
+        }
+
+
+        /* =================================================
+           ENCABEZADO
+        ================================================= */
+
+        .my-events-header {
+
+            margin-bottom: 32px;
+
+        }
+
+
+        .my-events-header h1 {
+
+            margin: 0;
+
+            color: #0f172a;
+
+            font-size: 38px;
+
+            line-height: 1.2;
+
+        }
+
+
+        .my-events-header p {
+
+            margin:
+                8px 0 0;
+
+            color: #64748b;
+
+            font-size: 16px;
+
+        }
+
+
+        /* =================================================
+           CONTENEDOR DE TARJETAS
+        ================================================= */
+
+        #myEventsContainer {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 28px;
+
+            width: 100%;
+
+            align-items: stretch;
+
+        }
+
+
+        /* =================================================
+           TARJETA
+        ================================================= */
+
+        #myEventsContainer .evento-card {
+
+            width: 100%;
+
+            min-width: 0;
+
+            min-height: 390px;
+
+            padding: 25px;
+
+            box-sizing: border-box;
+
+            background: #ffffff;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    0.08
+                );
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+
+        }
+
+
+        #myEventsContainer
+        .evento-card:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+                0 14px 32px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    0.13
+                );
+
+        }
+
+
+        /* =================================================
+           TÍTULO
+        ================================================= */
+
+        #myEventsContainer
+        .evento-card h3 {
+
+            margin:
+                0 0 18px;
+
+            color: #0f172a;
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            line-height: 1.3;
+
+            word-break: break-word;
+
+        }
+
+
+        /* =================================================
+           INFORMACIÓN
+        ================================================= */
+
+        #myEventsContainer
+        .evento-card p {
+
+            margin:
+                0 0 9px;
+
+            color: #475569;
+
+            font-size: 15px;
+
+            line-height: 1.45;
+
+            word-break: break-word;
+
+        }
+
+
+        /* =================================================
+           ACCIONES
+        ================================================= */
+
+        #myEventsContainer
+        .event-actions {
+
+            width: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+            margin-top: auto;
+
+            padding-top: 20px;
+
+        }
+
+
+        /* =================================================
+           BOTONES
+        ================================================= */
+
+        #myEventsContainer
+        .event-actions button {
+
+            width: 100%;
+
+            min-height: 44px;
+
+            padding:
+                11px 18px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #ff7445;
+
+            color: #ffffff;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            line-height: 1.2;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+
+        }
+
+
+        #myEventsContainer
+        .event-actions button:hover {
+
+            background: #f45f30;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        #myEventsContainer
+        .event-actions button:disabled {
+
+            opacity: 0.6;
+
+            cursor: wait;
+
+            transform: none;
+
+        }
+
+
+        /* =================================================
+           BOTÓN PROMOCIONAR
+        ================================================= */
+
+        #myEventsContainer
+        .event-actions
+        .promotion-btn {
+
+            background: #ff7445;
+
+        }
+
+
+        #myEventsContainer
+        .event-actions
+        .promotion-btn:hover {
+
+            background: #f45f30;
+
+        }
+
+
+        /* =================================================
+           BOTÓN ELIMINAR
+        ================================================= */
+
+        #myEventsContainer
+        .event-actions
+        .delete-btn {
+
+            background: #334155;
+
+        }
+
+
+        #myEventsContainer
+        .event-actions
+        .delete-btn:hover {
+
+            background: #1e293b;
+
+        }
+
+
+        /* =================================================
+           MENSAJE SIN EVENTOS
+        ================================================= */
+
+        #myEventsContainer
+        .sin-eventos {
+
+            grid-column:
+                1 / -1;
+
+            background: #ffffff;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 20px;
+
+            padding: 45px 30px;
+
+            text-align: center;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    0.06
+                );
+
+        }
+
+
+        #myEventsContainer
+        .sin-eventos h3 {
+
+            margin:
+                0 0 10px;
+
+            color: #0f172a;
+
+            font-size: 22px;
+
+        }
+
+
+        #myEventsContainer
+        .sin-eventos p {
+
+            margin: 0;
+
+            color: #64748b;
+
+        }
+
+
+        /* =================================================
+           CARGANDO
+        ================================================= */
+
+        #myEventsContainer
+        .loading-events {
+
+            grid-column:
+                1 / -1;
+
+            padding: 40px;
+
+            text-align: center;
+
+            color: #64748b;
+
+        }
+
+
+        /* =================================================
+           RESPONSIVE TABLET
+        ================================================= */
+
+        @media (max-width: 850px) {
+
+            #myEventsContainer {
+
+                grid-template-columns: 1fr;
+
+                gap: 20px;
+
+            }
+
+
+            .my-events-page {
+
+                padding:
+                    35px 20px 60px;
+
+            }
+
+
+            .my-events-header h1 {
+
+                font-size: 32px;
+
+            }
+
+        }
+
+
+        /* =================================================
+           RESPONSIVE MÓVIL
+        ================================================= */
+
+        @media (max-width: 600px) {
+
+            main {
+
+                padding-top: 85px !important;
+
+            }
+
+
+            .my-events-page {
+
+                padding:
+                    25px 15px 50px;
+
+            }
+
+
+            .my-events-header {
+
+                margin-bottom: 24px;
+
+            }
+
+
+            .my-events-header h1 {
+
+                font-size: 28px;
+
+            }
+
+
+            .my-events-header p {
+
+                font-size: 14px;
+
+            }
+
+
+            #myEventsContainer
+            .evento-card {
+
+                min-height: auto;
+
+                padding: 20px;
+
+            }
+
+
+            #myEventsContainer
+            .evento-card h3 {
+
+                font-size: 20px;
+
+            }
+
+
+            #myEventsContainer
+            .evento-card p {
+
+                font-size: 14px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL OTIUM
+    ====================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <main>
+
+        <section
+            class="my-events-page">
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================= -->
+
+            <div
+                class="my-events-header">
+
+                <h1>
+                    Mis eventos
+                </h1>
+
+                <p>
+                    Administra los eventos que has publicado en OTIUM.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 EVENTOS
+            ================================================= -->
+
+            <div
+                id="myEventsContainer">
+
+                <div
+                    class="loading-events">
+
+                    Cargando tus eventos...
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ====================================================== -->
+
+    <script
+    type="module"
+    src="js/menu.js?v=20260904">
+</script>
+
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- =====================================================
+         MIS EVENTOS
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/my-events.js">
+    </script>
+
+
+</body>
+
+</html>

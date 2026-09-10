@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Planes | OTIUM
+    </title>
+
+    <meta
+        name="description"
+        content="Conoce las opciones de promoción, publicidad y crecimiento disponibles en OTIUM.">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+        /* =====================================================
+           OTIUM - PLANES
+           Página comercial central
+           Versión 20260902
+        ===================================================== */
+
+        :root {
+            --planes-bg: #f5f7fb;
+            --planes-white: #ffffff;
+            --planes-text: #101828;
+            --planes-muted: #667085;
+            --planes-blue: #1467e8;
+            --planes-orange: #ff7545;
+            --planes-purple: #6d20e7;
+            --planes-green: #12a150;
+            --planes-border: #e1e7ef;
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            background: var(--planes-bg);
+            color: var(--planes-text);
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        /* =====================================================
+           CONTENEDOR
+        ===================================================== */
+
+        .planes-container {
+            width: min(
+                1180px,
+                calc(100% - 40px)
+            );
+
+            margin: 0 auto;
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .planes-hero {
+            padding: 70px 0 50px;
+            text-align: center;
+        }
+
+
+        .planes-eyebrow {
+            margin: 0 0 10px;
+
+            color: var(--planes-blue);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            letter-spacing: 1.6px;
+
+            text-transform: uppercase;
+        }
+
+
+        .planes-hero h1 {
+            margin: 0;
+
+            font-size:
+                clamp(
+                    38px,
+                    5vw,
+                    58px
+                );
+
+            line-height: 1.08;
+
+            font-weight: 850;
+
+            letter-spacing: -1.5px;
+        }
+
+
+        .planes-hero h1 span {
+            color: var(--planes-orange);
+        }
+
+
+        .planes-hero p {
+            max-width: 720px;
+
+            margin: 18px auto 0;
+
+            color: var(--planes-muted);
+
+            font-size: 18px;
+            line-height: 1.65;
+        }
+
+
+        /* =====================================================
+           OPCIONES
+        ===================================================== */
+
+        .planes-options {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(0, 1fr)
+                );
+
+            gap: 22px;
+
+            padding-bottom: 55px;
+        }
+
+
+        .planes-card {
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-height: 360px;
+
+            padding: 32px 28px 28px;
+
+            background:
+                var(--planes-white);
+
+            border:
+                1px solid
+                var(--planes-border);
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(
+                    16,
+                    24,
+                    40,
+                    .06
+                );
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease;
+        }
+
+
+        .planes-card:hover {
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                0 16px 38px
+                rgba(
+                    16,
+                    24,
+                    40,
+                    .10
+                );
+        }
+
+
+        .planes-card.featured {
+            border:
+                2px solid
+                var(--planes-orange);
+        }
+
+
+        .planes-card-icon {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 58px;
+            height: 58px;
+
+            margin-bottom: 22px;
+
+            border-radius: 16px;
+
+            font-size: 27px;
+
+            background:
+                #fff1eb;
+
+            color:
+                var(--planes-orange);
+        }
+
+
+        .planes-card.ads
+        .planes-card-icon {
+            background: #fff1eb;
+        }
+
+
+        .planes-card.brand
+        .planes-card-icon {
+            background: #eef5ff;
+            color: var(--planes-blue);
+        }
+
+
+        .planes-card.tickets
+        .planes-card-icon {
+            background: #f1edff;
+            color: var(--planes-purple);
+        }
+
+
+        .planes-card-kicker {
+            margin: 0 0 7px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+
+            color:
+                var(--planes-muted);
+        }
+
+
+        .planes-card h2 {
+            margin: 0;
+
+            font-size: 25px;
+
+            line-height: 1.2;
+        }
+
+
+        .planes-card p {
+            margin: 14px 0 0;
+
+            color:
+                var(--planes-muted);
+
+            font-size: 15px;
+
+            line-height: 1.6;
+        }
+
+
+        .planes-list {
+            display: grid;
+
+            gap: 10px;
+
+            margin: 22px 0 25px;
+
+            padding: 0;
+
+            list-style: none;
+        }
+
+
+        .planes-list li {
+            position: relative;
+
+            padding-left: 25px;
+
+            color:
+                #344054;
+
+            font-size: 14px;
+        }
+
+
+        .planes-list li::before {
+            content: "✓";
+
+            position: absolute;
+
+            left: 0;
+
+            top: 0;
+
+            color:
+                var(--planes-green);
+
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           BOTONES
+        ===================================================== */
+
+        .planes-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-height: 46px;
+
+            margin-top: auto;
+
+            padding:
+                12px 20px;
+
+            border-radius: 12px;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            text-decoration: none;
+
+            transition:
+                transform .2s ease,
+                opacity .2s ease;
+        }
+
+
+        .planes-button:hover {
+            transform:
+                translateY(-1px);
+
+            opacity: .92;
+        }
+
+
+        .planes-button.orange {
+            background:
+                var(--planes-orange);
+
+            color:
+                #ffffff;
+        }
+
+
+        .planes-button.blue {
+            background:
+                var(--planes-blue);
+
+            color:
+                #ffffff;
+        }
+
+
+        .planes-button.purple {
+            background:
+                var(--planes-purple);
+
+            color:
+                #ffffff;
+        }
+
+
+        .planes-button.disabled {
+            background:
+                #eef1f5;
+
+            color:
+                #667085;
+
+            cursor:
+                default;
+
+            pointer-events:
+                none;
+        }
+
+
+        /* =====================================================
+           DESTACADO
+        ===================================================== */
+
+        .planes-badge {
+            position: absolute;
+
+            top: 18px;
+            right: 18px;
+
+            padding:
+                6px 10px;
+
+            border-radius: 20px;
+
+            background:
+                var(--planes-orange);
+
+            color:
+                #ffffff;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            letter-spacing: .7px;
+        }
+
+
+        /* =====================================================
+           BLOQUE INFORMACIÓN
+        ===================================================== */
+
+        .planes-info {
+            margin-bottom: 55px;
+
+            padding:
+                34px 36px;
+
+            background:
+                #ffffff;
+
+            border:
+                1px solid
+                var(--planes-border);
+
+            border-radius: 20px;
+
+            display: grid;
+
+            grid-template-columns:
+                1.2fr .8fr;
+
+            gap: 40px;
+
+            align-items: center;
+        }
+
+
+        .planes-info h2 {
+            margin: 0 0 10px;
+
+            font-size: 28px;
+        }
+
+
+        .planes-info p {
+            margin: 0;
+
+            color:
+                var(--planes-muted);
+
+            line-height: 1.65;
+        }
+
+
+        .planes-info-box {
+            padding: 22px;
+
+            border-radius: 16px;
+
+            background:
+                #f7f9fc;
+        }
+
+
+        .planes-info-box strong {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 15px;
+        }
+
+
+        .planes-info-box span {
+            color:
+                var(--planes-muted);
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           FLUJO
+        ===================================================== */
+
+        .planes-flow {
+            padding-bottom: 65px;
+        }
+
+
+        .planes-section-heading {
+            margin-bottom: 25px;
+
+            text-align: center;
+        }
+
+
+        .planes-section-heading span {
+            color:
+                var(--planes-blue);
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.4px;
+
+            text-transform: uppercase;
+        }
+
+
+        .planes-section-heading h2 {
+            margin:
+                7px 0 0;
+
+            font-size: 32px;
+        }
+
+
+        .flow-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(0, 1fr)
+                );
+
+            gap: 20px;
+        }
+
+
+        .flow-step {
+            padding: 25px;
+
+            text-align: center;
+
+            background:
+                #ffffff;
+
+            border:
+                1px solid
+                var(--planes-border);
+
+            border-radius: 18px;
+        }
+
+
+        .flow-number {
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 42px;
+            height: 42px;
+
+            margin:
+                0 auto 14px;
+
+            border-radius: 50%;
+
+            background:
+                var(--planes-blue);
+
+            color:
+                #ffffff;
+
+            font-size: 15px;
+
+            font-weight: 800;
+        }
+
+
+        .flow-step h3 {
+            margin:
+                0 0 8px;
+
+            font-size: 17px;
+        }
+
+
+        .flow-step p {
+            margin: 0;
+
+            color:
+                var(--planes-muted);
+
+            font-size: 14px;
+
+            line-height: 1.55;
+        }
+
+
+        /* =====================================================
+           CONTACTO / PERSONALIZADO
+        ===================================================== */
+
+        .planes-contact {
+            margin-bottom: 70px;
+
+            padding:
+                40px 35px;
+
+            text-align: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #101828,
+                    #182b4a
+                );
+
+            border-radius: 22px;
+
+            color:
+                #ffffff;
+        }
+
+
+        .planes-contact h2 {
+            margin: 0;
+
+            font-size: 30px;
+        }
+
+
+        .planes-contact p {
+            max-width: 650px;
+
+            margin:
+                12px auto 22px;
+
+            color:
+                #cbd5e1;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .planes-options {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .planes-card {
+                min-height:
+                    auto;
+            }
+
+            .planes-info {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .flow-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .planes-container {
+                width:
+                    min(
+                        100% - 28px,
+                        1180px
+                    );
+            }
+
+            .planes-hero {
+                padding:
+                    45px 0 35px;
+            }
+
+            .planes-hero p {
+                font-size:
+                    16px;
+            }
+
+            .planes-info {
+                padding:
+                    25px;
+            }
+
+            .planes-contact {
+                padding:
+                    32px 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ====================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <main>
+
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <section class="planes-hero">
+
+            <div class="planes-container">
+
+                <p class="planes-eyebrow">
+                    OTIUM · PLANES
+                </p>
+
+                <h1>
+                    Haz que tu proyecto
+                    <span>llegue más lejos</span>
+                </h1>
+
+                <p>
+                    Encuentra las opciones de OTIUM para
+                    promocionar eventos, dar visibilidad a tu
+                    marca y próximamente vender entradas
+                    directamente desde nuestra plataforma.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OPCIONES COMERCIALES
+        ====================================================== -->
+
+        <section>
+
+            <div class="planes-container">
+
+                <div class="planes-options">
+
+
+                    <!-- =========================================
+                         PROMOCIONAR EVENTO
+                    ========================================== -->
+
+                    <article
+                        class="planes-card ads featured">
+
+                        <div class="planes-badge">
+                            MÁS POPULAR
+                        </div>
+
+                        <div
+                            class="planes-card-icon">
+                            🚀
+                        </div>
+
+                        <p class="planes-card-kicker">
+                            OTIUM ADS
+                        </p>
+
+                        <h2>
+                            Promociona tu evento
+                        </h2>
+
+                        <p>
+                            Aumenta la visibilidad de tu evento
+                            y llega a personas que están buscando
+                            qué hacer.
+                        </p>
+
+                        <ul class="planes-list">
+
+                            <li>
+                                Presencia dentro de OTIUM
+                            </li>
+
+                            <li>
+                                Mayor visibilidad
+                            </li>
+
+                            <li>
+                                Aparición en espacios destacados
+                            </li>
+
+                            <li>
+                                Diferentes duraciones disponibles
+                            </li>
+
+                        </ul>
+
+                        <a
+                            href="promocionar-evento.html"
+                            class="planes-button orange">
+
+                            Ver planes de promoción
+                            &nbsp; →
+
+                        </a>
+
+                    </article>
+
+
+                    <!-- =========================================
+                         PUBLICIDAD / MARCAS
+                    ========================================== -->
+
+                    <article
+                        class="planes-card brand">
+
+                        <div
+                            class="planes-card-icon">
+                            ◉
+                        </div>
+
+                        <p class="planes-card-kicker">
+                            PUBLICIDAD
+                        </p>
+
+                        <h2>
+                            Publicidad y marcas
+                        </h2>
+
+                        <p>
+                            Lleva tu marca, empresa o negocio
+                            a una audiencia interesada en
+                            actividades y experiencias.
+                        </p>
+
+                        <ul class="planes-list">
+
+                            <li>
+                                Espacios publicitarios en OTIUM
+                            </li>
+
+                            <li>
+                                Presencia de marca
+                            </li>
+
+                            <li>
+                                Campañas personalizadas
+                            </li>
+
+                            <li>
+                                Opciones para empresas
+                            </li>
+
+                        </ul>
+
+                        <a
+                            href="publicita.html"
+                            class="planes-button blue">
+
+                            Ver opciones de publicidad
+                            &nbsp; →
+
+                        </a>
+
+                    </article>
+
+
+                    <!-- =========================================
+                         TICKETS
+                    ========================================== -->
+
+                    <article
+                        class="planes-card tickets">
+
+                        <div
+                            class="planes-card-icon">
+                            🎟️
+                        </div>
+
+                        <p class="planes-card-kicker">
+                            PRÓXIMAMENTE
+                        </p>
+
+                        <h2>
+                            Venta de entradas
+                        </h2>
+
+                        <p>
+                            En el futuro podrás gestionar la
+                            venta de entradas de tus eventos
+                            directamente desde OTIUM.
+                        </p>
+
+                        <ul class="planes-list">
+
+                            <li>
+                                Venta online
+                            </li>
+
+                            <li>
+                                Gestión de entradas
+                            </li>
+
+                            <li>
+                                Acceso desde el evento
+                            </li>
+
+                            <li>
+                                Integración progresiva
+                            </li>
+
+                        </ul>
+
+                        <span
+                            class="planes-button disabled">
+
+                            Próximamente
+
+                        </span>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             INFORMACIÓN PROMOCIÓN
+        ====================================================== -->
+
+        <section>
+
+            <div class="planes-container">
+
+                <div class="planes-info">
+
+                    <div>
+
+                        <p class="planes-eyebrow">
+                            OTIUM ADS
+                        </p>
+
+                        <h2>
+                            ¿Quieres promocionar un evento?
+                        </h2>
+
+                        <p>
+                            Primero publica tu evento en OTIUM.
+                            Luego podrás elegir una campaña
+                            de promoción y pagarla de manera
+                            segura mediante Mercado Pago.
+                        </p>
+
+                    </div>
+
+
+                    <div class="planes-info-box">
+
+                        <strong>
+                            ¿Ya publicaste tu evento?
+                        </strong>
+
+                        <span>
+                            Entra a
+                            <strong>
+                                Mis eventos
+                            </strong>
+                            y selecciona el evento que quieres
+                            promocionar.
+                        </span>
+
+                        <br><br>
+
+                        <a
+                            href="my-events.html"
+                            class="planes-button orange">
+
+                            Ir a mis eventos
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PUBLICIDAD
+        ====================================================== -->
+
+        <section
+            id="publicidad"
+            class="planes-flow">
+
+            <div class="planes-container">
+
+                <div
+                    class="planes-section-heading">
+
+                    <span>
+                        PUBLICIDAD Y PATROCINIOS
+                    </span>
+
+                    <h2>
+                        Tu marca también puede estar en OTIUM
+                    </h2>
+
+                </div>
+
+
+                <div class="flow-grid">
+
+
+                    <div class="flow-step">
+
+                        <div class="flow-number">
+                            1
+                        </div>
+
+                        <h3>
+                            Presencia
+                        </h3>
+
+                        <p>
+                            Tu marca puede aparecer en
+                            espacios visibles dentro de
+                            la plataforma OTIUM.
+                        </p>
+
+                    </div>
+
+
+                    <div class="flow-step">
+
+                        <div class="flow-number">
+                            2
+                        </div>
+
+                        <h3>
+                            Campañas
+                        </h3>
+
+                        <p>
+                            Diseñamos opciones según el
+                            objetivo, duración y alcance
+                            que necesites.
+                        </p>
+
+                    </div>
+
+
+                    <div class="flow-step">
+
+                        <div class="flow-number">
+                            3
+                        </div>
+
+                        <h3>
+                            Patrocinio
+                        </h3>
+
+                        <p>
+                            Conviértete en socio o
+                            patrocinador y conecta tu
+                            marca con OTIUM.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PERSONALIZADO
+        ====================================================== -->
+
+        <section>
+
+            <div class="planes-container">
+
+                <div class="planes-contact">
+
+                    <h2>
+                        ¿Necesitas algo diferente?
+                    </h2>
+
+                    <p>
+                        Podemos trabajar una campaña
+                        personalizada para tu evento,
+                        empresa o marca.
+                    </p>
+
+                    <a
+                        href="mailto:contacto@otiumgo.net"
+                        class="planes-button orange">
+
+                        Contactar con OTIUM
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         SCRIPTS
+    ====================================================== -->
+
+    <script type="module" src="js/menu.js?v=20260904"></script>
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+</body>
+
+</html>

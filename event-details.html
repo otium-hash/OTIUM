@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+    Detalle del evento | OTIUM
+</title>
+
+<meta
+    name="description"
+    content="Información completa del evento en OTIUM.">
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+<link
+    rel="stylesheet"
+    href="css/style.css?v=20260826">
+
+<link
+    rel="stylesheet"
+    href="css/event-details.css?v=20260826">
+
+
+<style>
+
+    /* =====================================================
+       OTIUM - BOTÓN INVITACIÓN
+    ===================================================== */
+
+    .action-button.invitation {
+        background: #102a43;
+        color: #ffffff;
+    }
+
+    .action-button.invitation:hover {
+        background: #183b5c;
+    }
+
+
+    /* =====================================================
+       OTIUM - RANGO DE EDAD
+    ===================================================== */
+
+    .age-info-box {
+        display: none;
+    }
+
+    .age-info-box.visible {
+        display: block;
+    }
+
+    .age-info-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+</style>
+```
+
+</head>
+
+<body class="otium-page">
+
+```
+<!-- =====================================================
+     MENÚ GLOBAL
+===================================================== -->
+
+<div id="menuOTIUM"></div>
+
+
+<!-- =====================================================
+     CONTENIDO
+===================================================== -->
+
+<main class="event-detail-page">
+
+
+    <!-- =================================================
+         MENSAJE
+    ================================================== -->
+
+    <div
+        id="eventMessage"
+        class="event-message"
+        role="status"
+        aria-live="polite">
+    </div>
+
+
+    <!-- =================================================
+         TARJETA DEL EVENTO
+    ================================================== -->
+
+    <article
+        id="eventDetailCard"
+        class="event-detail-card">
+
+
+        <!-- =================================================
+             CARGANDO
+        ================================================== -->
+
+        <div
+            class="event-loading"
+            id="eventLoading">
+
+            Cargando evento...
+
+        </div>
+
+
+        <!-- =================================================
+             CONTENIDO EVENTO
+        ================================================== -->
+
+        <div
+            id="eventContent"
+            class="event-content"
+            style="display:none;">
+
+
+            <!-- =============================================
+                 ENCABEZADO
+            ============================================== -->
+
+            <header
+                class="event-detail-header">
+
+
+                <div
+                    class="event-image-wrap"
+                    id="eventImageWrap"
+                    style="display:none;">
+
+                    <img
+                        id="eventImage"
+                        class="event-image"
+                        alt="">
+
+                </div>
+
+
+                <div
+                    class="event-header-copy">
+
+
+                    <span
+                        id="eventCategory"
+                        class="event-category">
+                    </span>
+
+
+                    <h1 id="eventTitle">
+                        Evento
+                    </h1>
+
+
+                    <div
+                        class="event-header-meta">
+
+                        <span
+                            id="eventDateMeta">
+                        </span>
+
+                        <span
+                            id="eventCityMeta">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =============================================
+                 INFORMACIÓN PRINCIPAL
+            ============================================== -->
+
+            <div
+                class="event-info-grid">
+
+
+                <!-- FECHA -->
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        FECHA
+                    </span>
+
+                    <strong
+                        id="eventDate">
+                    </strong>
+
+                </div>
+
+
+                <!-- HORA -->
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        HORA
+                    </span>
+
+                    <strong
+                        id="eventTime">
+                    </strong>
+
+                </div>
+
+
+                <!-- CIUDAD -->
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        CIUDAD
+                    </span>
+
+                    <strong
+                        id="eventCity">
+                    </strong>
+
+                </div>
+
+
+                <!-- REGIÓN -->
+
+                <div class="info-box">
+
+                    <span class="info-label">
+                        REGIÓN
+                    </span>
+
+                    <strong
+                        id="eventRegion">
+                    </strong>
+
+                </div>
+
+
+                <!-- UBICACIÓN -->
+
+                <div
+                    class="info-box info-box-wide">
+
+                    <span class="info-label">
+                        UBICACIÓN
+                    </span>
+
+                    <strong
+                        id="eventLocation">
+                    </strong>
+
+                </div>
+
+
+                <!-- PRECIO -->
+
+                <div
+                    class="info-box"
+                    id="priceBox">
+
+                    <span class="info-label">
+                        PRECIO
+                    </span>
+
+                    <strong
+                        id="eventPrice">
+                    </strong>
+
+                </div>
+
+
+                <!-- ENTRADAS -->
+
+                <div
+                    class="info-box"
+                    id="ticketsBox">
+
+                    <span class="info-label">
+                        ENTRADAS
+                    </span>
+
+                    <strong
+                        id="eventTickets">
+                    </strong>
+
+                </div>
+
+
+                <!-- =========================================
+                     EDAD
+                ========================================== -->
+
+                <div
+                    class="info-box age-info-box"
+                    id="ageBox">
+
+                    <span class="info-label">
+                        EDAD RECOMENDADA
+                    </span>
+
+                    <strong
+                        id="eventAge"
+                        class="age-info-value">
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =============================================
+                 DESCRIPCIÓN
+            ============================================== -->
+
+            <section
+                class="event-section">
+
+
+                <div class="section-kicker">
+                    DETALLES
+                </div>
+
+
+                <h2>
+                    Sobre el evento
+                </h2>
+
+
+                <p
+                    id="eventDescription"
+                    class="event-description">
+                </p>
+
+            </section>
+
+
+            <!-- =============================================
+                 ORGANIZADOR
+            ============================================== -->
+
+            <section
+                id="organizerSection"
+                class="event-section organizer-section"
+                style="display:none;">
+
+                <div class="section-kicker">
+                    ORGANIZADOR
+                </div>
+
+                <h2 id="organizerName">
+                    Organizador
+                </h2>
+
+                <p id="organizerInfo">
+                </p>
+
+            </section>
+
+
+            <!-- =============================================
+                 MAPA
+            ============================================== -->
+
+            <section
+                id="mapSection"
+                class="event-section map-section"
+                style="display:none;">
+
+                <div class="section-kicker">
+                    UBICACIÓN
+                </div>
+
+                <h2>
+                    ¿Dónde es?
+                </h2>
+
+                <div id="eventMap">
+                </div>
+
+                <a
+                    id="mapLink"
+                    class="secondary-link"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    Abrir ubicación en Google Maps
+
+                </a>
+
+            </section>
+
+
+            <!-- =============================================
+                 INFORMACIÓN OFICIAL
+            ============================================== -->
+
+            <section
+                id="eventLinkSection"
+                class="event-section event-link-section"
+                style="display:none;">
+
+                <div class="section-kicker">
+                    INFORMACIÓN OFICIAL
+                </div>
+
+                <h2>
+                    Más información
+                </h2>
+
+                <p>
+                    Consulta la información oficial, compra de
+                    entradas o reserva directamente con el organizador.
+                </p>
+
+                <a
+                    id="eventLink"
+                    class="primary-link"
+                    target="_blank"
+                    rel="noopener noreferrer">
+
+                    Ver información del evento
+
+                </a>
+
+            </section>
+
+
+            <!-- =============================================
+                 ACCIONES
+            ============================================== -->
+
+            <div class="event-actions">
+
+
+                <a
+                    href="eventos.html"
+                    class="action-button secondary">
+
+                    ← Volver a eventos
+
+                </a>
+
+
+                <button
+                    id="favoriteButton"
+                    type="button"
+                    class="action-button favorite">
+
+                    ☆ Guardar en favoritos
+
+                </button>
+
+
+                <button
+                    id="shareButton"
+                    type="button"
+                    class="action-button share">
+
+                    ↗ Compartir
+
+                </button>
+
+
+                <!-- =========================================
+                     INVITACIÓN / QR
+                     Solo propietario
+                ========================================== -->
+
+                <a
+                    id="invitationButton"
+                    class="action-button invitation"
+                    style="display:none;">
+
+                    🎟️ Crear invitación
+
+                </a>
+
+
+                <!-- =========================================
+                     PROMOCIÓN
+                ========================================== -->
+
+                <a
+                    id="promoteButton"
+                    class="action-button promote"
+                    style="display:none;">
+
+                    ★ Promocionar evento
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </article>
+
+
+</main>
+
+
+<!-- =====================================================
+     MENÚ
+===================================================== -->
+
+<script
+    src="js/menu.js">
+
+</script>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<script
+    type="module"
+    src="js/login.js">
+
+</script>
+
+
+<!-- =====================================================
+     EVENT DETAILS
+===================================================== -->
+
+<script
+    type="module"
+    src="js/event-details.js?v=20260901">
+
+</script>
+```
+
+</body>
+
+</html>

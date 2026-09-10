@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Contacto | OTIUM
+    </title>
+
+    <meta
+        name="description"
+        content="Contacta con OTIUM para consultas, eventos, publicidad, patrocinio y sugerencias."
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           OTIUM - PÁGINA DE CONTACTO
+           No modifica el diseño global ni Home
+        ===================================================== */
+
+        .contact-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 25px 80px;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .contact-header h1 {
+            margin: 0 0 12px;
+            font-size: 38px;
+            color: var(--otium-dark);
+        }
+
+        .contact-header p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--otium-muted);
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .contact-info,
+        .contact-form-card {
+            background: var(--otium-white);
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .contact-info {
+            padding: 30px;
+        }
+
+        .contact-info h2,
+        .contact-form-card h2 {
+            margin: 0 0 15px;
+            color: var(--otium-dark);
+            font-size: 24px;
+        }
+
+        .contact-info p {
+            color: var(--otium-muted);
+            line-height: 1.6;
+        }
+
+        .contact-email {
+            display: block;
+            margin-top: 25px;
+            padding: 18px;
+            background: #fff5f0;
+            border: 1px solid #ffd8ca;
+            border-radius: 12px;
+            color: var(--otium-orange);
+            font-weight: bold;
+            text-decoration: none;
+            word-break: break-word;
+        }
+
+        .contact-email:hover {
+            background: #ffede6;
+        }
+
+        .contact-topics {
+            margin-top: 30px;
+        }
+
+        .contact-topics h3 {
+            margin-bottom: 12px;
+            color: var(--otium-dark);
+        }
+
+        .contact-topics ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--otium-muted);
+            line-height: 1.9;
+        }
+
+        .contact-form-card {
+            padding: 30px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .contact-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .contact-field label {
+            font-weight: 600;
+            color: var(--otium-dark);
+        }
+
+        .contact-field input,
+        .contact-field select,
+        .contact-field textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #d7dce5;
+            border-radius: 10px;
+            padding: 13px 14px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            color: var(--otium-text);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        .contact-field input:focus,
+        .contact-field select:focus,
+        .contact-field textarea:focus {
+            border-color: var(--otium-orange);
+            box-shadow: 0 0 0 3px rgba(255, 122, 69, 0.12);
+        }
+
+        .contact-field textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .contact-field input[readonly] {
+            background: #f8fafc;
+            color: #64748b;
+        }
+
+        .contact-submit {
+            border: none;
+            border-radius: 10px;
+            padding: 14px 22px;
+            background: var(--otium-orange);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease,
+                        transform 0.2s ease;
+        }
+
+        .contact-submit:hover {
+            background: var(--otium-orange-hover);
+            transform: translateY(-1px);
+        }
+
+        .contact-note {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--otium-muted);
+        }
+
+        .contact-status {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .contact-status.show {
+            display: block;
+        }
+
+        .contact-status.success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        @media (max-width: 800px) {
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-header h1 {
+                font-size: 32px;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .contact-page {
+                padding: 35px 15px 60px;
+            }
+
+            .contact-info,
+            .contact-form-card {
+                padding: 22px;
+                border-radius: 14px;
+            }
+
+            .contact-header h1 {
+                font-size: 28px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL OTIUM
+    ====================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- =====================================================
+         CONTENIDO
+    ====================================================== -->
+
+    <main>
+
+        <section class="contact-page">
+
+
+            <div class="contact-header">
+
+                <h1>
+                    Contacto
+                </h1>
+
+                <p>
+                    ¿Tienes una consulta, quieres publicar un evento,
+                    promocionarte en OTIUM o necesitas informarnos de
+                    algún problema? Escríbenos.
+                </p>
+
+            </div>
+
+
+            <div class="contact-grid">
+
+
+                <!-- =================================================
+                     INFORMACIÓN
+                ================================================== -->
+
+                <div class="contact-info">
+
+                    <h2>
+                        Estamos para ayudarte
+                    </h2>
+
+                    <p>
+                        Hemos centralizado el contacto de OTIUM en
+                        un solo canal para que puedas comunicarte
+                        con nosotros de manera simple.
+                    </p>
+
+                    <a
+                        class="contact-email"
+                        href="mailto:otiumgo@gmail.com"
+                    >
+                        otiumgo@gmail.com
+                    </a>
+
+
+                    <div class="contact-topics">
+
+                        <h3>
+                            Puedes escribirnos por:
+                        </h3>
+
+                        <ul>
+
+                            <li>
+                                Consultas generales
+                            </li>
+
+                            <li>
+                                Publicación de eventos
+                            </li>
+
+                            <li>
+                                Problemas con la página
+                            </li>
+
+                            <li>
+                                Publicidad
+                            </li>
+
+                            <li>
+                                Patrocinios
+                            </li>
+
+                            <li>
+                                Venta de entradas
+                            </li>
+
+                            <li>
+                                Información incorrecta
+                            </li>
+
+                            <li>
+                                Sugerencias
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FORMULARIO
+                ================================================== -->
+
+                <div class="contact-form-card">
+
+                    <h2>
+                        Envíanos un mensaje
+                    </h2>
+
+
+                    <form
+                        id="contactForm"
+                        class="contact-form"
+                    >
+
+
+                        <div class="contact-field">
+
+                            <label for="nombre">
+                                Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="Tu nombre"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="contact-field">
+
+                            <label for="email">
+                                Correo electrónico
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="tucorreo@ejemplo.com"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="contact-field">
+
+                            <label for="motivo">
+                                Motivo
+                            </label>
+
+                            <select
+                                id="motivo"
+                                name="motivo"
+                                required
+                            >
+
+                                <option value="">
+                                    Selecciona un motivo
+                                </option>
+
+                                <option value="Consulta general">
+                                    Consulta general
+                                </option>
+
+                                <option value="Problema con la página">
+                                    Problema con la página
+                                </option>
+
+                                <option value="Publicación de evento">
+                                    Publicación de evento
+                                </option>
+
+                                <option value="Información de evento">
+                                    Información de evento
+                                </option>
+
+                                <option value="Publicidad">
+                                    Publicidad
+                                </option>
+
+                                <option value="Patrocinio">
+                                    Patrocinio
+                                </option>
+
+                                <option value="Venta de entradas">
+                                    Venta de entradas
+                                </option>
+
+                                <option value="Denunciar información incorrecta">
+                                    Denunciar información incorrecta
+                                </option>
+
+                                <option value="Sugerencia">
+                                    Sugerencia
+                                </option>
+
+                                <option value="Otro">
+                                    Otro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="contact-field">
+
+                            <label for="asunto">
+                                Asunto
+                            </label>
+
+                            <input
+                                type="text"
+                                id="asunto"
+                                name="asunto"
+                                value="[OTIUM]"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="contact-field">
+
+                            <label for="mensaje">
+                                Mensaje
+                            </label>
+
+                            <textarea
+                                id="mensaje"
+                                name="mensaje"
+                                placeholder="Escribe aquí tu mensaje..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div
+                            id="contactStatus"
+                            class="contact-status"
+                        ></div>
+
+
+                        <button
+                            type="submit"
+                            class="contact-submit"
+                        >
+                            Enviar mensaje
+                        </button>
+
+
+                        <p class="contact-note">
+
+                            Al enviar, se abrirá tu aplicación de
+                            correo para completar el envío a
+                            OTIUM.
+
+                        </p>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/menu.js"
+    ></script>
+
+
+    <!-- =====================================================
+         FORMULARIO DE CONTACTO
+    ====================================================== -->
+
+    <script>
+
+        const contactForm =
+            document.getElementById("contactForm");
+
+        const motivo =
+            document.getElementById("motivo");
+
+        const asunto =
+            document.getElementById("asunto");
+
+        const contactStatus =
+            document.getElementById("contactStatus");
+
+
+        /* ================================================
+           GENERAR ASUNTO AUTOMÁTICAMENTE
+        ================================================= */
+
+        motivo.addEventListener("change", function () {
+
+            const valor = motivo.value;
+
+            if (valor) {
+
+                asunto.value =
+                    "[OTIUM] " + valor;
+
+            } else {
+
+                asunto.value =
+                    "[OTIUM]";
+
+            }
+
+        });
+
+
+        /* ================================================
+           ENVIAR
+        ================================================= */
+
+        contactForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+
+                const nombre =
+                    document.getElementById("nombre").value.trim();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const motivoValor =
+                    motivo.value;
+
+                const asuntoValor =
+                    asunto.value.trim();
+
+                const mensaje =
+                    document.getElementById("mensaje").value.trim();
+
+
+                if (
+                    !nombre ||
+                    !email ||
+                    !motivoValor ||
+                    !mensaje
+                ) {
+
+                    return;
+
+                }
+
+
+                const cuerpo =
+                    "Nombre: " + nombre +
+                    "\nCorreo: " + email +
+                    "\nMotivo: " + motivoValor +
+                    "\n\nMensaje:\n" + mensaje;
+
+
+                const mailto =
+                    "mailto:otiumgo@gmail.com" +
+                    "?subject=" +
+                    encodeURIComponent(asuntoValor) +
+                    "&body=" +
+                    encodeURIComponent(cuerpo);
+
+
+                contactStatus.textContent =
+                    "Se abrirá tu aplicación de correo para enviar el mensaje.";
+
+                contactStatus.className =
+                    "contact-status show success";
+
+
+                window.location.href =
+                    mailto;
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

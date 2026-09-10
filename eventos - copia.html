@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        OTIUM - Eventos
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+/* =====================================================
+   OTIUM - EVENTOS
+===================================================== */
+
+.eventos-page {
+
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    padding: 120px 30px 60px;
+
+}
+
+
+/* =====================================================
+   ENCABEZADO
+===================================================== */
+
+.eventos-header {
+
+    text-align: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.eventos-header h1 {
+
+    margin: 0 0 8px;
+
+    font-size: 34px;
+
+}
+
+
+.eventos-header p {
+
+    margin: 0;
+
+    color: #666;
+
+    font-size: 16px;
+
+}
+
+
+/* =====================================================
+   FILTROS
+===================================================== */
+
+.eventos-filtros {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-bottom: 24px;
+
+    padding: 16px;
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 4px 16px rgba(0,0,0,0.07);
+
+}
+
+
+/* =====================================================
+   FILA PRINCIPAL
+===================================================== */
+
+.filtros-principal {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        220px
+        220px;
+
+    gap: 12px;
+
+}
+
+
+/* =====================================================
+   FILTROS SECUNDARIOS
+===================================================== */
+
+.filtros-secundarios {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+
+}
+
+
+/* =====================================================
+   FILTROS AVANZADOS
+===================================================== */
+
+.filtros-avanzados {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+
+}
+
+
+/* =====================================================
+   CAMPOS
+===================================================== */
+
+.eventos-filtros input,
+.eventos-filtros select {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 13px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+
+    background: #fff;
+
+    color: #333;
+
+}
+
+
+.eventos-filtros input:focus,
+.eventos-filtros select:focus {
+
+    outline: none;
+
+    border-color: #102a43;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(16,42,67,0.08);
+
+}
+
+
+/* =====================================================
+   FILTRO AVANZADO
+===================================================== */
+
+.filtro-avanzado {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 40px;
+
+    padding: 8px 10px;
+
+    border: 1px solid #e1e5ea;
+
+    border-radius: 9px;
+
+    background: #f8fafc;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    color: #344054;
+
+}
+
+
+.filtro-avanzado:hover {
+
+    background: #f2f4f7;
+
+}
+
+
+.filtro-avanzado input {
+
+    width: auto;
+
+    margin: 0;
+
+}
+
+
+/* =====================================================
+   ACCIONES
+===================================================== */
+
+.filtros-acciones {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+}
+
+
+#clearFilters {
+
+    padding: 9px 15px;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #344054;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+#clearFilters:hover {
+
+    background: #f2f4f7;
+
+}
+
+
+/* =====================================================
+   CONTADOR
+===================================================== */
+
+#eventosResultadoInfo {
+
+    margin-bottom: 14px;
+
+    color: #667085;
+
+    font-size: 13px;
+
+}
+
+
+/* =====================================================
+   EVENTOS
+===================================================== */
+
+#eventosContainer {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+
+    align-items: start;
+
+}
+
+
+/* =====================================================
+   TARJETA
+===================================================== */
+
+#eventosContainer .evento-card {
+
+    width: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px 12px;
+
+    background: #fff;
+
+    border-radius: 12px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 3px 12px
+        rgba(0,0,0,0.07);
+
+}
+
+
+#eventosContainer .evento-card:hover {
+
+    box-shadow:
+        0 6px 16px
+        rgba(0,0,0,0.10);
+
+}
+
+
+/* =====================================================
+   IMAGEN
+===================================================== */
+
+#eventosContainer .evento-imagen {
+
+    width: 100%;
+
+    height: 58px;
+
+    flex: 0 0 58px;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #fff;
+
+    border-radius: 8px;
+
+    margin: 0 0 8px;
+
+}
+
+
+#eventosContainer .evento-imagen-img {
+
+    display: block;
+
+    width: auto !important;
+
+    height: auto !important;
+
+    max-width: 100px !important;
+
+    max-height: 46px !important;
+
+    object-fit: contain !important;
+
+    object-position: center;
+
+}
+
+
+#eventosContainer
+.evento-imagen-img.default-event-image {
+
+    width: 34px !important;
+
+    height: 34px !important;
+
+    max-width: 34px !important;
+
+    max-height: 34px !important;
+
+    object-fit: contain !important;
+
+}
+
+
+/* =====================================================
+   TÍTULO
+===================================================== */
+
+#eventosContainer .evento-card h3 {
+
+    margin: 0 0 6px;
+
+    font-size: 15px;
+
+    line-height: 1.25;
+
+    color: #102a43;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+#eventosContainer .evento-card p {
+
+    margin: 3px 0;
+
+    color: #555;
+
+    font-size: 11.5px;
+
+    line-height: 1.3;
+
+    overflow-wrap: anywhere;
+
+}
+
+
+/* =====================================================
+   BOTÓN
+===================================================== */
+
+#eventosContainer .btn-mostrar-mas {
+
+    display: block;
+
+    margin-top: 8px;
+
+    padding: 7px 9px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    border-radius: 7px;
+
+    background: #102a43;
+
+    color: #fff;
+
+    font-size: 11.5px;
+
+    font-weight: 600;
+
+}
+
+
+#eventosContainer .btn-mostrar-mas:hover {
+
+    background: #183b5c;
+
+}
+
+
+/* =====================================================
+   SIN EVENTOS
+===================================================== */
+
+.sin-eventos {
+
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    padding: 40px 20px;
+
+    background: #fff;
+
+    border-radius: 14px;
+
+    color: #666;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1050px) {
+
+    .filtros-principal {
+
+        grid-template-columns:
+            minmax(0, 1fr)
+            200px;
+
+    }
+
+    #subcategoryFilter {
+
+        grid-column: 1 / -1;
+
+    }
+
+}
+
+
+@media (max-width: 950px) {
+
+    .eventos-page {
+
+        padding:
+            110px 20px 50px;
+
+    }
+
+
+    #eventosContainer {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .filtros-secundarios,
+    .filtros-avanzados {
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .eventos-page {
+
+        padding:
+            100px 12px 40px;
+
+    }
+
+
+    .eventos-header h1 {
+
+        font-size: 29px;
+
+    }
+
+
+    .filtros-principal {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    #subcategoryFilter {
+
+        grid-column: auto;
+
+    }
+
+
+    .filtros-secundarios,
+    .filtros-avanzados {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    #eventosContainer {
+
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+
+    }
+
+
+    #eventosContainer
+    .evento-imagen {
+
+        height: 54px;
+
+        flex-basis: 54px;
+
+    }
+
+
+    #eventosContainer
+    .evento-imagen-img {
+
+        max-width: 90px !important;
+
+        max-height: 42px !important;
+
+    }
+
+
+    #eventosContainer
+    .evento-imagen-img.default-event-image {
+
+        width: 32px !important;
+
+        height: 32px !important;
+
+        max-width: 32px !important;
+
+        max-height: 32px !important;
+
+    }
+
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =================================================
+         MENÚ GLOBAL
+    ================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <!-- =================================================
+         CONTENIDO
+    ================================================== -->
+
+    <main class="eventos-page">
+
+
+        <!-- ENCABEZADO -->
+
+        <section class="eventos-header">
+
+            <h1>
+                Todos los eventos
+            </h1>
+
+            <p>
+                Descubre eventos, actividades y celebraciones
+                disponibles en OTIUM
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             FILTROS
+        ================================================== -->
+
+        <section class="eventos-filtros">
+
+
+            <!-- =================================================
+                 BÚSQUEDA + CATEGORÍA + SUBCATEGORÍA
+            ================================================== -->
+
+            <div class="filtros-principal">
+
+
+                <input
+                    id="search"
+                    type="text"
+                    placeholder="🔎 Buscar eventos, actividades, lugares...">
+
+
+                <select
+                    id="categoryFilter">
+
+                    <option value="">
+                        Todas las categorías
+                    </option>
+
+                    <option value="Música">
+                        Música
+                    </option>
+
+                    <option value="Teatro">
+                        Teatro
+                    </option>
+
+                    <option value="Danza">
+                        Danza
+                    </option>
+
+                    <option value="Cine">
+                        Cine
+                    </option>
+
+                    <option value="Arte">
+                        Arte
+                    </option>
+
+                    <option value="Cultura">
+                        Cultura
+                    </option>
+
+                    <option value="Deportes">
+                        Deportes
+                    </option>
+
+                    <option value="Fiestas y celebraciones">
+                        Fiestas y celebraciones
+                    </option>
+
+                    <option value="Vida nocturna">
+                        Vida nocturna
+                    </option>
+
+                    <option value="Gastronomía">
+                        Gastronomía
+                    </option>
+
+                    <option value="Familiar">
+                        Familiar
+                    </option>
+
+                    <option value="Ferias y mercados">
+                        Ferias y mercados
+                    </option>
+
+                    <option value="Negocios y empresas">
+                        Negocios y empresas
+                    </option>
+
+                    <option value="Educación y formación">
+                        Educación y formación
+                    </option>
+
+                    <option value="Comunidad">
+                        Comunidad
+                    </option>
+
+                    <option value="Institucional">
+                        Institucional
+                    </option>
+
+                    <option value="Otros">
+                        Otros
+                    </option>
+
+                </select>
+
+
+                <select
+                    id="subcategoryFilter">
+
+                    <option value="">
+                        Todas las subcategorías
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 FILTROS SECUNDARIOS
+            ================================================== -->
+
+            <div class="filtros-secundarios">
+
+
+                <select id="dateFilter">
+
+                    <option value="">
+                        📅 Todas las fechas
+                    </option>
+
+                    <option value="hoy">
+                        Hoy
+                    </option>
+
+                    <option value="manana">
+                        Mañana
+                    </option>
+
+                    <option value="fin_semana">
+                        Este fin de semana
+                    </option>
+
+                    <option value="7_dias">
+                        Próximos 7 días
+                    </option>
+
+                </select>
+
+
+                <input
+                    id="cityFilter"
+                    type="text"
+                    placeholder="📍 Ciudad">
+
+
+                <select id="priceFilter">
+
+                    <option value="">
+                        💰 Todos los precios
+                    </option>
+
+                    <option value="gratis">
+                        🆓 Gratis
+                    </option>
+
+                    <option value="costo">
+                        💲 Con costo
+                    </option>
+
+                </select>
+
+
+                <select id="sortFilter">
+
+                    <option value="proximos">
+                        🔄 Próximos primero
+                    </option>
+
+                    <option value="recientes">
+                        Más recientes
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =================================================
+                 FILTROS AVANZADOS
+            ================================================== -->
+
+            <div class="filtros-avanzados">
+
+
+                <label class="filtro-avanzado">
+
+                    <input
+                        type="checkbox"
+                        id="ticketsFilter">
+
+                    <span>
+                        🎟️ Con entradas
+                    </span>
+
+                </label>
+
+
+                <label class="filtro-avanzado">
+
+                    <input
+                        type="checkbox"
+                        id="featuredFilter">
+
+                    <span>
+                        ⭐ Solo destacados
+                    </span>
+
+                </label>
+
+
+                <label class="filtro-avanzado">
+
+                    <input
+                        type="checkbox"
+                        id="publicFilter">
+
+                    <span>
+                        👥 Solo públicos
+                    </span>
+
+                </label>
+
+
+                <label class="filtro-avanzado">
+
+                    <input
+                        type="checkbox"
+                        id="privateFilter">
+
+                    <span>
+                        🔒 Solo privados
+                    </span>
+
+                </label>
+
+            </div>
+
+
+            <!-- ACCIONES -->
+
+            <div class="filtros-acciones">
+
+                <button
+                    type="button"
+                    id="clearFilters">
+
+                    Limpiar filtros
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RESULTADOS
+        ================================================== -->
+
+        <div
+            id="eventosResultadoInfo">
+        </div>
+
+
+        <!-- =================================================
+             EVENTOS
+        ================================================== -->
+
+        <section
+            id="eventosContainer">
+
+            <div class="sin-eventos">
+
+                Cargando eventos...
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =================================================
+         FOOTER
+    ================================================== -->
+
+    <footer>
+
+        <p>
+            © 2026 OTIUM
+        </p>
+
+    </footer>
+
+
+    <!-- =================================================
+         MENÚ
+    ================================================== -->
+
+    <script
+        src="js/menu.js?v=20260828">
+    </script>
+
+
+    <!-- =================================================
+         EVENTOS
+    ================================================== -->
+
+    <script
+        type="module"
+        src="js/eventos.js?v=20260828">
+    </script>
+
+
+    <!-- =================================================
+         LOGIN
+    ================================================== -->
+
+    <script
+        type="module"
+        src="js/login.js?v=20260828">
+    </script>
+
+
+</body>
+
+</html>

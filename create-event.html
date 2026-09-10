@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Publicar evento | OTIUM
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <style>
+
+        /* =====================================================
+           OTIUM - CREAR EVENTO
+           Diseño exclusivo de esta página.
+           No modifica Home ni menú global.
+        ===================================================== */
+
+        .create-event-page {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 120px 20px 70px;
+        }
+
+        .create-event-header {
+            margin-bottom: 28px;
+        }
+
+        .create-event-header h1 {
+            margin: 0 0 8px;
+            color: #102a43;
+        }
+
+        .create-event-header p {
+            margin: 0;
+            color: #667085;
+        }
+
+        /* =====================================================
+           MENSAJES
+        ===================================================== */
+
+        .create-event-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .create-event-message.success {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .create-event-message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .create-event-message.info {
+            display: block;
+            background: #eef4ff;
+            color: #1d4ed8;
+        }
+
+        /* =====================================================
+           FORMULARIO
+        ===================================================== */
+
+        .create-event-form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #102a43;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #ffffff;
+        }
+
+        .form-group textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff7445;
+            box-shadow: 0 0 0 3px rgba(255, 116, 69, 0.12);
+        }
+
+        /* =====================================================
+           SECCIONES
+        ===================================================== */
+
+        .section-box {
+            grid-column: 1 / -1;
+            padding: 20px;
+            border: 1px solid #dbe3ec;
+            border-radius: 14px;
+            background: #f8fafc;
+        }
+
+        .section-box h3 {
+            margin: 0 0 6px;
+            color: #102a43;
+        }
+
+        .section-box > p {
+            margin: 0 0 16px;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           OPCIONES
+        ===================================================== */
+
+        .radio-row,
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 10px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            border-color: #ff7445;
+        }
+
+        .radio-option input,
+        .checkbox-option input {
+            width: auto;
+            margin: 0;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: #102a43;
+        }
+
+        .option-description {
+            display: block;
+            margin-top: 2px;
+            color: #667085;
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           TIPO DE EVENTO
+        ===================================================== */
+
+        .event-type-section {
+            background: #f8fafc;
+        }
+
+        .event-type-option {
+            min-width: 220px;
+        }
+
+        /* =====================================================
+           EDAD
+        ===================================================== */
+
+        .age-section {
+            background: #f8fafc;
+        }
+
+        .age-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .age-option {
+            min-width: 230px;
+        }
+
+        .age-range {
+            display: none;
+            margin-top: 16px;
+        }
+
+        .age-range.visible {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .age-help {
+            margin-top: 10px;
+            color: #667085;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           ACCESO
+        ===================================================== */
+
+        .access-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .access-option {
+            min-width: 210px;
+        }
+
+        .free-entry-box {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #d0d5dd;
+        }
+
+        .free-entry-box.active {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .free-entry-box label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            color: #102a43;
+            font-weight: 700;
+        }
+
+        .free-entry-box input {
+            width: auto;
+        }
+
+        /* =====================================================
+           PRECIO
+        ===================================================== */
+
+        #priceGroup {
+            display: none;
+        }
+
+        #priceGroup.visible {
+            display: flex;
+        }
+
+        .disabled-field {
+            opacity: 0.65;
+        }
+
+        /* =====================================================
+           CONFIRMACIÓN
+        ===================================================== */
+
+        .attendance-section {
+            display: none;
+        }
+
+        .attendance-section.visible {
+            display: block;
+        }
+
+        .attendance-help {
+            margin-top: 8px;
+            color: #667085;
+            font-size: 12px;
+        }
+
+        #attendanceLinkGroup {
+            display: none;
+        }
+
+        #attendanceLinkGroup.visible {
+            display: flex;
+        }
+
+        /* =====================================================
+           UBICACIÓN
+        ===================================================== */
+
+        .location-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .location-button {
+            width: fit-content;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 9px;
+            background: #102a43;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .location-button:hover {
+            background: #183b5c;
+        }
+
+        .location-button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+
+        .location-message {
+            display: none;
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .location-message.success {
+            display: block;
+            color: #087443;
+        }
+
+        .location-message.error {
+            display: block;
+            color: #b42318;
+        }
+
+        .location-message.info {
+            display: block;
+            color: #475467;
+        }
+
+        .location-coordinates {
+            display: none;
+        }
+
+        /* =====================================================
+           IMAGEN
+        ===================================================== */
+
+        .event-image-box {
+            border: 1px solid #d0d5dd;
+            border-radius: 14px;
+            padding: 18px;
+            background: #f8fafc;
+        }
+
+        .event-image-box input[type="file"] {
+            padding: 10px;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .image-help {
+            margin: 4px 0 0;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #667085;
+        }
+
+        .image-preview-container {
+            display: none;
+            margin-top: 15px;
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .image-preview-container.visible {
+            display: block;
+        }
+
+        #eventImagePreview {
+            display: block;
+            width: 100%;
+            max-width: 420px;
+            max-height: 280px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #d0d5dd;
+            background: #e5e7eb;
+        }
+
+        .image-file-info {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #475467;
+            word-break: break-word;
+        }
+
+        .remove-image-button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #b42318;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .image-upload-status {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .image-upload-status.visible {
+            display: block;
+        }
+
+        .image-upload-status.info {
+            background: #eef4ff;
+            color: #1d4ed8;
+        }
+
+        .image-upload-status.success {
+            background: #ecfdf3;
+            color: #087443;
+        }
+
+        .image-upload-status.error {
+            background: #fef2f2;
+            color: #b42318;
+        }
+
+        /* =====================================================
+           AVISO
+        ===================================================== */
+
+        .notice-box {
+            grid-column: 1 / -1;
+            padding: 15px 18px;
+            border-radius: 10px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           ADVERTENCIA FINAL
+        ===================================================== */
+
+        .publication-warning {
+            margin-top: 25px;
+            padding: 18px 20px;
+            border-radius: 12px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #7c2d12;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .publication-warning-title {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #9a3412;
+        }
+
+        .publication-warning p {
+            margin: 8px 0;
+        }
+
+        /* =====================================================
+           BOTÓN
+        ===================================================== */
+
+        .create-event-submit {
+            width: 100%;
+            margin-top: 28px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #ff7445;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .create-event-submit:hover {
+            background: #f45f30;
+        }
+
+        .create-event-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        .hidden-field {
+            display: none !important;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .create-event-page {
+                margin-top: 20px;
+                padding: 110px 15px 50px;
+            }
+
+            .create-event-form {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .section-box,
+            .notice-box {
+                grid-column: auto;
+            }
+
+            .event-type-option,
+            .access-option,
+            .age-option {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .age-range.visible {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         MENÚ GLOBAL
+    ====================================================== -->
+
+    <div id="menuOTIUM"></div>
+
+
+    <main>
+
+        <section class="create-event-page">
+
+            <header class="create-event-header">
+
+                <h1>
+                    Publicar evento
+                </h1>
+
+                <p>
+                    Comparte tu evento con la comunidad OTIUM.
+                </p>
+
+            </header>
+
+
+            <!-- =================================================
+                 MENSAJE
+            ================================================== -->
+
+            <div
+                id="createEventMessage"
+                class="create-event-message">
+            </div>
+
+
+            <form
+                id="createEventForm"
+                class="create-event-form">
+
+
+                <div class="form-grid">
+
+
+                    <!-- =================================================
+                         NOMBRE
+                    ================================================== -->
+
+                    <div class="form-group full">
+
+                        <label for="title">
+                            Nombre del evento *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            required
+                            autocomplete="off"
+                            placeholder="Ej: Festival de Música">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         TIPO DE EVENTO
+                    ================================================== -->
+
+                    <div class="section-box event-type-section">
+
+                        <h3>
+                            1. Tipo de evento
+                        </h3>
+
+                        <p>
+                            Primero indica si el evento es público o particular.
+                        </p>
+
+                        <div class="radio-row">
+
+                            <label class="radio-option event-type-option">
+
+                                <input
+                                    type="radio"
+                                    name="eventType"
+                                    id="eventTypePublic"
+                                    value="publico"
+                                    checked>
+
+                                <span>
+
+                                    <span class="option-title">
+                                        🌎 Público
+                                    </span>
+
+                                    <span class="option-description">
+                                        Abierto para personas interesadas en asistir.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+
+                            <label class="radio-option event-type-option">
+
+                                <input
+                                    type="radio"
+                                    name="eventType"
+                                    id="eventTypePrivate"
+                                    value="particular">
+
+                                <span>
+
+                                    <span class="option-title">
+                                        🔒 Particular
+                                    </span>
+
+                                    <span class="option-description">
+                                        Evento privado, familiar o con invitación.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CATEGORÍA
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            2. Categoría *
+                        </label>
+
+                        <select
+                            id="category"
+                            name="category"
+                            required>
+
+                            <option value="">
+                                Selecciona una categoría
+                            </option>
+
+                            <option value="Música">
+                                Música
+                            </option>
+
+                            <option value="Teatro">
+                                Teatro
+                            </option>
+
+                            <option value="Danza">
+                                Danza
+                            </option>
+
+                            <option value="Cine">
+                                Cine
+                            </option>
+
+                            <option value="Arte y cultura">
+                                Arte y cultura
+                            </option>
+
+                            <option value="Deportes">
+                                Deportes
+                            </option>
+
+                            <option value="Gastronomía">
+                                Gastronomía
+                            </option>
+
+                            <option value="Ferias y mercados">
+                                Ferias y mercados
+                            </option>
+
+                            <option value="Vida nocturna">
+                                Vida nocturna
+                            </option>
+
+                            <option value="Fiestas">
+                                Fiestas
+                            </option>
+
+                            <option value="Familiar">
+                                Familiar
+                            </option>
+
+                            <option value="Congresos y conferencias">
+                                Congresos y conferencias
+                            </option>
+
+                            <option value="Educación y formación">
+                                Educación y formación
+                            </option>
+
+                            <option value="Negocios y networking">
+                                Negocios y networking
+                            </option>
+
+                            <option value="Exposiciones">
+                                Exposiciones
+                            </option>
+
+                            <option value="Comunidad">
+                                Comunidad
+                            </option>
+
+                            <option value="Eventos particulares">
+                                Eventos particulares
+                            </option>
+
+                            <option value="Otros">
+                                Otros
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SUBCATEGORÍA
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="subcategory">
+                            3. Subcategoría
+                        </label>
+
+                        <select
+                            id="subcategory"
+                            name="subcategory">
+
+                            <option value="">
+                                Primero selecciona una categoría
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CIUDAD
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="city">
+                            Ciudad *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            required
+                            autocomplete="address-level2"
+                            placeholder="Ej: Santiago">
+
+                        <div class="location-wrapper">
+
+                            <button
+                                type="button"
+                                id="useLocationButton"
+                                class="location-button">
+
+                                📍 Usar mi ubicación actual
+
+                            </button>
+
+                            <p
+                                id="locationMessage"
+                                class="location-message">
+                            </p>
+
+                            <span
+                                id="locationCoordinates"
+                                class="location-coordinates">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         FECHA
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="date">
+                            Fecha *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date"
+                            name="date"
+                            required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         HORA
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="time">
+                            Hora
+                        </label>
+
+                        <input
+                            type="time"
+                            id="time"
+                            name="time">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DIRECCIÓN
+                    ================================================== -->
+
+                    <div class="form-group full">
+
+                        <label for="address">
+                            Dirección / Ubicación
+                        </label>
+
+                        <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            autocomplete="street-address"
+                            placeholder="Ej: Movistar Arena">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         EDAD
+                    ================================================== -->
+
+                    <div class="section-box age-section">
+
+                        <h3>
+                            4. Rango de edad
+                        </h3>
+
+                        <p>
+                            Indica para qué edades está recomendado el evento.
+                            Esta información permitirá a OTIUM generar avisos de interés
+                            personalizados.
+                        </p>
+
+                        <div class="age-options">
+
+                            <label class="radio-option age-option">
+
+                                <input
+                                    type="radio"
+                                    name="ageType"
+                                    id="ageAll"
+                                    value="todas"
+                                    checked>
+
+                                <span>
+
+                                    <span class="option-title">
+                                        👨‍👩‍👧 Todas las edades
+                                    </span>
+
+                                    <span class="option-description">
+                                        El evento no tiene un rango de edad específico.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+
+                            <label class="radio-option age-option">
+
+                                <input
+                                    type="radio"
+                                    name="ageType"
+                                    id="ageRange"
+                                    value="rango">
+
+                                <span>
+
+                                    <span class="option-title">
+                                        🎯 Rango de edad
+                                    </span>
+
+                                    <span class="option-description">
+                                        Especifica la edad mínima y máxima recomendada.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            id="ageRangeFields"
+                            class="age-range">
+
+                            <div class="form-group">
+
+                                <label for="ageMin">
+                                    Edad mínima
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="ageMin"
+                                    name="ageMin"
+                                    min="0"
+                                    max="120"
+                                    step="1"
+                                    placeholder="Ej: 5">
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="ageMax">
+                                    Edad máxima
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="ageMax"
+                                    name="ageMax"
+                                    min="0"
+                                    max="120"
+                                    step="1"
+                                    placeholder="Ej: 9">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="age-help">
+
+                            Ejemplo: si el evento está dirigido a niños de
+                            <strong>5 a 9 años</strong>, selecciona "Rango de edad"
+                            e ingresa 5 como edad mínima y 9 como edad máxima.
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DESCRIPCIÓN
+                    ================================================== -->
+
+                    <div class="form-group full">
+
+                        <label for="description">
+                            Descripción
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            placeholder="Describe el evento..."></textarea>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ACCESO
+                    ================================================== -->
+
+                    <div class="section-box">
+
+                        <h3>
+                            5. Acceso y entradas
+                        </h3>
+
+                        <p>
+                            Indica si las personas deben pagar para asistir.
+                        </p>
+
+                        <div class="access-options">
+
+                            <label class="radio-option access-option">
+
+                                <input
+                                    type="radio"
+                                    name="accessType"
+                                    id="accessFree"
+                                    value="gratis"
+                                    checked>
+
+                                <span>
+
+                                    <span class="option-title">
+                                        🆓 Gratis
+                                    </span>
+
+                                    <span class="option-description">
+                                        Entrada liberada o gratuita.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+
+                            <label class="radio-option access-option">
+
+                                <input
+                                    type="radio"
+                                    name="accessType"
+                                    id="accessPaid"
+                                    value="pagado">
+
+                                <span>
+
+                                    <span class="option-title">
+                                        🎟️ Pagado
+                                    </span>
+
+                                    <span class="option-description">
+                                        Requiere comprar o pagar una entrada.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            id="freeEntryBox"
+                            class="free-entry-box active">
+
+                            <label for="freeEntry">
+
+                                <input
+                                    type="checkbox"
+                                    id="freeEntry"
+                                    name="freeEntry"
+                                    checked>
+
+                                <span>
+                                    Entrada liberada / gratuita
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         PRECIO
+                    ================================================== -->
+
+                    <div
+                        id="priceGroup"
+                        class="form-group">
+
+                        <label for="price">
+                            Precio *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="price"
+                            name="price"
+                            placeholder="Ej: $15.000">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ENTRADAS
+                    ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="tickets">
+                            Entradas disponibles
+                        </label>
+
+                        <input
+                            type="number"
+                            id="tickets"
+                            name="tickets"
+                            min="0"
+                            placeholder="Ej: 500">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LINK
+                    ================================================== -->
+
+                    <div class="form-group full">
+
+                        <label for="eventLink">
+                            Enlace del evento / Entradas
+                        </label>
+
+                        <input
+                            type="url"
+                            id="eventLink"
+                            name="eventLink"
+                            placeholder="Ej: https://www.tuevento.cl/entradas">
+
+                        <small>
+                            Puedes ingresar el sitio oficial, página de entradas,
+                            formulario o información del evento.
+                        </small>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CONFIRMACIÓN PARTICULAR
+                    ================================================== -->
+
+                    <div
+                        id="attendanceSection"
+                        class="section-box attendance-section">
+
+                        <h3>
+                            6. Confirmación de asistencia
+                        </h3>
+
+                        <p>
+                            Esta opción está disponible para eventos particulares.
+                        </p>
+
+                        <div class="checkbox-row">
+
+                            <label class="checkbox-option">
+
+                                <input
+                                    type="checkbox"
+                                    id="requiresAttendance"
+                                    name="requiresAttendance">
+
+                                <span>
+
+                                    <span class="option-title">
+                                        Recibir confirmación de asistencia
+                                    </span>
+
+                                    <span class="option-description">
+                                        Permite que los invitados confirmen su asistencia.
+                                    </span>
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div
+                            id="attendanceLinkGroup"
+                            class="form-group"
+                            style="margin-top:15px;">
+
+                            <label for="attendanceLink">
+                                Enlace para confirmar asistencia
+                            </label>
+
+                            <input
+                                type="url"
+                                id="attendanceLink"
+                                name="attendanceLink"
+                                placeholder="Ej: https://...">
+
+                            <div class="attendance-help">
+
+                                Puedes utilizar un formulario o sistema externo
+                                de confirmación.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         IMAGEN
+                    ================================================== -->
+
+                    <div class="form-group full">
+
+                        <label for="eventImage">
+                            Imagen del evento
+                        </label>
+
+                        <div class="event-image-box">
+
+                            <input
+                                type="file"
+                                id="eventImage"
+                                name="eventImage"
+                                accept="image/jpeg,image/png,image/webp,image/gif">
+
+                            <p class="image-help">
+
+                                <strong>
+                                    Imagen recomendada: 1200 × 675 px (16:9, horizontal).
+                                </strong>
+
+                                <br>
+
+                                Formatos permitidos: JPG, PNG o WEBP.
+
+                                <br>
+
+                                Tamaño máximo: 5 MB.
+
+                                <br>
+
+                                La imagen es opcional. Si no subes una,
+                                OTIUM utilizará su imagen predeterminada.
+
+                            </p>
+
+
+                            <div
+                                id="imagePreviewContainer"
+                                class="image-preview-container">
+
+                                <img
+                                    id="eventImagePreview"
+                                    alt="Vista previa de la imagen del evento">
+
+                                <div
+                                    id="imageFileInfo"
+                                    class="image-file-info">
+                                </div>
+
+                                <button
+                                    type="button"
+                                    id="removeImageButton"
+                                    class="remove-image-button">
+
+                                    ✕ Quitar imagen
+
+                                </button>
+
+                            </div>
+
+
+                            <div
+                                id="imageUploadStatus"
+                                class="image-upload-status">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         AVISO
+                    ================================================== -->
+
+                    <div class="notice-box">
+
+                        <strong>
+                            Importante:
+                        </strong>
+
+                        Verifica que la información publicada sea correcta.
+
+                        Si el evento es particular, informa claramente
+                        las condiciones de acceso y el mecanismo de
+                        confirmación de asistencia.
+
+                    </div>
+
+
+                    <!-- =================================================
+                         REGION
+                    ================================================== -->
+
+                    <div class="form-group hidden-field">
+
+                        <label for="region">
+                            Región
+                        </label>
+
+                        <input
+                            type="text"
+                            id="region"
+                            name="region">
+
+                    </div>
+
+
+                    <input
+                        type="hidden"
+                        id="latitude"
+                        name="latitude">
+
+
+                    <input
+                        type="hidden"
+                        id="longitude"
+                        name="longitude">
+
+
+                </div>
+
+
+                <!-- =====================================================
+                     ADVERTENCIA ANTES DE PUBLICAR
+                ====================================================== -->
+
+                <div class="publication-warning">
+
+                    <div class="publication-warning-title">
+                        ⚠️ Antes de publicar
+                    </div>
+
+                    <p>
+                        La información ingresada debe ser verdadera,
+                        completa y estar actualizada.
+                    </p>
+
+                    <p>
+                        OTIUM es una plataforma de difusión y descubrimiento
+                        de eventos, actividades y panoramas. OTIUM no verifica
+                        necesariamente la información proporcionada por los
+                        usuarios u organizadores.
+                    </p>
+
+                    <p>
+
+                        <strong>
+                            La responsabilidad sobre la veracidad,
+                            exactitud, disponibilidad y actualización
+                            de la información corresponde a quien
+                            publica o proporciona los antecedentes
+                            del evento.
+                        </strong>
+
+                    </p>
+
+                    <p>
+                        Antes de publicar, verifica especialmente la fecha,
+                        horario, ubicación, precios, disponibilidad de entradas,
+                        condiciones de acceso, enlaces, rango de edad y
+                        cualquier otro dato relevante.
+                    </p>
+
+                </div>
+
+
+                <!-- =====================================================
+                     BOTÓN PUBLICAR
+                ====================================================== -->
+
+                <button
+                    type="submit"
+                    id="publishEventButton"
+                    class="create-event-submit">
+
+                    Publicar evento
+
+                </button>
+
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         MENÚ
+    ====================================================== -->
+
+    <script type="module" src="js/menu.js?v=20260904"></script>
+
+
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- =====================================================
+         CREATE EVENT
+    ====================================================== -->
+
+    <script
+        type="module"
+        src="js/create-event.js?v=20260901">
+    </script>
+
+
+    <!-- =====================================================
+         SUBCATEGORÍAS
+    ====================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                const category =
+                    document.getElementById(
+                        "category"
+                    );
+
+                const subcategory =
+                    document.getElementById(
+                        "subcategory"
+                    );
+
+
+                if (
+                    !category ||
+                    !subcategory
+                ) {
+
+                    return;
+
+                }
+
+
+                const subcategorias = {
+
+                    "Música": [
+                        "Concierto",
+                        "Festival musical",
+                        "Recital",
+                        "Tributo",
+                        "DJ / Electrónica",
+                        "Música clásica",
+                        "Jazz",
+                        "Rock",
+                        "Pop",
+                        "Folclore",
+                        "Otros"
+                    ],
+
+                    "Teatro": [
+                        "Obra teatral",
+                        "Comedia",
+                        "Drama",
+                        "Musical",
+                        "Teatro infantil",
+                        "Teatro familiar",
+                        "Stand up",
+                        "Otros"
+                    ],
+
+                    "Danza": [
+                        "Ballet",
+                        "Danza contemporánea",
+                        "Danza urbana",
+                        "Folclórica",
+                        "Danza clásica",
+                        "Otros"
+                    ],
+
+                    "Cine": [
+                        "Película",
+                        "Festival de cine",
+                        "Cine arte",
+                        "Documental",
+                        "Estreno",
+                        "Otros"
+                    ],
+
+                    "Arte y cultura": [
+                        "Arte",
+                        "Cultura",
+                        "Literatura",
+                        "Poesía",
+                        "Patrimonio",
+                        "Museos",
+                        "Otros"
+                    ],
+
+                    "Deportes": [
+                        "Fútbol",
+                        "Running",
+                        "Ciclismo",
+                        "Tenis",
+                        "Artes marciales",
+                        "Fitness",
+                        "Torneos",
+                        "Competencias",
+                        "Otros"
+                    ],
+
+                    "Gastronomía": [
+                        "Festival gastronómico",
+                        "Feria gastronómica",
+                        "Cata",
+                        "Degustación",
+                        "Cena",
+                        "Clase de cocina",
+                        "Otros"
+                    ],
+
+                    "Ferias y mercados": [
+                        "Feria artesanal",
+                        "Feria comercial",
+                        "Feria libre",
+                        "Mercado",
+                        "Feria de emprendedores",
+                        "Feria temática",
+                        "Otros"
+                    ],
+
+                    "Vida nocturna": [
+                        "Club",
+                        "Bar",
+                        "Pub",
+                        "After office",
+                        "Noche temática",
+                        "Otros"
+                    ],
+
+                    "Fiestas": [
+                        "Fiesta temática",
+                        "Fiesta electrónica",
+                        "Fiesta familiar",
+                        "Fiesta tradicional",
+                        "Celebración",
+                        "Otros"
+                    ],
+
+                    "Familiar": [
+                        "Actividad infantil",
+                        "Actividad familiar",
+                        "Parque",
+                        "Juegos",
+                        "Animación",
+                        "Otros"
+                    ],
+
+                    "Congresos y conferencias": [
+                        "Congreso",
+                        "Convención",
+                        "Seminario",
+                        "Simposio",
+                        "Foro",
+                        "Conferencia",
+                        "Otros"
+                    ],
+
+                    "Educación y formación": [
+                        "Taller",
+                        "Curso",
+                        "Capacitación",
+                        "Charla",
+                        "Diplomado",
+                        "Clase",
+                        "Otros"
+                    ],
+
+                    "Negocios y networking": [
+                        "Networking",
+                        "Rueda de negocios",
+                        "Lanzamiento",
+                        "Evento empresarial",
+                        "Evento corporativo",
+                        "Otros"
+                    ],
+
+                    "Exposiciones": [
+                        "Exposición",
+                        "Muestra",
+                        "Galería",
+                        "Feria de arte",
+                        "Instalación",
+                        "Otros"
+                    ],
+
+                    "Comunidad": [
+                        "Actividad comunitaria",
+                        "Voluntariado",
+                        "Organización social",
+                        "Encuentro vecinal",
+                        "Actividad municipal",
+                        "Otros"
+                    ],
+
+                    "Eventos particulares": [
+                        "Cumpleaños",
+                        "Aniversario",
+                        "Matrimonio",
+                        "Bautizo",
+                        "Baby shower",
+                        "Despedida",
+                        "Celebración familiar",
+                        "Reunión",
+                        "Fiesta privada",
+                        "Otro evento particular"
+                    ],
+
+                    "Otros": [
+                        "Otro"
+                    ]
+
+                };
+
+
+                function actualizarSubcategorias() {
+
+                    const categoria =
+                        category.value;
+
+                    subcategory.innerHTML =
+                        "";
+
+                    const primera =
+                        document.createElement(
+                            "option"
+                        );
+
+                    primera.value =
+                        "";
+
+                    primera.textContent =
+                        categoria
+                            ? "Selecciona una subcategoría"
+                            : "Primero selecciona una categoría";
+
+                    subcategory.appendChild(
+                        primera
+                    );
+
+                    if (
+                        !categoria
+                    ) {
+
+                        return;
+
+                    }
+
+                    const opciones =
+                        subcategorias[
+                            categoria
+                        ] || [];
+
+                    opciones.forEach(
+                        (nombre) => {
+
+                            const option =
+                                document.createElement(
+                                    "option"
+                                );
+
+                            option.value =
+                                nombre;
+
+                            option.textContent =
+                                nombre;
+
+                            subcategory.appendChild(
+                                option
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                category.addEventListener(
+                    "change",
+                    actualizarSubcategorias
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

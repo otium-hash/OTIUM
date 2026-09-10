@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Editar evento | OTIUM
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         MENÚ OTIUM
+    =========================================== -->
+
+    <header>
+
+        <nav class="navbar">
+
+
+            <!-- LOGO -->
+
+            <a
+                href="index.html"
+                class="logo-container">
+
+                <img
+                    src="assets/icono.png"
+                    alt="OTIUM"
+                    class="header-icon">
+
+            </a>
+
+
+            <!-- MENÚ -->
+
+            <ul class="menu">
+
+                <li>
+                    <a href="index.html">
+                        Inicio
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="eventos.html">
+                        Eventos
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="calendar.html">
+                        Calendario
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="index.html#mapa">
+                        Mapa
+                    </a>
+                </li>
+
+
+                <li>
+
+                    <a
+                        id="publishEvent"
+                        href="create-event.html">
+
+                        Publicar evento
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+
+            <!-- ==================================
+                 USUARIO
+            =================================== -->
+
+            <div id="userPanel">
+
+
+                <button
+                    id="googleLogin">
+
+                    Iniciar sesión
+
+                </button>
+
+
+                <div
+                    id="userMenu"
+                    style="display:none;">
+
+
+                    <button
+                        id="userDropdown">
+
+                        <span
+                            id="userName">
+                        </span>
+
+                        ▼
+
+                    </button>
+
+
+                    <div
+                        id="dropdownMenu">
+
+
+                        <a href="profile.html">
+                            Mi perfil
+                        </a>
+
+
+                        <a href="my-events.html">
+                            Mis eventos
+                        </a>
+
+
+                        <a href="favoritos.html">
+                            Favoritos
+                        </a>
+
+
+                        <button
+                            id="logoutButton">
+
+                            Cerrar sesión
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ==========================================
+         CONTENIDO
+    =========================================== -->
+
+    <main>
+
+
+        <div class="event-container">
+
+
+            <!-- ==================================
+                 ENCABEZADO
+            =================================== -->
+
+            <div class="page-header">
+
+
+                <a
+                    class="back-button"
+                    href="my-events.html">
+
+                    ← Volver a mis eventos
+
+                </a>
+
+
+                <h1>
+                    Editar evento
+                </h1>
+
+
+            </div>
+
+
+            <!-- ==================================
+                 FORMULARIO
+            =================================== -->
+
+            <form
+                id="editForm">
+
+
+                <!-- TÍTULO -->
+
+                <label for="title">
+                    Título del evento
+                </label>
+
+                <input
+                    id="title"
+                    type="text"
+                    placeholder="Título del evento"
+                    required>
+
+
+                <!-- CATEGORÍA -->
+
+                <label for="category">
+                    Categoría
+                </label>
+
+                <select
+                    id="category"
+                    required>
+
+                    <option value="">
+                        Seleccionar categoría
+                    </option>
+
+                    <option value="Música">
+                        Música
+                    </option>
+
+                    <option value="Gastronomía">
+                        Gastronomía
+                    </option>
+
+                    <option value="Deportes">
+                        Deportes
+                    </option>
+
+                    <option value="Teatro">
+                        Teatro
+                    </option>
+
+                    <option value="Cine">
+                        Cine
+                    </option>
+
+                    <option value="Arte y cultura">
+                        Arte y cultura
+                    </option>
+
+                    <option value="Ferias">
+                        Ferias
+                    </option>
+
+                    <option value="Familia">
+                        Familia
+                    </option>
+
+                    <option value="Vida nocturna">
+                        Vida nocturna
+                    </option>
+
+                    <option value="Fiestas">
+                        Fiestas
+                    </option>
+
+                </select>
+
+
+                <!-- FECHA -->
+
+                <label for="date">
+                    Fecha
+                </label>
+
+                <input
+                    id="date"
+                    type="date"
+                    required>
+
+
+                <!-- HORA -->
+
+                <label for="time">
+                    Hora
+                </label>
+
+                <input
+                    id="time"
+                    type="time"
+                    required>
+
+
+                <!-- CIUDAD -->
+
+                <label for="city">
+                    Ciudad
+                </label>
+
+                <input
+                    id="city"
+                    type="text"
+                    placeholder="Ciudad"
+                    required>
+
+
+                <!-- DIRECCIÓN -->
+
+                <label for="address">
+                    Dirección
+                </label>
+
+                <input
+                    id="address"
+                    type="text"
+                    placeholder="Dirección del evento"
+                    required>
+
+
+                <!-- ==================================
+                     UBICACIÓN
+                =================================== -->
+
+                <div class="location-section">
+
+
+                    <h3>
+                        📍 Ubicación del evento
+                    </h3>
+
+
+                    <button
+                        type="button"
+                        id="searchAddress">
+
+                        🔎 Buscar ubicación
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="currentLocation">
+
+                        📍 Usar mi ubicación actual
+
+                    </button>
+
+
+                    <p>
+
+                        Puedes buscar la dirección,
+                        utilizar tu ubicación actual
+                        o hacer clic directamente
+                        sobre el mapa.
+
+                    </p>
+
+
+                    <!-- MAPA -->
+
+                    <div
+                        id="eventMap">
+
+                    </div>
+
+
+                    <!-- LATITUD -->
+
+                    <input
+                        id="latitude"
+                        type="hidden">
+
+
+                    <!-- LONGITUD -->
+
+                    <input
+                        id="longitude"
+                        type="hidden">
+
+                </div>
+
+
+                <!-- ==================================
+                     DESCRIPCIÓN
+                =================================== -->
+
+                <label for="description">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Descripción del evento"
+                    rows="7">
+                </textarea>
+
+
+                <!-- ==================================
+                     PRECIO
+                =================================== -->
+
+                <label for="price">
+                    Precio
+                </label>
+
+                <input
+                    id="price"
+                    type="number"
+                    min="0"
+                    placeholder="Precio">
+
+
+                <!-- ==================================
+                     ENTRADAS
+                =================================== -->
+
+                <label for="tickets">
+                    Entradas disponibles
+                </label>
+
+                <input
+                    id="tickets"
+                    type="number"
+                    min="0"
+                    placeholder="Entradas disponibles">
+
+
+                <!-- ==================================
+                     ACCIONES
+                =================================== -->
+
+                <div
+                    class="event-actions">
+
+
+                    <button
+                        type="submit">
+
+                        💾 Guardar cambios
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        onclick="window.location.href='my-events.html'">
+
+                        Cancelar
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
+    <footer>
+
+        <p>
+            © 2026 OTIUM
+        </p>
+
+    </footer>
+
+
+    <!-- ==========================================
+         LEAFLET
+    =========================================== -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <!-- ==========================================
+         UBICACIÓN
+    =========================================== -->
+
+    <script
+        src="js/location-picker.js">
+    </script>
+
+
+    <!-- ==========================================
+         LOGIN
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/login.js">
+    </script>
+
+
+    <!-- ==========================================
+         EDITAR EVENTO
+    =========================================== -->
+
+    <script
+        type="module"
+        src="js/edit-event.js">
+    </script>
+
+
+</body>
+
+</html>
