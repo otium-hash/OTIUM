@@ -1,7 +1,7 @@
 /* ===================================
    OTIUM 12.0 FUSION
    STYLE GLOBAL
-   Versión ajustada 20260907
+   Versión ajustada 20260913
    ===================================
 
    OBJETIVOS:
@@ -18,6 +18,14 @@
      su diseño actual.
    - Compatible con navbar.html
      y footer.html.
+
+   AJUSTE 20260913:
+
+   - Corregida posición vertical
+     del Home en smartphone.
+   - El carrusel sube en móvil.
+   - No se modifica la proporción
+     de las imágenes.
 =================================== */
 
 
@@ -619,7 +627,7 @@ main {
 
 /* ===================================
    HOME
-   NO MODIFICAR DISEÑO
+   NO MODIFICAR DISEÑO DESKTOP
 =================================== */
 
 .hero {
@@ -2008,6 +2016,27 @@ footer small {
             );
     }
 
+
+    /* ===================================
+       HOME - CORRECCIÓN POSICIÓN MÓVIL
+    =================================== */
+
+    .hero {
+
+        padding:
+            80px 15px 40px;
+    }
+
+
+    .hero-tools {
+
+        margin-top: 40px;
+    }
+
+
+    /* ===================================
+       RESTO DEL MÓVIL
+    =================================== */
 
     .category-grid {
 
