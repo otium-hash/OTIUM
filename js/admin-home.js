@@ -7324,12 +7324,7 @@ function actualizarControlesImportacion() {
     button.style.cursor =
         "pointer";
 
-
     /* ---------------------------------------------
-       POR AHORA NO IMPORTA
-    --------------------------------------------- */
-
-        /* ---------------------------------------------
        IMPORTAR EVENTOS A FIRESTORE
     --------------------------------------------- */
 
@@ -7506,7 +7501,7 @@ function actualizarControlesImportacion() {
 
 
                     /* ---------------------------------
-                       ACTUALIZAR BOTÓN
+                       ACTUALIZAR PROGRESO
                     --------------------------------- */
 
                     button.textContent =
@@ -7549,12 +7544,10 @@ function actualizarControlesImportacion() {
                 "[OTIUM Excel] Importación finalizada."
             );
 
-
             console.log(
                 "[OTIUM Excel] Importados:",
                 importados
             );
-
 
             console.log(
                 "[OTIUM Excel] Errores:",
@@ -7637,30 +7630,6 @@ function actualizarControlesImportacion() {
         }
     );
 
-            console.log(
-                "[OTIUM Excel] Botón de importación presionado."
-            );
-
-
-            console.log(
-                "[OTIUM Excel] Eventos preparados:",
-                eventos
-            );
-
-
-            alert(
-                `El sistema preparó ${eventos.length} eventos correctamente.\n\nLa escritura en Firestore se agregará en el siguiente paso.`
-            );
-
-        }
-    ;
-
-
-    controls.appendChild(
-        button
-    );
-
-
     /* ---------------------------------------------
        INFORMACIÓN DE SEGURIDAD
     --------------------------------------------- */
@@ -7695,4 +7664,4 @@ function actualizarControlesImportacion() {
     console.log(
         "[OTIUM Excel] Controles de importación actualizados correctamente."
     );
-
+}
