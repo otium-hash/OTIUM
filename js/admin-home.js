@@ -6048,6 +6048,268 @@ function bindExcelReader() {
 
 }
 /* =====================================================
+   MANEJAR SELECCIÓN DE ARCHIVO EXCEL
+===================================================== */
+
+async function handleExcelFileChange(event) {
+
+    const input =
+        event &&
+        event.target
+            ? event.target
+            : null;
+
+
+    const file =
+        input &&
+        input.files &&
+        input.files.length > 0
+            ? input.files[0]
+            : null;
+
+
+    /* -------------------------------------------------
+       SI NO SE SELECCIONÓ ARCHIVO
+    ------------------------------------------------- */
+
+    if (!file) {
+
+        excelRows = [];
+
+        excelHeaders = [];
+
+        excelFileName = "";
+
+
+        const preview =
+            document.getElementById(
+                "excelPreview"
+            );
+
+
+        const status =
+            document.getElementById(
+                "excelStatus"
+            );
+
+
+        if (preview) {
+
+            preview.innerHTML = "";
+
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "No se seleccionó ningún archivo.";
+
+        }
+
+
+        if (
+            typeof actualizarControlesImportacion ===
+            "function"
+        ) {
+
+            actualizarControlesImportacion();
+
+        }
+
+
+        return;
+
+    }
+
+
+    /* -------------------------------------------------
+       GUARDAR NOMBRE DEL ARCHIVO
+    ------------------------------------------------- */
+
+    excelFileName =
+        file.name || "";
+
+
+    /* -------------------------------------------------
+       LEER ARCHIVO
+    ------------------------------------------------- */
+
+    try {
+
+        const result =
+            await readExcelFile(
+                file
+            );
+
+
+        /* ---------------------------------------------
+           GUARDAR DATOS OBTENIDOS
+        --------------------------------------------- */
+
+        if (
+            result &&
+            Array.isArray(
+                result.rows
+            )
+        ) {
+
+            excelRows =
+                result.rows;
+
+        } else {
+
+            excelRows = [];
+
+        }
+
+
+        if (
+            result &&
+            Array.isArray(
+                result.headers
+            )
+        ) {
+
+            excelHeaders =
+                result.headers;
+
+        } else {
+
+            excelHeaders = [];
+
+        }
+
+
+        /* ---------------------------------------------
+           GENERAR PREVISUALIZACIÓN
+        --------------------------------------------- */
+
+        if (
+            typeof renderExcelPreview ===
+            "function"
+        ) {
+
+            await renderExcelPreview(
+                result
+            );
+
+        } else {
+
+            console.warn(
+                "[OTIUM Excel] renderExcelPreview no está definida."
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           ACTUALIZAR ESTADO
+        --------------------------------------------- */
+
+        const status =
+            document.getElementById(
+                "excelStatus"
+            );
+
+
+        if (status) {
+
+            status.textContent =
+                `Archivo cargado: ${excelFileName} — ${excelRows.length} registros encontrados.`;
+
+        }
+
+
+        /* ---------------------------------------------
+           ACTUALIZAR CONTROLES
+        --------------------------------------------- */
+
+        if (
+            typeof actualizarControlesImportacion ===
+            "function"
+        ) {
+
+            actualizarControlesImportacion();
+
+        }
+
+
+        console.log(
+            "[OTIUM Excel] Archivo leído correctamente:",
+            excelFileName
+        );
+
+
+        console.log(
+            "[OTIUM Excel] Encabezados:",
+            excelHeaders
+        );
+
+
+        console.log(
+            "[OTIUM Excel] Filas:",
+            excelRows.length
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "[OTIUM Excel] Error leyendo archivo Excel:",
+            error
+        );
+
+
+        excelRows = [];
+
+        excelHeaders = [];
+
+
+        const preview =
+            document.getElementById(
+                "excelPreview"
+            );
+
+
+        const status =
+            document.getElementById(
+                "excelStatus"
+            );
+
+
+        if (preview) {
+
+            preview.innerHTML =
+                `<div class="excel-error">
+                    Error al leer el archivo Excel.
+                    Revisa la consola para más información.
+                </div>`;
+
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "Error al leer el archivo Excel.";
+
+        }
+
+
+        if (
+            typeof actualizarControlesImportacion ===
+            "function"
+        ) {
+
+            actualizarControlesImportacion();
+
+        }
+
+    }
+
+}
+/* =====================================================
    OBTENER DATOS EXCEL
    Preparado para Paso 6C
 ===================================================== */
