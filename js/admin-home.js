@@ -7088,3 +7088,308 @@ function previsualizarEventoExcelOTIUM(fila) {
 }
 window.previsualizarEventoExcelOTIUM =
     previsualizarEventoExcelOTIUM;
+    /* =====================================================
+   PASO 6C.2
+   CONTROLES DE IMPORTACIÓN EXCEL
+   SOLO PREPARA EL BOTÓN
+   NO ESCRIBE EN FIRESTORE
+===================================================== */
+
+function actualizarControlesImportacion() {
+
+    console.log(
+        "[OTIUM Excel] Actualizando controles de importación..."
+    );
+
+
+    /* ---------------------------------------------
+       BUSCAR CONTENEDOR DE PREVISUALIZACIÓN
+    --------------------------------------------- */
+
+    const preview =
+        document.getElementById(
+            "excelPreview"
+        );
+
+
+    if (!preview) {
+
+        console.warn(
+            "[OTIUM Excel] No se encontró #excelPreview."
+        );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       BUSCAR / CREAR CONTENEDOR DE CONTROLES
+    --------------------------------------------- */
+
+    let controls =
+        document.getElementById(
+            "excelImportControls"
+        );
+
+
+    if (!controls) {
+
+        controls =
+            document.createElement(
+                "div"
+            );
+
+
+        controls.id =
+            "excelImportControls";
+
+
+        controls.style.marginTop =
+            "20px";
+
+
+        controls.style.padding =
+            "18px";
+
+
+        controls.style.border =
+            "1px solid #d9dee7";
+
+
+        controls.style.borderRadius =
+            "10px";
+
+
+        controls.style.background =
+            "#f8fafc";
+
+
+        preview.appendChild(
+            controls
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       LIMPIAR CONTROLES ANTERIORES
+    --------------------------------------------- */
+
+    controls.innerHTML = "";
+
+
+    /* ---------------------------------------------
+       SI NO HAY FILAS
+    --------------------------------------------- */
+
+    if (
+        !Array.isArray(excelRows) ||
+        excelRows.length === 0
+    ) {
+
+        controls.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    controls.style.display =
+        "block";
+
+
+    /* ---------------------------------------------
+       CONVERTIR FILAS
+       SIN GUARDAR EN FIRESTORE
+    --------------------------------------------- */
+
+    const eventos =
+        convertirExcelAEventosOTIUM(
+            excelRows
+        );
+
+
+    console.log(
+        "[OTIUM Excel] Eventos preparados para importación:",
+        eventos.length
+    );
+
+
+    /* ---------------------------------------------
+       MENSAJE
+    --------------------------------------------- */
+
+    const title =
+        document.createElement(
+            "div"
+        );
+
+
+    title.textContent =
+        "Eventos listos para importar";
+
+
+    title.style.fontWeight =
+        "700";
+
+
+    title.style.fontSize =
+        "16px";
+
+
+    title.style.marginBottom =
+        "8px";
+
+
+    controls.appendChild(
+        title
+    );
+
+
+    /* ---------------------------------------------
+       INFORMACIÓN
+    --------------------------------------------- */
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+
+    info.textContent =
+        `${eventos.length} eventos fueron convertidos correctamente al formato OTIUM.`;
+
+
+    info.style.marginBottom =
+        "14px";
+
+
+    info.style.color =
+        "#4b5563";
+
+
+    controls.appendChild(
+        info
+    );
+
+
+    /* ---------------------------------------------
+       BOTÓN IMPORTAR
+    --------------------------------------------- */
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.type =
+        "button";
+
+
+    button.id =
+        "excelImportButton";
+
+
+    button.textContent =
+        `📥 Importar ${eventos.length} eventos a OTIUM`;
+
+
+    button.style.padding =
+        "11px 18px";
+
+
+    button.style.border =
+        "0";
+
+
+    button.style.borderRadius =
+        "8px";
+
+
+    button.style.background =
+        "#0b1f3a";
+
+
+    button.style.color =
+        "#ffffff";
+
+
+    button.style.fontWeight =
+        "700";
+
+
+    button.style.cursor =
+        "pointer";
+
+
+    /* ---------------------------------------------
+       POR AHORA NO IMPORTA
+    --------------------------------------------- */
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            console.log(
+                "[OTIUM Excel] Botón de importación presionado."
+            );
+
+
+            console.log(
+                "[OTIUM Excel] Eventos preparados:",
+                eventos
+            );
+
+
+            alert(
+                `El sistema preparó ${eventos.length} eventos correctamente.\n\nLa escritura en Firestore se agregará en el siguiente paso.`
+            );
+
+        }
+    );
+
+
+    controls.appendChild(
+        button
+    );
+
+
+    /* ---------------------------------------------
+       INFORMACIÓN DE SEGURIDAD
+    --------------------------------------------- */
+
+    const note =
+        document.createElement(
+            "div"
+        );
+
+
+    note.textContent =
+        "ℹ️ En este paso todavía no se modifica Firestore.";
+
+
+    note.style.marginTop =
+        "12px";
+
+
+    note.style.fontSize =
+        "13px";
+
+
+    note.style.color =
+        "#6b7280";
+
+
+    controls.appendChild(
+        note
+    );
+
+
+    console.log(
+        "[OTIUM Excel] Controles de importación actualizados correctamente."
+    );
+
+}
