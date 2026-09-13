@@ -7629,7 +7629,13 @@ function actualizarControlesImportacion() {
 
         }
     );
+    /* ---------------------------------------------
+       INSERTAR BOTÓN EN LA INTERFAZ
+    --------------------------------------------- */
 
+    controls.appendChild(
+        button
+    );
     /* ---------------------------------------------
        INFORMACIÓN DE SEGURIDAD
     --------------------------------------------- */
