@@ -1,3 +1,25 @@
+/* =====================================================
+   OTIUM - DETALLE COMPLETO DEL EVENTO
+
+   VERSIÓN CORREGIDA
+   Fecha: 2026-09-13
+
+   OBJETIVOS:
+   - Mostrar correctamente el encabezado.
+   - Soportar fechaInicio + fechaTermino.
+   - Soportar eventos de un solo día.
+   - Soportar eventos de varios días.
+   - Soportar horaInicio + horaTermino.
+   - Mantener compatibilidad con fecha/hora antiguos.
+   - Mantener favoritos.
+   - Mantener compartir.
+   - Mantener organizador.
+   - Mantener mapa.
+   - Mantener enlaces.
+   - Mantener promoción.
+   - Mantener invitaciones.
+===================================================== */
+
 import {
     getEventById,
     addFavorite,
@@ -29,85 +51,138 @@ const eventId = params.get("id");
    ELEMENTOS PRINCIPALES
 ===================================================== */
 
-const eventMessage = document.getElementById("eventMessage");
-const eventLoading = document.getElementById("eventLoading");
-const eventContent = document.getElementById("eventContent");
+const eventMessage =
+    document.getElementById("eventMessage");
+
+const eventLoading =
+    document.getElementById("eventLoading");
+
+const eventContent =
+    document.getElementById("eventContent");
 
 
 /* =====================================================
    INFORMACIÓN EVENTO
 ===================================================== */
 
-const eventTitle = document.getElementById("eventTitle");
-const eventCategory = document.getElementById("eventCategory");
-const eventDate = document.getElementById("eventDate");
-const eventTime = document.getElementById("eventTime");
-const eventCity = document.getElementById("eventCity");
-const eventRegion = document.getElementById("eventRegion");
-const eventLocation = document.getElementById("eventLocation");
-const eventPrice = document.getElementById("eventPrice");
-const eventTickets = document.getElementById("eventTickets");
-const eventDescription = document.getElementById("eventDescription");
+const eventTitle =
+    document.getElementById("eventTitle");
+
+const eventCategory =
+    document.getElementById("eventCategory");
+
+const eventDate =
+    document.getElementById("eventDate");
+
+const eventTime =
+    document.getElementById("eventTime");
+
+const eventCity =
+    document.getElementById("eventCity");
+
+const eventRegion =
+    document.getElementById("eventRegion");
+
+const eventLocation =
+    document.getElementById("eventLocation");
+
+const eventPrice =
+    document.getElementById("eventPrice");
+
+const eventTickets =
+    document.getElementById("eventTickets");
+
+const eventDescription =
+    document.getElementById("eventDescription");
 
 
 /* =====================================================
    EDAD
 ===================================================== */
 
-const ageBox = document.getElementById("ageBox");
-const eventAge = document.getElementById("eventAge");
+const ageBox =
+    document.getElementById("ageBox");
+
+const eventAge =
+    document.getElementById("eventAge");
 
 
 /* =====================================================
    META
 ===================================================== */
 
-const eventDateMeta = document.getElementById("eventDateMeta");
-const eventCityMeta = document.getElementById("eventCityMeta");
+const eventDateMeta =
+    document.getElementById("eventDateMeta");
+
+const eventCityMeta =
+    document.getElementById("eventCityMeta");
 
 
 /* =====================================================
    IMAGEN
 ===================================================== */
 
-const eventImageWrap = document.getElementById("eventImageWrap");
-const eventImage = document.getElementById("eventImage");
+const eventImageWrap =
+    document.getElementById("eventImageWrap");
+
+const eventImage =
+    document.getElementById("eventImage");
 
 
 /* =====================================================
    ORGANIZADOR
 ===================================================== */
 
-const organizerSection = document.getElementById("organizerSection");
-const organizerName = document.getElementById("organizerName");
-const organizerInfo = document.getElementById("organizerInfo");
+const organizerSection =
+    document.getElementById("organizerSection");
+
+const organizerName =
+    document.getElementById("organizerName");
+
+const organizerInfo =
+    document.getElementById("organizerInfo");
 
 
 /* =====================================================
    MAPA
 ===================================================== */
 
-const mapSection = document.getElementById("mapSection");
-const eventMap = document.getElementById("eventMap");
-const mapLink = document.getElementById("mapLink");
+const mapSection =
+    document.getElementById("mapSection");
+
+const eventMap =
+    document.getElementById("eventMap");
+
+const mapLink =
+    document.getElementById("mapLink");
 
 
 /* =====================================================
    ENLACE OFICIAL
 ===================================================== */
 
-const eventLinkSection = document.getElementById("eventLinkSection");
-const eventLink = document.getElementById("eventLink");
+const eventLinkSection =
+    document.getElementById("eventLinkSection");
+
+const eventLink =
+    document.getElementById("eventLink");
 
 
 /* =====================================================
    ACCIONES
 ===================================================== */
 
-const favoriteButton = document.getElementById("favoriteButton");
-const shareButton = document.getElementById("shareButton");
-const invitationButton = document.getElementById("invitationButton");
-const promoteButton = document.getElementById("promoteButton");
+const favoriteButton =
+    document.getElementById("favoriteButton");
+
+const shareButton =
+    document.getElementById("shareButton");
+
+const invitationButton =
+    document.getElementById("invitationButton");
+
+const promoteButton =
+    document.getElementById("promoteButton");
 
 
 /* =====================================================
@@ -165,6 +240,12 @@ function firstValue(object, keys) {
 
 /* =====================================================
    FORMATEAR FECHA
+
+   Soporta:
+   YYYY-MM-DD
+   YYYY/MM/DD
+   DD/MM/YYYY
+   DD-MM-YYYY
 ===================================================== */
 
 function formatDate(value) {
@@ -172,23 +253,225 @@ function formatDate(value) {
     const text = clean(value);
 
     if (!text) {
-        return "No informada";
+        return "";
     }
+
+
+    /* -----------------------------------------------
+       YYYY-MM-DD
+    ------------------------------------------------ */
 
     if (
         /^\d{4}-\d{2}-\d{2}$/.test(text)
     ) {
 
-        const parts = text.split("-");
-
-        const year = parts[0];
-        const month = parts[1];
-        const day = parts[2];
+        const [
+            year,
+            month,
+            day
+        ] = text.split("-");
 
         return `${day}-${month}-${year}`;
     }
 
+
+    /* -----------------------------------------------
+       YYYY/MM/DD
+    ------------------------------------------------ */
+
+    if (
+        /^\d{4}\/\d{2}\/\d{2}$/.test(text)
+    ) {
+
+        const [
+            year,
+            month,
+            day
+        ] = text.split("/");
+
+        return `${day}-${month}-${year}`;
+    }
+
+
+    /* -----------------------------------------------
+       DD/MM/YYYY
+    ------------------------------------------------ */
+
+    if (
+        /^\d{2}\/\d{2}\/\d{4}$/.test(text)
+    ) {
+
+        const [
+            day,
+            month,
+            year
+        ] = text.split("/");
+
+        return `${day}-${month}-${year}`;
+    }
+
+
+    /* -----------------------------------------------
+       DD-MM-YYYY
+    ------------------------------------------------ */
+
+    if (
+        /^\d{2}-\d{2}-\d{4}$/.test(text)
+    ) {
+        return text;
+    }
+
+
     return text;
+}
+
+
+/* =====================================================
+   OBTENER FECHA DE INICIO
+===================================================== */
+
+function obtenerFechaInicio(event) {
+
+    return firstValue(
+        event,
+        [
+            "fechaInicio",
+            "fecha",
+            "date"
+        ]
+    );
+}
+
+
+/* =====================================================
+   OBTENER FECHA DE TÉRMINO
+===================================================== */
+
+function obtenerFechaTermino(event) {
+
+    const fechaTermino =
+        firstValue(
+            event,
+            [
+                "fechaTermino"
+            ]
+        );
+
+    if (fechaTermino) {
+        return fechaTermino;
+    }
+
+    return obtenerFechaInicio(event);
+}
+
+
+/* =====================================================
+   FORMATEAR RANGO DE FECHAS
+===================================================== */
+
+function formatDateRange(event) {
+
+    const fechaInicio =
+        obtenerFechaInicio(event);
+
+    const fechaTermino =
+        obtenerFechaTermino(event);
+
+    const inicio =
+        formatDate(fechaInicio);
+
+    const termino =
+        formatDate(fechaTermino);
+
+
+    if (!inicio && !termino) {
+        return "No informada";
+    }
+
+
+    if (!inicio) {
+        return termino;
+    }
+
+
+    if (!termino) {
+        return inicio;
+    }
+
+
+    /* -----------------------------------------------
+       MISMA FECHA
+    ------------------------------------------------ */
+
+    if (
+        clean(fechaInicio) ===
+        clean(fechaTermino)
+    ) {
+        return inicio;
+    }
+
+
+    /* -----------------------------------------------
+       RANGO
+    ------------------------------------------------ */
+
+    return `${inicio} al ${termino}`;
+}
+
+
+/* =====================================================
+   FORMATEAR HORARIO
+===================================================== */
+
+function formatTimeRange(event) {
+
+    const horaInicio =
+        firstValue(
+            event,
+            [
+                "horaInicio",
+                "hora",
+                "time"
+            ]
+        );
+
+    const horaTermino =
+        firstValue(
+            event,
+            [
+                "horaTermino"
+            ]
+        );
+
+
+    const inicio =
+        clean(horaInicio);
+
+    const termino =
+        clean(horaTermino);
+
+
+    if (!inicio && !termino) {
+        return "No informada";
+    }
+
+
+    if (!inicio) {
+        return termino;
+    }
+
+
+    if (!termino) {
+        return inicio;
+    }
+
+
+    if (inicio === termino) {
+        return inicio;
+    }
+
+
+    return `${inicio} - ${termino}`;
 }
 
 
@@ -205,7 +488,8 @@ function showMessage(
         return;
     }
 
-    eventMessage.textContent = text;
+    eventMessage.textContent =
+        text;
 
     eventMessage.className =
         `event-message ${type}`;
@@ -218,7 +502,8 @@ function hideMessage() {
         return;
     }
 
-    eventMessage.textContent = "";
+    eventMessage.textContent =
+        "";
 
     eventMessage.className =
         "event-message";
@@ -234,7 +519,8 @@ function renderOptionalBox(
     value
 ) {
 
-    const box = document.getElementById(boxId);
+    const box =
+        document.getElementById(boxId);
 
     if (!box) {
         return;
@@ -253,7 +539,8 @@ function renderOptionalBox(
 
 function normalizeUrl(value) {
 
-    const url = clean(value);
+    const url =
+        clean(value);
 
     if (!url) {
         return "";
@@ -275,15 +562,18 @@ function normalizeUrl(value) {
 
 function obtenerInformacionEdad(event) {
 
-    const edad = event?.edad || {};
+    const edad =
+        event?.edad || {};
 
-    let edadMinima = Number(
-        edad.edadMinima
-    );
+    let edadMinima =
+        Number(
+            edad.edadMinima
+        );
 
-    let edadMaxima = Number(
-        edad.edadMaxima
-    );
+    let edadMaxima =
+        Number(
+            edad.edadMaxima
+        );
 
 
     /* -------------------------------------------------
@@ -294,9 +584,10 @@ function obtenerInformacionEdad(event) {
         !Number.isFinite(edadMinima)
     ) {
 
-        edadMinima = Number(
-            event?.edadMinima
-        );
+        edadMinima =
+            Number(
+                event?.edadMinima
+            );
     }
 
 
@@ -304,9 +595,10 @@ function obtenerInformacionEdad(event) {
         !Number.isFinite(edadMaxima)
     ) {
 
-        edadMaxima = Number(
-            event?.edadMaxima
-        );
+        edadMaxima =
+            Number(
+                event?.edadMaxima
+            );
     }
 
 
@@ -323,7 +615,6 @@ function obtenerInformacionEdad(event) {
         !Number.isFinite(edadMinima) &&
         !Number.isFinite(edadMaxima)
     ) {
-
         return null;
     }
 
@@ -338,9 +629,14 @@ function obtenerInformacionEdad(event) {
     ) {
 
         return {
+
             tipo: "rango",
-            edadMinima: edadMinima,
-            edadMaxima: edadMaxima
+
+            edadMinima:
+                edadMinima,
+
+            edadMaxima:
+                edadMaxima
         };
     }
 
@@ -354,9 +650,14 @@ function obtenerInformacionEdad(event) {
     ) {
 
         return {
+
             tipo: "minima",
-            edadMinima: edadMinima,
-            edadMaxima: null
+
+            edadMinima:
+                edadMinima,
+
+            edadMaxima:
+                null
         };
     }
 
@@ -370,9 +671,14 @@ function obtenerInformacionEdad(event) {
     ) {
 
         return {
+
             tipo: "maxima",
-            edadMinima: null,
-            edadMaxima: edadMaxima
+
+            edadMinima:
+                null,
+
+            edadMaxima:
+                edadMaxima
         };
     }
 
@@ -385,7 +691,9 @@ function obtenerInformacionEdad(event) {
    FORMATEAR TEXTO DE EDAD
 ===================================================== */
 
-function formatearEdad(informacionEdad) {
+function formatearEdad(
+    informacionEdad
+) {
 
     if (!informacionEdad) {
         return "";
@@ -405,7 +713,6 @@ function formatearEdad(informacionEdad) {
         if (
             minimo === maximo
         ) {
-
             return `👤 ${minimo} años`;
         }
 
@@ -416,7 +723,6 @@ function formatearEdad(informacionEdad) {
     if (
         informacionEdad.tipo === "minima"
     ) {
-
         return `👤 Desde ${minimo} años`;
     }
 
@@ -424,7 +730,6 @@ function formatearEdad(informacionEdad) {
     if (
         informacionEdad.tipo === "maxima"
     ) {
-
         return `👤 Hasta ${maximo} años`;
     }
 
@@ -481,28 +786,25 @@ function renderEvent(event) {
         );
 
 
-    const fecha =
-        formatDate(
-            firstValue(
-                event,
-                [
-                    "fecha",
-                    "date"
-                ]
-            )
-        );
+    /* =================================================
+       FECHAS NUEVAS
+    ================================================= */
 
+    const fecha =
+        formatDateRange(event);
+
+
+    /* =================================================
+       HORARIOS NUEVOS
+    ================================================= */
 
     const hora =
-        firstValue(
-            event,
-            [
-                "hora",
-                "time"
-            ]
-        ) ||
-        "No informada";
+        formatTimeRange(event);
 
+
+    /* =================================================
+       CIUDAD
+    ================================================= */
 
     const ciudad =
         firstValue(
@@ -515,6 +817,10 @@ function renderEvent(event) {
         "No informada";
 
 
+    /* =================================================
+       REGIÓN
+    ================================================= */
+
     const region =
         firstValue(
             event,
@@ -525,6 +831,10 @@ function renderEvent(event) {
         ) ||
         "No informada";
 
+
+    /* =================================================
+       UBICACIÓN
+    ================================================= */
 
     const ubicacion =
         firstValue(
@@ -540,6 +850,10 @@ function renderEvent(event) {
         "No informada";
 
 
+    /* =================================================
+       DESCRIPCIÓN
+    ================================================= */
+
     const descripcion =
         firstValue(
             event,
@@ -551,6 +865,10 @@ function renderEvent(event) {
         "Este evento no tiene una descripción disponible.";
 
 
+    /* =================================================
+       PRECIO
+    ================================================= */
+
     const precio =
         firstValue(
             event,
@@ -561,12 +879,17 @@ function renderEvent(event) {
         );
 
 
+    /* =================================================
+       ENTRADAS
+    ================================================= */
+
     const entradas =
         firstValue(
             event,
             [
                 "entradas",
-                "tickets"
+                "tickets",
+                "linkEntradas"
             ]
         );
 
@@ -633,9 +956,7 @@ function renderEvent(event) {
                 "eventLink",
                 "eventUrl",
                 "link",
-                "url",
-                "ticketsUrl",
-                "linkEntradas"
+                "url"
             ]
         );
 
@@ -693,6 +1014,41 @@ function renderEvent(event) {
 
 
     /* =================================================
+       DATOS DE DIAGNÓSTICO
+    ================================================= */
+
+    console.log(
+        "OTIUM - Fecha inicio:",
+        event.fechaInicio
+    );
+
+    console.log(
+        "OTIUM - Fecha término:",
+        event.fechaTermino
+    );
+
+    console.log(
+        "OTIUM - Fecha mostrada:",
+        fecha
+    );
+
+    console.log(
+        "OTIUM - Hora inicio:",
+        event.horaInicio
+    );
+
+    console.log(
+        "OTIUM - Hora término:",
+        event.horaTermino
+    );
+
+    console.log(
+        "OTIUM - Hora mostrada:",
+        hora
+    );
+
+
+    /* =================================================
        TÍTULO
     ================================================= */
 
@@ -701,6 +1057,7 @@ function renderEvent(event) {
 
 
     if (eventTitle) {
+
         eventTitle.textContent =
             nombre;
     }
@@ -721,9 +1078,14 @@ function renderEvent(event) {
 
     /* =================================================
        FECHA
+
+       Se utiliza la nueva fechaInicio /
+       fechaTermino y se mantiene compatibilidad
+       con fecha antigua.
     ================================================= */
 
     if (eventDate) {
+
         eventDate.textContent =
             fecha;
     }
@@ -982,6 +1344,7 @@ function renderEvent(event) {
                     clean(organizerEmail)
                         .replace(/"/g, "");
 
+
                 organizerInfo.innerHTML =
                     `Contacto: <a href="mailto:${encodeURIComponent(safeEmail)}">${safeEmail}</a>`;
 
@@ -1175,6 +1538,7 @@ async function loadEvent() {
                 "none";
         }
 
+
         showMessage(
             "No se recibió el ID del evento.",
             "error"
@@ -1205,6 +1569,7 @@ async function loadEvent() {
                 eventLoading.style.display =
                     "none";
             }
+
 
             showMessage(
                 "No se encontró el evento.",
@@ -1463,10 +1828,15 @@ async function shareEvent() {
         ) {
 
             await navigator.share({
-                title: title,
+
+                title:
+                    title,
+
                 text:
                     `Mira este evento en OTIUM: ${title}`,
-                url: url
+
+                url:
+                    url
             });
 
             return;
@@ -1649,4 +2019,3 @@ onAuthStateChanged(
 ===================================================== */
 
 loadEvent();
-
