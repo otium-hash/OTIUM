@@ -7213,8 +7213,8 @@ function actualizarControlesImportacion() {
 
     console.log(
         "[OTIUM Excel] Eventos preparados para importación:",
-        eventos.length
-    );
+        eventos
+            );
 
 
     /* ---------------------------------------------
