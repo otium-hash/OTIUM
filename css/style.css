@@ -128,12 +128,6 @@ header {
 
     margin: 0 auto;
 
-    /*
-       5px arriba/abajo permite utilizar
-       un logo de 80px sin aumentar
-       la altura total de 90px.
-    */
-
     padding:
         5px 40px;
 
@@ -1894,11 +1888,6 @@ footer small {
 
     .navbar {
 
-        /*
-           Se mantiene exactamente
-           la altura de 90px.
-        */
-
         height: var(--otium-header-height);
 
         min-height:
@@ -1956,7 +1945,7 @@ footer small {
 
 
     /*
-       Logo aumentado a 68px.
+       Logo de 68px.
 
        68px + 10px de padding vertical
        = 78px exactos.
@@ -2019,18 +2008,34 @@ footer small {
 
     /* ===================================
        HOME - CORRECCIÓN POSICIÓN MÓVIL
-    =================================== */
+       ===================================
+
+       Se elimina min-height: 100vh
+       solamente en móvil para evitar
+       que el Home fuerce una altura
+       innecesaria.
+
+       El padding superior se reduce
+       para subir el carrusel.
+
+       NO se modifica la proporción
+       de las imágenes del carrusel.
+    */
 
     .hero {
 
+        min-height: auto;
+
         padding:
-            80px 15px 40px;
+            25px 15px 40px;
+
+        align-items: flex-start;
     }
 
 
     .hero-tools {
 
-        margin-top: 40px;
+        margin-top: 20px;
     }
 
 
