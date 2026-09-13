@@ -5201,14 +5201,23 @@ function normalizeExcelHeader(value) {
 
 
 /* =====================================================
-   NORMALIZAR VALOR EXCEL
+   NORMALIZAR VALORES EXCEL
+   OTIUM
+   Fechas  → YYYY-MM-DD
+   Horas   → HH:MM
 ===================================================== */
 
-function normalizeExcelValue(value) {
+
+/* =====================================================
+   NORMALIZAR FECHA EXCEL
+===================================================== */
+
+function normalizarFechaExcel(value) {
 
     if (
         value === null ||
-        value === undefined
+        value === undefined ||
+        value === ""
     ) {
 
         return "";
@@ -5216,9 +5225,9 @@ function normalizeExcelValue(value) {
     }
 
 
-    /*
-       Fechas reconocidas por SheetJS.
-    */
+    /* ---------------------------------------------
+       Excel / SheetJS entrega Date
+    --------------------------------------------- */
 
     if (
         value instanceof Date
@@ -5234,19 +5243,680 @@ function normalizeExcelValue(value) {
 
         }
 
-        return value;
+
+        const year =
+            value
+                .getFullYear();
+
+
+        const month =
+            String(
+                value.getMonth() + 1
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        const day =
+            String(
+                value.getDate()
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        return (
+            `${year}-${month}-${day}`
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       Número serial de Excel
+    --------------------------------------------- */
+
+    if (
+        typeof value === "number" &&
+        Number.isFinite(value)
+    ) {
+
+        if (
+            value >= 1 &&
+            value < 2958466
+        ) {
+
+            try {
+
+                const parsed =
+                    XLSX.SSF.parse_date_code(
+                        value
+                    );
+
+
+                if (
+                    parsed &&
+                    parsed.y &&
+                    parsed.m &&
+                    parsed.d
+                ) {
+
+                    return (
+                        `${String(parsed.y).padStart(4, "0")}-` +
+                        `${String(parsed.m).padStart(2, "0")}-` +
+                        `${String(parsed.d).padStart(2, "0")}`
+                    );
+
+                }
+
+            }
+
+            catch {
+
+                // Continúa con los otros formatos.
+
+            }
+
+        }
+
+    }
+
+
+    const text =
+        String(
+            value
+        )
+        .trim();
+
+
+    if (!text) {
+
+        return "";
+
+    }
+
+
+    /* ---------------------------------------------
+       DD-MM-YYYY
+       DD/MM/YYYY
+       DD.MM.YYYY
+    --------------------------------------------- */
+
+    let match =
+        text.match(
+            /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/
+        );
+
+
+    if (match) {
+
+        const day =
+            String(
+                Number(
+                    match[1]
+                )
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        const month =
+            String(
+                Number(
+                    match[2]
+                )
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        const year =
+            match[3];
+
+
+        return (
+            `${year}-${month}-${day}`
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       YYYY-MM-DD
+       YYYY/MM/DD
+       YYYY.MM.DD
+    --------------------------------------------- */
+
+    match =
+        text.match(
+            /^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/
+        );
+
+
+    if (match) {
+
+        const year =
+            match[1];
+
+
+        const month =
+            String(
+                Number(
+                    match[2]
+                )
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        const day =
+            String(
+                Number(
+                    match[3]
+                )
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        return (
+            `${year}-${month}-${day}`
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       Serial Excel recibido como texto
+    --------------------------------------------- */
+
+    if (
+        /^\d+(?:\.\d+)?$/.test(
+            text
+        )
+    ) {
+
+        const numericValue =
+            Number(
+                text
+            );
+
+
+        if (
+            numericValue >= 1 &&
+            numericValue < 2958466
+        ) {
+
+            try {
+
+                const parsed =
+                    XLSX.SSF.parse_date_code(
+                        numericValue
+                    );
+
+
+                if (
+                    parsed &&
+                    parsed.y &&
+                    parsed.m &&
+                    parsed.d
+                ) {
+
+                    return (
+                        `${String(parsed.y).padStart(4, "0")}-` +
+                        `${String(parsed.m).padStart(2, "0")}-` +
+                        `${String(parsed.d).padStart(2, "0")}`
+                    );
+
+                }
+
+            }
+
+            catch {
+
+                // No se pudo interpretar.
+
+            }
+
+        }
 
     }
 
 
     /*
-       Algunos valores pueden
-       venir como objetos.
+       Si no corresponde a ningún
+       formato conocido, conserva
+       el texto original.
     */
 
+    return text;
+
+}
+
+
+/* =====================================================
+   NORMALIZAR HORA EXCEL
+===================================================== */
+
+function normalizarHoraExcel(value) {
+
     if (
-        typeof value ===
-        "object"
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+
+    /* ---------------------------------------------
+       Excel / SheetJS entrega Date
+    --------------------------------------------- */
+
+    if (
+        value instanceof Date
+    ) {
+
+        if (
+            isNaN(
+                value.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        const hours =
+            String(
+                value.getHours()
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        const minutes =
+            String(
+                value.getMinutes()
+            )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+        return (
+            `${hours}:${minutes}`
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       Excel representa horas como
+       fracción de un día.
+
+       Ejemplo:
+       0.5     = 12:00
+       0.8125  = 19:30
+    --------------------------------------------- */
+
+    if (
+        typeof value === "number" &&
+        Number.isFinite(value)
+    ) {
+
+        if (
+            value >= 0 &&
+            value < 1
+        ) {
+
+            let totalMinutes =
+                Math.round(
+                    value *
+                    24 *
+                    60
+                );
+
+
+            totalMinutes =
+                totalMinutes % 1440;
+
+
+            const hours =
+                String(
+                    Math.floor(
+                        totalMinutes / 60
+                    )
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            const minutes =
+                String(
+                    totalMinutes % 60
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            return (
+                `${hours}:${minutes}`
+            );
+
+        }
+
+    }
+
+
+    const text =
+        String(
+            value
+        )
+        .trim();
+
+
+    if (!text) {
+
+        return "";
+
+    }
+
+
+    /* ---------------------------------------------
+       HH:MM
+       HH:MM:SS
+    --------------------------------------------- */
+
+    let match =
+        text.match(
+            /^(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/
+        );
+
+
+    if (match) {
+
+        const hours =
+            Number(
+                match[1]
+            );
+
+
+        const minutes =
+            Number(
+                match[2]
+            );
+
+
+        if (
+            hours >= 0 &&
+            hours <= 23 &&
+            minutes >= 0 &&
+            minutes <= 59
+        ) {
+
+            return (
+                `${String(hours).padStart(2, "0")}:` +
+                `${String(minutes).padStart(2, "0")}`
+            );
+
+        }
+
+    }
+
+
+    /* ---------------------------------------------
+       AM / PM
+    --------------------------------------------- */
+
+    match =
+        text.match(
+            /^(\d{1,2}):(\d{1,2})(?::\d{1,2})?\s*(AM|PM)$/i
+        );
+
+
+    if (match) {
+
+        let hours =
+            Number(
+                match[1]
+            );
+
+
+        const minutes =
+            Number(
+                match[2]
+            );
+
+
+        const period =
+            match[3]
+                .toUpperCase();
+
+
+        if (
+            hours >= 1 &&
+            hours <= 12 &&
+            minutes >= 0 &&
+            minutes <= 59
+        ) {
+
+            if (
+                period === "AM" &&
+                hours === 12
+            ) {
+
+                hours = 0;
+
+            }
+
+
+            if (
+                period === "PM" &&
+                hours !== 12
+            ) {
+
+                hours += 12;
+
+            }
+
+
+            return (
+                `${String(hours).padStart(2, "0")}:` +
+                `${String(minutes).padStart(2, "0")}`
+            );
+
+        }
+
+    }
+
+
+    /* ---------------------------------------------
+       Fracción Excel recibida como texto
+    --------------------------------------------- */
+
+    if (
+        /^\d+(?:\.\d+)?$/.test(
+            text
+        )
+    ) {
+
+        const numericValue =
+            Number(
+                text
+            );
+
+
+        if (
+            numericValue >= 0 &&
+            numericValue < 1
+        ) {
+
+            let totalMinutes =
+                Math.round(
+                    numericValue *
+                    24 *
+                    60
+                );
+
+
+            totalMinutes =
+                totalMinutes % 1440;
+
+
+            const hours =
+                String(
+                    Math.floor(
+                        totalMinutes / 60
+                    )
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            const minutes =
+                String(
+                    totalMinutes % 60
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            return (
+                `${hours}:${minutes}`
+            );
+
+        }
+
+    }
+
+
+    return text;
+
+}
+
+
+/* =====================================================
+   NORMALIZAR VALOR EXCEL
+===================================================== */
+
+function normalizeExcelValue(
+    value,
+    header = ""
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    const field =
+        String(
+            header || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    /* ---------------------------------------------
+       CAMPOS DE FECHA
+    --------------------------------------------- */
+
+    if (
+        field === "fechainicio" ||
+        field === "fechatermino" ||
+        field === "date"
+    ) {
+
+        return (
+            normalizarFechaExcel(
+                value
+            )
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       CAMPOS DE HORA
+    --------------------------------------------- */
+
+    if (
+        field === "horainicio" ||
+        field === "horatermino" ||
+        field === "time"
+    ) {
+
+        return (
+            normalizarHoraExcel(
+                value
+            )
+        );
+
+    }
+
+
+    /* ---------------------------------------------
+       OTROS Date
+    --------------------------------------------- */
+
+    if (
+        value instanceof Date
+    ) {
+
+        if (
+            isNaN(
+                value.getTime()
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        return value;
+
+    }
+
+
+    /* ---------------------------------------------
+       OBJETOS
+    --------------------------------------------- */
+
+    if (
+        typeof value === "object"
     ) {
 
         try {
@@ -5270,7 +5940,8 @@ function normalizeExcelValue(value) {
 
     return String(
         value
-    ).trim();
+    )
+    .trim();
 
 }
 
@@ -5278,737 +5949,6 @@ function normalizeExcelValue(value) {
 /* =====================================================
    LEER ARCHIVO EXCEL
 ===================================================== */
-
-async function readExcelFile(
-    file
-) {
-
-    if (!file) {
-
-        throw new Error(
-            "No se seleccionó ningún archivo."
-        );
-
-    }
-
-
-    const fileName =
-        String(
-            file.name ||
-            ""
-        ).trim();
-
-
-    const extension =
-        fileName
-            .split(".")
-            .pop()
-            .toLowerCase();
-
-
-    if (
-        extension !== "xlsx" &&
-        extension !== "xls"
-    ) {
-
-        throw new Error(
-            "El archivo debe ser Excel .xlsx o .xls."
-        );
-
-    }
-
-
-    const arrayBuffer =
-        await file.arrayBuffer();
-
-
-    const workbook =
-        XLSX.read(
-            arrayBuffer,
-            {
-                type: "array",
-                cellDates: true
-            }
-        );
-
-
-    if (
-        !workbook.SheetNames ||
-        !workbook.SheetNames.length
-    ) {
-
-        throw new Error(
-            "El archivo Excel no contiene hojas."
-        );
-
-    }
-
-
-    /*
-       Por ahora utilizamos
-       solamente la primera hoja.
-    */
-
-    const sheetName =
-        workbook.SheetNames[0];
-
-
-    const worksheet =
-        workbook.Sheets[
-            sheetName
-        ];
-
-
-    if (!worksheet) {
-
-        throw new Error(
-            "No fue posible leer la primera hoja del Excel."
-        );
-
-    }
-
-
-    /*
-       Convertimos la hoja en
-       una matriz.
-
-       header: 1
-       permite conservar
-       exactamente la estructura
-       de filas y columnas.
-    */
-
-    const matrix =
-        XLSX.utils.sheet_to_json(
-            worksheet,
-            {
-                header: 1,
-                defval: "",
-                raw: true
-            }
-        );
-
-
-    if (
-        !Array.isArray(
-            matrix
-        ) ||
-        !matrix.length
-    ) {
-
-        throw new Error(
-            "La hoja Excel está vacía."
-        );
-
-    }
-
-
-    /*
-       Primera fila =
-       encabezados.
-    */
-
-    const rawHeaders =
-        matrix[0] || [];
-
-
-    const headers =
-        rawHeaders.map(
-            value =>
-                String(
-                    value ??
-                    ""
-                ).trim()
-        );
-
-
-    /*
-       Eliminar columnas
-       completamente vacías
-       del encabezado.
-    */
-
-    const validColumnIndexes =
-        headers
-            .map(
-                (
-                    header,
-                    index
-                ) => ({
-                    header,
-                    index
-                })
-            )
-            .filter(
-                item =>
-                    item.header !== ""
-            );
-
-
-    if (
-        !validColumnIndexes.length
-    ) {
-
-        throw new Error(
-            "No se encontraron encabezados en la primera fila del Excel."
-        );
-
-    }
-
-
-    const cleanHeaders =
-        validColumnIndexes.map(
-            item =>
-                item.header
-        );
-
-
-    /*
-       Convertir filas en objetos.
-    */
-
-    const rows = [];
-
-
-    for (
-        let rowIndex = 1;
-        rowIndex < matrix.length;
-        rowIndex++
-    ) {
-
-        const row =
-            matrix[rowIndex] || [];
-
-
-        /*
-           Ignorar filas completamente
-           vacías.
-        */
-
-        const hasData =
-            validColumnIndexes.some(
-                item => {
-
-                    const value =
-                        row[
-                            item.index
-                        ];
-
-                    return (
-                        value !==
-                            null &&
-                        value !==
-                            undefined &&
-                        String(
-                            value
-                        ).trim() !==
-                            ""
-                    );
-
-                }
-            );
-
-
-        if (!hasData) {
-
-            continue;
-
-        }
-
-
-        const object = {};
-
-
-        validColumnIndexes.forEach(
-            item => {
-
-                object[
-                    item.header
-                ] =
-                    normalizeExcelValue(
-                        row[
-                            item.index
-                        ]
-                    );
-
-            }
-        );
-
-
-        rows.push(
-            object
-        );
-
-    }
-
-
-    /*
-       Guardar en memoria.
-    */
-
-    excelHeaders =
-        cleanHeaders;
-
-    excelRows =
-        rows;
-
-    excelFileName =
-        fileName;
-
-
-    return {
-
-        fileName,
-
-        sheetName,
-
-        headers:
-            excelHeaders,
-
-        rows:
-            excelRows,
-
-        totalRows:
-            excelRows.length,
-
-        totalColumns:
-            excelHeaders.length
-
-    };
-
-}
-
-
-/* =====================================================
-   FORMATEAR VALOR PARA PREVIEW
-===================================================== */
-
-function formatExcelPreviewValue(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    if (
-        value instanceof Date
-    ) {
-
-        if (
-            isNaN(
-                value.getTime()
-            )
-        ) {
-
-            return "";
-
-        }
-
-        return new Intl.DateTimeFormat(
-            "es-CL",
-            {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            }
-        ).format(
-            value
-        );
-
-    }
-
-
-    return String(
-        value
-    );
-
-}
-
-
-/* =====================================================
-   RENDER PREVISUALIZACIÓN EXCEL
-===================================================== */
-
-function renderExcelPreview(
-    result
-) {
-
-    const preview =
-        document.getElementById(
-            "excelPreview"
-        );
-
-
-    const status =
-        document.getElementById(
-            "excelStatus"
-        );
-
-
-    if (status) {
-
-        status.textContent =
-            `Archivo: ${result.fileName} · ` +
-            `Hoja: ${result.sheetName} · ` +
-            `${result.totalRows} filas · ` +
-            `${result.totalColumns} columnas`;
-
-    }
-
-
-    if (!preview) {
-
-        return;
-
-    }
-
-
-    const previewRows =
-        result.rows.slice(
-            0,
-            20
-        );
-
-
-    let html = `
-
-        <div class="excel-preview-summary">
-
-            <strong>
-                ${esc(
-                    result.fileName
-                )}
-            </strong>
-
-            <span>
-                Hoja:
-                ${esc(
-                    result.sheetName
-                )}
-            </span>
-
-            <span>
-                ${result.totalRows}
-                registros
-            </span>
-
-            <span>
-                ${result.totalColumns}
-                columnas
-            </span>
-
-        </div>
-
-    `;
-
-
-    if (
-        !previewRows.length
-    ) {
-
-        html += `
-
-            <div class="admin-empty">
-
-                No hay registros
-                para mostrar.
-
-            </div>
-
-        `;
-
-        preview.innerHTML =
-            html;
-
-        return;
-
-    }
-
-
-    html += `
-
-        <div class="excel-preview-table-wrap">
-
-            <table
-                class="excel-preview-table"
-            >
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            #
-                        </th>
-
-                        ${
-                            result.headers
-                                .map(
-                                    header => `
-                                        <th>
-                                            ${esc(
-                                                header
-                                            )}
-                                        </th>
-                                    `
-                                )
-                                .join("")
-                        }
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-    `;
-
-
-    previewRows.forEach(
-        (
-            row,
-            index
-        ) => {
-
-            html += `
-
-                <tr>
-
-                    <td>
-                        ${index + 1}
-                    </td>
-
-                    ${
-                        result.headers
-                            .map(
-                                header => {
-
-                                    const value =
-                                        row[
-                                            header
-                                        ];
-
-                                    return `
-
-                                        <td>
-
-                                            ${esc(
-                                                formatExcelPreviewValue(
-                                                    value
-                                                )
-                                            )}
-
-                                        </td>
-
-                                    `;
-
-                                }
-                            )
-                            .join("")
-                    }
-
-                </tr>
-
-            `;
-
-        }
-    );
-
-
-    html += `
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    `;
-
-
-    if (
-        result.totalRows >
-        20
-    ) {
-
-        html += `
-
-            <div class="excel-preview-note">
-
-                Mostrando los primeros
-                20 registros de
-                ${result.totalRows}.
-
-            </div>
-
-        `;
-
-    }
-
-
-    preview.innerHTML =
-        html;
-
-}
-
-
-/* =====================================================
-   CAMBIO DE ARCHIVO EXCEL
-===================================================== */
-
-async function handleExcelFileChange(
-    event
-) {
-
-    const file =
-        event.target?.files?.[0];
-
-
-    const preview =
-        document.getElementById(
-            "excelPreview"
-        );
-
-
-    const status =
-        document.getElementById(
-            "excelStatus"
-        );
-
-
-    if (!file) {
-
-        excelRows =
-            [];
-
-        excelHeaders =
-            [];
-
-        excelFileName =
-            "";
-
-
-        if (status) {
-
-            status.textContent =
-                "No hay archivo seleccionado.";
-
-        }
-
-
-        if (preview) {
-
-            preview.innerHTML =
-                "";
-
-        }
-
-        return;
-
-    }
-
-
-    if (status) {
-
-        status.textContent =
-            "Leyendo archivo Excel...";
-
-    }
-
-
-    if (preview) {
-
-        preview.innerHTML =
-            "";
-
-    }
-
-
-    try {
-
-        const result =
-            await readExcelFile(
-                file
-            );
-
-
-        renderExcelPreview(
-            result
-        );
-
-
-        if (status) {
-
-            status.textContent =
-                `Excel leído correctamente: ` +
-                `${result.totalRows} registros encontrados.`;
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Error leyendo Excel:",
-            error
-        );
-
-
-        excelRows =
-            [];
-
-        excelHeaders =
-            [];
-
-        excelFileName =
-            "";
-
-
-        if (status) {
-
-            status.textContent =
-                error?.message ||
-                "No fue posible leer el archivo Excel.";
-
-        }
-
-
-        if (preview) {
-
-            preview.innerHTML = `
-
-                <div class="admin-empty">
-
-                    <strong>
-                        Error al leer Excel
-                    </strong>
-
-                    <br><br>
-
-                    ${esc(
-                        error?.message ||
-                        "No fue posible leer el archivo."
-                    )}
-
-                </div>
-
-            `;
-
-        }
-
-    }
-
-}
-
-
 /* =====================================================
    VINCULAR LECTOR EXCEL
 ===================================================== */
