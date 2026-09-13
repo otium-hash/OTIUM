@@ -6940,51 +6940,6 @@ function convertirFilaExcelAEventoOTIUM(fila) {
 
 
         // ---------------------------------------------
-        // CAMPOS COMPATIBLES CON OTIUM
-        // ---------------------------------------------
-
-        title: limpiarValorExcel(
-            fila.nombre
-        ),
-
-        category: limpiarValorExcel(
-            fila.categoria
-        ),
-
-        date: limpiarValorExcel(
-            fila.fechaInicio
-        ),
-
-        time: limpiarValorExcel(
-            fila.horaInicio
-        ),
-
-        city: limpiarValorExcel(
-            fila.ciudad
-        ),
-
-        address: limpiarValorExcel(
-            fila.direccion
-        ),
-
-        location: limpiarValorExcel(
-            fila.lugar
-        ),
-
-        description: limpiarValorExcel(
-            fila.descripcion
-        ),
-
-        price: limpiarValorExcel(
-            fila.precio
-        ),
-
-        tickets: limpiarValorExcel(
-            fila.linkEntradas
-        ),
-
-
-        // ---------------------------------------------
         // ESTADO DE IMPORTACIÓN
         // ---------------------------------------------
 
