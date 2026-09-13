@@ -6503,7 +6503,300 @@ onAuthStateChanged(
     }
 
 );
+/* =====================================================
+   PREVISUALIZACIÓN EXCEL
+   PASO 6B
+   SOLO MUESTRA LOS DATOS LEÍDOS
+   NO GUARDA EN FIRESTORE
+===================================================== */
 
+async function renderExcelPreview(result) {
+
+    console.log(
+        "[OTIUM Excel] Generando previsualización..."
+    );
+
+    const preview =
+        document.getElementById(
+            "excelPreview"
+        );
+
+    if (!preview) {
+
+        console.warn(
+            "[OTIUM Excel] No se encontró #excelPreview."
+        );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       OBTENER FILAS
+    --------------------------------------------- */
+
+    let rows = [];
+
+
+    if (
+        result &&
+        Array.isArray(result.rows)
+    ) {
+
+        rows = result.rows;
+
+    }
+
+    else if (
+        Array.isArray(result)
+    ) {
+
+        rows = result;
+
+    }
+
+    else if (
+        Array.isArray(excelRows)
+    ) {
+
+        rows = excelRows;
+
+    }
+
+
+    /* ---------------------------------------------
+       GUARDAR FILAS
+    --------------------------------------------- */
+
+    excelRows = [
+        ...rows
+    ];
+
+
+    /* ---------------------------------------------
+       OBTENER ENCABEZADOS
+    --------------------------------------------- */
+
+    if (
+        excelRows.length > 0
+    ) {
+
+        excelHeaders =
+            Object.keys(
+                excelRows[0]
+            );
+
+    }
+
+    else {
+
+        excelHeaders = [];
+
+    }
+
+
+    console.log(
+        "[OTIUM Excel] Previsualización:",
+        excelRows.length,
+        "filas"
+    );
+
+
+    console.log(
+        "[OTIUM Excel] Encabezados detectados:",
+        excelHeaders
+    );
+
+
+    /* ---------------------------------------------
+       SI NO HAY DATOS
+    --------------------------------------------- */
+
+    if (
+        excelRows.length === 0
+    ) {
+
+        preview.innerHTML = `
+            <div class="excel-empty">
+                El archivo Excel no contiene registros.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       CONSTRUIR TABLA
+    --------------------------------------------- */
+
+    const maxRows = Math.min(
+        excelRows.length,
+        10
+    );
+
+
+    let html = `
+        <div class="excel-preview-wrapper">
+
+            <div class="excel-preview-title">
+                Vista previa de los eventos
+            </div>
+
+            <div class="excel-preview-info">
+                Mostrando ${maxRows} de ${excelRows.length} registros.
+            </div>
+
+            <div class="excel-preview-table-container">
+
+                <table class="excel-preview-table">
+
+                    <thead>
+                        <tr>
+    `;
+
+
+    excelHeaders.forEach(
+        header => {
+
+            html += `
+                <th>
+                    ${escapeHtmlExcel(header)}
+                </th>
+            `;
+
+        }
+    );
+
+
+    html += `
+                        </tr>
+                    </thead>
+
+                    <tbody>
+    `;
+
+
+    for (
+        let i = 0;
+        i < maxRows;
+        i++
+    ) {
+
+        const row =
+            excelRows[i];
+
+
+        html += `
+            <tr>
+        `;
+
+
+        excelHeaders.forEach(
+            header => {
+
+                const value =
+                    row[header] !== undefined &&
+                    row[header] !== null
+                        ? row[header]
+                        : "";
+
+
+                html += `
+                    <td>
+                        ${escapeHtmlExcel(value)}
+                    </td>
+                `;
+
+            }
+        );
+
+
+        html += `
+            </tr>
+        `;
+
+    }
+
+
+    html += `
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    `;
+
+
+    preview.innerHTML =
+        html;
+
+
+    /* ---------------------------------------------
+       ACTUALIZAR CONTROLES DE IMPORTACIÓN
+    --------------------------------------------- */
+
+    if (
+        typeof actualizarControlesImportacion ===
+        "function"
+    ) {
+
+        actualizarControlesImportacion();
+
+    }
+
+
+    console.log(
+        "[OTIUM Excel] Previsualización generada correctamente."
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPAR HTML
+   Evita insertar directamente contenido del Excel
+===================================================== */
+
+function escapeHtmlExcel(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(valor)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 /* =====================================================
    PASO 6C.1
    CONVERSIÓN EXCEL → FORMATO OTIUM
