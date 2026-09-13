@@ -309,7 +309,35 @@ export async function getEvents() {
         EVENTOS_COLLECTION
     );
 
-    const q = query(
+
+    /* -----------------------------------------------------
+       OTIUM ACTUAL
+       
+       Un evento sigue vigente mientras su
+       fechaTermino sea hoy o posterior.
+       
+       Esto permite mostrar eventos de varios días
+       aunque hayan comenzado antes de hoy.
+    ----------------------------------------------------- */
+
+    const qFechaTermino = query(
+        eventosRef,
+        where(
+            "fechaTermino",
+            ">=",
+            fechaActual
+        )
+    );
+
+
+    /* -----------------------------------------------------
+       COMPATIBILIDAD CON EVENTOS ANTIGUOS
+       
+       Algunos eventos antiguos pueden utilizar
+       solamente el campo "fecha".
+    ----------------------------------------------------- */
+
+    const qFechaAntigua = query(
         eventosRef,
         where(
             "fecha",
@@ -318,11 +346,75 @@ export async function getEvents() {
         )
     );
 
-    const snapshot = await getDocs(q);
 
-    return snapshot.docs.map(
-        mapearEvento
+    /* -----------------------------------------------------
+       EJECUTAR AMBAS CONSULTAS
+    ----------------------------------------------------- */
+
+    const [
+        snapshotFechaTermino,
+        snapshotFechaAntigua
+    ] = await Promise.all([
+        getDocs(qFechaTermino),
+        getDocs(qFechaAntigua)
+    ]);
+
+
+    /* -----------------------------------------------------
+       UNIFICAR RESULTADOS
+       
+       Evita duplicados si algún documento tuviera
+       tanto fechaTermino como fecha.
+    ----------------------------------------------------- */
+
+    const eventos = [];
+
+    const ids = new Set();
+
+
+    /* -----------------------------------------------------
+       EVENTOS NUEVOS
+       
+       Utilizan fechaTermino.
+    ----------------------------------------------------- */
+
+    snapshotFechaTermino.docs.forEach(
+        docSnap => {
+
+            if (!ids.has(docSnap.id)) {
+
+                ids.add(docSnap.id);
+
+                eventos.push(
+                    mapearEvento(docSnap)
+                );
+            }
+        }
     );
+
+
+    /* -----------------------------------------------------
+       EVENTOS ANTIGUOS
+       
+       Utilizan fecha.
+    ----------------------------------------------------- */
+
+    snapshotFechaAntigua.docs.forEach(
+        docSnap => {
+
+            if (!ids.has(docSnap.id)) {
+
+                ids.add(docSnap.id);
+
+                eventos.push(
+                    mapearEvento(docSnap)
+                );
+            }
+        }
+    );
+
+
+    return eventos;
 }
 
 
