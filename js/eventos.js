@@ -16,7 +16,15 @@
    Acceso
       Gratis / Con costo
 
-   Compatible con campos antiguos y nuevos.
+   FECHAS:
+      fechaInicio
+      fechaTermino
+
+   Compatibilidad:
+      Campos nuevos + campos antiguos.
+
+   VERSIÓN:
+      2026-09-13
 ===================================================== */
 
 import {
@@ -124,7 +132,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Teatro": [
         "Obra de teatro",
         "Musical",
@@ -135,7 +142,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Danza": [
         "Ballet",
         "Danza contemporánea",
@@ -144,7 +150,6 @@ const SUBCATEGORIAS = {
         "Danza moderna",
         "Otro"
     ],
-
 
     "Cine": [
         "Película",
@@ -155,7 +160,6 @@ const SUBCATEGORIAS = {
         "Documental",
         "Otro"
     ],
-
 
     "Arte": [
         "Exposición",
@@ -168,7 +172,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Cultura": [
         "Charla",
         "Encuentro cultural",
@@ -179,7 +182,6 @@ const SUBCATEGORIAS = {
         "Tradiciones",
         "Otro"
     ],
-
 
     "Deportes": [
         "Competencia",
@@ -192,7 +194,6 @@ const SUBCATEGORIAS = {
         "Actividad deportiva",
         "Otro"
     ],
-
 
     "Fiestas y celebraciones": [
         "Cumpleaños",
@@ -210,7 +211,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Vida nocturna": [
         "Fiesta",
         "Club",
@@ -221,7 +221,6 @@ const SUBCATEGORIAS = {
         "Noche temática",
         "Otro"
     ],
-
 
     "Gastronomía": [
         "Festival gastronómico",
@@ -235,7 +234,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Familiar": [
         "Actividad infantil",
         "Panorama familiar",
@@ -246,7 +244,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Ferias y mercados": [
         "Feria artesanal",
         "Feria comercial",
@@ -256,7 +253,6 @@ const SUBCATEGORIAS = {
         "Feria de productos",
         "Otro"
     ],
-
 
     "Negocios y empresas": [
         "Congreso",
@@ -272,7 +268,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Educación y formación": [
         "Curso",
         "Taller",
@@ -285,7 +280,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Comunidad": [
         "Encuentro comunitario",
         "Actividad social",
@@ -297,7 +291,6 @@ const SUBCATEGORIAS = {
         "Otro"
     ],
 
-
     "Institucional": [
         "Ceremonia",
         "Celebración",
@@ -307,7 +300,6 @@ const SUBCATEGORIAS = {
         "Aniversario institucional",
         "Otro"
     ],
-
 
     "Otros": [
         "Actividad",
@@ -491,17 +483,45 @@ function obtenerTipoEvento(evento) {
 
 
 /* =====================================================
-   OBTENER FECHA
+   OBTENER FECHA DE INICIO
 ===================================================== */
 
-function obtenerFecha(evento) {
+function obtenerFechaInicio(evento) {
 
     return (
+        evento.fechaInicio ||
         evento.date ||
         evento.fecha ||
         evento.fechaEvento ||
         ""
     );
+
+}
+
+
+/* =====================================================
+   OBTENER FECHA DE TÉRMINO
+===================================================== */
+
+function obtenerFechaTermino(evento) {
+
+    return (
+        evento.fechaTermino ||
+        evento.fechaFin ||
+        evento.endDate ||
+        obtenerFechaInicio(evento)
+    );
+
+}
+
+
+/* =====================================================
+   OBTENER FECHA PARA MOSTRAR
+===================================================== */
+
+function obtenerFecha(evento) {
+
+    return obtenerFechaInicio(evento);
 
 }
 
@@ -516,6 +536,23 @@ function obtenerHora(evento) {
         evento.time ||
         evento.hora ||
         evento.horaEvento ||
+        evento.horaInicio ||
+        ""
+    );
+
+}
+
+
+/* =====================================================
+   OBTENER HORA DE TÉRMINO
+===================================================== */
+
+function obtenerHoraTermino(evento) {
+
+    return (
+        evento.horaTermino ||
+        evento.horaFin ||
+        evento.endTime ||
         ""
     );
 
@@ -585,6 +622,7 @@ function tieneEntrada(evento) {
         evento.link ||
         evento.url ||
         evento.ticketUrl ||
+        evento.linkEntradas ||
         "";
 
     return (
@@ -706,6 +744,10 @@ function esParticular(evento) {
    FECHA LOCAL
 ===================================================== */
 
+/**
+ * Convierte YYYY-MM-DD a fecha local sin problemas
+ * de zona horaria.
+ */
 function obtenerFechaLocal(fecha) {
 
     if (!fecha) {
@@ -773,6 +815,269 @@ function obtenerFechaLocal(fecha) {
 
 
 /* =====================================================
+   FECHA PARA ORDENAR
+===================================================== */
+
+function obtenerFechaOrden(evento) {
+
+    return (
+        obtenerFechaLocal(
+            obtenerFechaInicio(evento)
+        ) ||
+        new Date(9999, 11, 31)
+    );
+
+}
+
+
+/* =====================================================
+   EVENTO OCURRE EN RANGO DE FECHAS
+===================================================== */
+
+/**
+ * Comprueba si un evento está activo en una fecha.
+ *
+ * Esto permite trabajar correctamente con eventos:
+ *
+ * fechaInicio: 2026-09-18
+ * fechaTermino: 2026-09-20
+ *
+ * El evento será considerado activo los días:
+ *
+ * 18, 19 y 20.
+ */
+function eventoIncluyeFecha(
+    evento,
+    fechaObjetivo
+) {
+
+    const inicio =
+        obtenerFechaLocal(
+            obtenerFechaInicio(evento)
+        );
+
+    const termino =
+        obtenerFechaLocal(
+            obtenerFechaTermino(evento)
+        );
+
+
+    if (!inicio) {
+
+        return false;
+
+    }
+
+
+    if (!termino) {
+
+        return (
+            inicio.getTime() ===
+            fechaObjetivo.getTime()
+        );
+
+    }
+
+
+    return (
+        inicio <= fechaObjetivo &&
+        termino >= fechaObjetivo
+    );
+
+}
+
+
+/* =====================================================
+   FILTRO FECHA
+===================================================== */
+
+function cumpleFiltroFecha(evento) {
+
+    if (!dateFilter) {
+
+        return true;
+
+    }
+
+
+    const filtro =
+        dateFilter.value;
+
+
+    /*
+       Si no existe filtro seleccionado,
+       no se elimina ningún evento.
+    */
+
+    if (!filtro) {
+
+        return true;
+
+    }
+
+
+    const fechaInicio =
+        obtenerFechaLocal(
+            obtenerFechaInicio(evento)
+        );
+
+
+    const fechaTermino =
+        obtenerFechaLocal(
+            obtenerFechaTermino(evento)
+        );
+
+
+    /*
+       Si el evento no tiene fecha válida,
+       solamente se excluye cuando realmente
+       estamos aplicando un filtro de fecha.
+    */
+
+    if (!fechaInicio) {
+
+        return false;
+
+    }
+
+
+    const hoy =
+        new Date();
+
+
+    hoy.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const manana =
+        new Date(hoy);
+
+
+    manana.setDate(
+        manana.getDate() + 1
+    );
+
+
+    /* =================================================
+       HOY
+    ================================================= */
+
+    if (filtro === "hoy") {
+
+        return eventoIncluyeFecha(
+            evento,
+            hoy
+        );
+
+    }
+
+
+    /* =================================================
+       MAÑANA
+    ================================================= */
+
+    if (filtro === "manana") {
+
+        return eventoIncluyeFecha(
+            evento,
+            manana
+        );
+
+    }
+
+
+    /* =================================================
+       PRÓXIMOS 7 DÍAS
+    ================================================= */
+
+    if (
+        filtro === "7_dias" ||
+        filtro === "proximos_7_dias"
+    ) {
+
+        const limite =
+            new Date(hoy);
+
+
+        limite.setDate(
+            limite.getDate() + 7
+        );
+
+
+        const terminoReal =
+            fechaTermino ||
+            fechaInicio;
+
+
+        return (
+            fechaInicio <= limite &&
+            terminoReal >= hoy
+        );
+
+    }
+
+
+    /* =================================================
+       FIN DE SEMANA
+    ================================================= */
+
+    if (filtro === "fin_semana") {
+
+        const diaSemana =
+            hoy.getDay();
+
+
+        const diasHastaSabado =
+            (6 - diaSemana + 7) % 7;
+
+
+        const sabado =
+            new Date(hoy);
+
+
+        sabado.setDate(
+            hoy.getDate() +
+            diasHastaSabado
+        );
+
+
+        const domingo =
+            new Date(sabado);
+
+
+        domingo.setDate(
+            sabado.getDate() + 1
+        );
+
+
+        const terminoReal =
+            fechaTermino ||
+            fechaInicio;
+
+
+        return (
+            fechaInicio <= domingo &&
+            terminoReal >= sabado
+        );
+
+    }
+
+
+    /*
+       Compatibilidad con otros valores de
+       dateFilter que puedan existir.
+    */
+
+    return true;
+
+}
+
+
+/* =====================================================
    CARGAR EVENTOS
 ===================================================== */
 
@@ -810,8 +1115,35 @@ async function cargarEventos() {
 
 
         console.log(
-            "OTIUM - Eventos cargados:",
+            "OTIUM - Eventos cargados desde Firestore:",
             eventos.length
+        );
+
+
+        console.table(
+            eventos.map(
+                evento => ({
+                    id:
+                        evento.firestoreId ||
+                        evento.id,
+
+                    nombre:
+                        obtenerTitulo(evento),
+
+                    fechaInicio:
+                        obtenerFechaInicio(evento),
+
+                    fechaTermino:
+                        obtenerFechaTermino(evento),
+
+                    ciudad:
+                        obtenerCiudad(evento),
+
+                    imagen:
+                        evento.imagen || ""
+
+                })
+            )
         );
 
 
@@ -950,145 +1282,6 @@ function actualizarSubcategorias() {
 
             }
         );
-
-}
-
-
-/* =====================================================
-   FILTRO FECHA
-===================================================== */
-
-function cumpleFiltroFecha(evento) {
-
-    if (!dateFilter) {
-
-        return true;
-
-    }
-
-
-    const filtro =
-        dateFilter.value;
-
-
-    if (!filtro) {
-
-        return true;
-
-    }
-
-
-    const fechaEvento =
-        obtenerFechaLocal(
-            obtenerFecha(evento)
-        );
-
-
-    if (!fechaEvento) {
-
-        return false;
-
-    }
-
-
-    const hoy =
-        new Date();
-
-
-    hoy.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    const manana =
-        new Date(hoy);
-
-
-    manana.setDate(
-        manana.getDate() + 1
-    );
-
-
-    if (filtro === "hoy") {
-
-        return (
-            fechaEvento.getTime() ===
-            hoy.getTime()
-        );
-
-    }
-
-
-    if (filtro === "manana") {
-
-        return (
-            fechaEvento.getTime() ===
-            manana.getTime()
-        );
-
-    }
-
-
-    if (filtro === "7_dias") {
-
-        const limite =
-            new Date(hoy);
-
-
-        limite.setDate(
-            limite.getDate() + 7
-        );
-
-
-        return (
-            fechaEvento >= hoy &&
-            fechaEvento <= limite
-        );
-
-    }
-
-
-    if (filtro === "fin_semana") {
-
-        const diaSemana =
-            hoy.getDay();
-
-
-        const diasHastaSabado =
-            (6 - diaSemana + 7) % 7;
-
-
-        const sabado =
-            new Date(hoy);
-
-
-        sabado.setDate(
-            hoy.getDate() +
-            diasHastaSabado
-        );
-
-
-        const domingo =
-            new Date(sabado);
-
-
-        domingo.setDate(
-            sabado.getDate() + 1
-        );
-
-
-        return (
-            fechaEvento >= sabado &&
-            fechaEvento <= domingo
-        );
-
-    }
-
-
-    return true;
 
 }
 
@@ -1374,23 +1567,10 @@ function aplicarFiltros() {
         filtrados.sort(
             (a, b) => {
 
-                const fechaA =
-                    obtenerFechaLocal(
-                        obtenerFecha(a)
-                    );
-
-                const fechaB =
-                    obtenerFechaLocal(
-                        obtenerFecha(b)
-                    );
-
-
-                if (!fechaA) return 1;
-
-                if (!fechaB) return -1;
-
-
-                return fechaB - fechaA;
+                return (
+                    obtenerFechaOrden(b) -
+                    obtenerFechaOrden(a)
+                );
 
             }
         );
@@ -1400,23 +1580,10 @@ function aplicarFiltros() {
         filtrados.sort(
             (a, b) => {
 
-                const fechaA =
-                    obtenerFechaLocal(
-                        obtenerFecha(a)
-                    );
-
-                const fechaB =
-                    obtenerFechaLocal(
-                        obtenerFecha(b)
-                    );
-
-
-                if (!fechaA) return 1;
-
-                if (!fechaB) return -1;
-
-
-                return fechaA - fechaB;
+                return (
+                    obtenerFechaOrden(a) -
+                    obtenerFechaOrden(b)
+                );
 
             }
         );
@@ -1444,9 +1611,136 @@ function aplicarFiltros() {
     }
 
 
+    console.log(
+        "OTIUM - Eventos después de filtros:",
+        filtrados.length
+    );
+
+
     renderizar(
         filtrados
     );
+
+}
+
+
+/* =====================================================
+   VALIDAR URL DE IMAGEN
+===================================================== */
+
+/**
+ * Evita que textos como:
+ *
+ * Chile es TUYO / agenda de eventos
+ *
+ * sean utilizados como src de una imagen.
+ *
+ * Acepta:
+ * - https://
+ * - http://
+ * - rutas relativas
+ * - data:
+ *
+ * Rechaza texto libre que claramente no corresponde
+ * a una dirección de imagen.
+ */
+function obtenerImagenEvento(evento) {
+
+    const posibles = [
+
+        evento.imagen,
+
+        evento.imagenUrl,
+
+        evento.imageUrl,
+
+        evento.fotoUrl
+
+    ];
+
+
+    for (
+        const valor of posibles
+    ) {
+
+        if (
+            valor === undefined ||
+            valor === null
+        ) {
+
+            continue;
+
+        }
+
+
+        const texto =
+            String(valor).trim();
+
+
+        if (!texto) {
+
+            continue;
+
+        }
+
+
+        /*
+           URL absoluta.
+        */
+
+        if (
+            texto.startsWith(
+                "https://"
+            ) ||
+            texto.startsWith(
+                "http://"
+            )
+        ) {
+
+            return texto;
+
+        }
+
+
+        /*
+           Data URI.
+        */
+
+        if (
+            texto.startsWith(
+                "data:image/"
+            )
+        ) {
+
+            return texto;
+
+        }
+
+
+        /*
+           Ruta relativa válida.
+           
+           Evitamos aceptar frases con espacios,
+           como "Chile es TUYO / agenda de eventos".
+        */
+
+        if (
+            !texto.includes(" ") &&
+            (
+                texto.startsWith("/") ||
+                texto.startsWith("./") ||
+                texto.startsWith("../")
+            )
+        ) {
+
+            return texto;
+
+        }
+
+    }
+
+
+    return DEFAULT_EVENT_IMAGE;
 
 }
 
@@ -1514,13 +1808,21 @@ function renderizar(lista) {
                 "Sin título";
 
 
-            const fecha =
-                obtenerFecha(evento) ||
+            const fechaInicio =
+                obtenerFechaInicio(evento) ||
                 "Sin fecha";
+
+
+            const fechaTermino =
+                obtenerFechaTermino(evento);
 
 
             const hora =
                 obtenerHora(evento);
+
+
+            const horaTermino =
+                obtenerHoraTermino(evento);
 
 
             const ciudad =
@@ -1545,22 +1847,24 @@ function renderizar(lista) {
                 obtenerPrecio(evento);
 
 
+            /* ------------------------------------------------
+               IMAGEN
+            ------------------------------------------------ */
+
             const imagenEvento =
-                evento.imagen ||
-                evento.imagenUrl ||
-                evento.imageUrl ||
-                evento.fotoUrl ||
+                obtenerImagenEvento(
+                    evento
+                );
+
+
+            const tieneImagenReal =
+                imagenEvento !==
                 DEFAULT_EVENT_IMAGE;
 
 
-            const tieneImagen =
-                Boolean(
-                    evento.imagen ||
-                    evento.imagenUrl ||
-                    evento.imageUrl ||
-                    evento.fotoUrl
-                );
-
+            /* ------------------------------------------------
+               CARD
+            ------------------------------------------------ */
 
             const card =
                 document.createElement(
@@ -1576,43 +1880,86 @@ function renderizar(lista) {
                 firestoreId;
 
 
+            /* =================================================
+               FECHA A MOSTRAR
+            ================================================= */
+
+            let textoFecha =
+                fechaInicio;
+
+
+            if (
+                fechaTermino &&
+                fechaTermino !== fechaInicio
+            ) {
+
+                textoFecha =
+                    `${fechaInicio} al ${fechaTermino}`;
+
+            }
+
+
+            /* =================================================
+               HORA A MOSTRAR
+            ================================================= */
+
+            let textoHora =
+                hora;
+
+
+            if (
+                horaTermino &&
+                horaTermino !== hora
+            ) {
+
+                textoHora =
+                    `${hora} - ${horaTermino}`;
+
+            }
+
+
             card.innerHTML = `
 
                 <div class="evento-imagen">
 
                     <img
-                        src="${escapeHTML(imagenEvento)}"
-                        alt="${escapeHTML(titulo)}"
+                        src="${escapeHTML(
+                            imagenEvento
+                        )}"
+                        alt="${escapeHTML(
+                            titulo
+                        )}"
                         class="evento-imagen-img${
-                            !tieneImagen
+                            !tieneImagenReal
                                 ? " default-event-image"
                                 : ""
                         }"
-                        loading="lazy"
-                        onerror="
-                            this.onerror=null;
-                            this.src='${DEFAULT_EVENT_IMAGE}';
-                            this.classList.add('default-event-image');
-                        ">
+                        loading="lazy">
 
                 </div>
 
 
                 <h3>
-                    ${escapeHTML(titulo)}
+                    ${escapeHTML(
+                        titulo
+                    )}
                 </h3>
 
 
                 <p>
-                    📅 ${escapeHTML(fecha)}
+                    📅 ${escapeHTML(
+                        textoFecha
+                    )}
                 </p>
 
 
                 ${
-                    hora
+                    textoHora
                         ? `
                             <p>
-                                🕐 ${escapeHTML(hora)}
+                                🕐 ${escapeHTML(
+                                    textoHora
+                                )}
                             </p>
                           `
                         : ""
@@ -1620,12 +1967,16 @@ function renderizar(lista) {
 
 
                 <p>
-                    📍 ${escapeHTML(ciudad)}
+                    📍 ${escapeHTML(
+                        ciudad
+                    )}
                 </p>
 
 
                 <p>
-                    🎭 ${escapeHTML(categoria)}
+                    🎭 ${escapeHTML(
+                        categoria
+                    )}
                 </p>
 
 
@@ -1715,6 +2066,40 @@ function renderizar(lista) {
                 </a>
 
             `;
+
+
+            /* =================================================
+               FALLBACK DE IMAGEN
+               
+               Si una URL aparentemente válida responde
+               con error, se utiliza la imagen por defecto.
+            ================================================= */
+
+            const img =
+                card.querySelector(
+                    "img.evento-imagen-img"
+                );
+
+
+            if (img) {
+
+                img.addEventListener(
+                    "error",
+                    () => {
+
+                        img.onerror = null;
+
+                        img.src =
+                            DEFAULT_EVENT_IMAGE;
+
+                        img.classList.add(
+                            "default-event-image"
+                        );
+
+                    }
+                );
+
+            }
 
 
             container.appendChild(
