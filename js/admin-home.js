@@ -7329,9 +7329,313 @@ function actualizarControlesImportacion() {
        POR AHORA NO IMPORTA
     --------------------------------------------- */
 
+        /* ---------------------------------------------
+       IMPORTAR EVENTOS A FIRESTORE
+    --------------------------------------------- */
+
     button.addEventListener(
         "click",
-        function () {
+        async function () {
+
+            console.log(
+                "[OTIUM Excel] Iniciando importación a Firestore..."
+            );
+
+
+            /* -----------------------------------------
+               EVITAR DOBLE CLIC
+            ----------------------------------------- */
+
+            button.disabled =
+                true;
+
+            button.style.opacity =
+                "0.6";
+
+            button.style.cursor =
+                "not-allowed";
+
+            button.textContent =
+                "⏳ Importando eventos...";
+
+
+            /* -----------------------------------------
+               VALIDAR EVENTOS
+            ----------------------------------------- */
+
+            if (
+                !Array.isArray(eventos) ||
+                eventos.length === 0
+            ) {
+
+                alert(
+                    "No hay eventos válidos para importar."
+                );
+
+                button.disabled =
+                    false;
+
+                button.style.opacity =
+                    "1";
+
+                button.style.cursor =
+                    "pointer";
+
+                button.textContent =
+                    "📥 Importar eventos a OTIUM";
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               CONFIRMACIÓN
+            ----------------------------------------- */
+
+            const confirmar =
+                confirm(
+                    `Se importarán ${eventos.length} eventos a Firestore.\n\n` +
+                    `Colección: eventos\n\n` +
+                    `¿Deseas continuar?`
+                );
+
+
+            if (!confirmar) {
+
+                button.disabled =
+                    false;
+
+                button.style.opacity =
+                    "1";
+
+                button.style.cursor =
+                    "pointer";
+
+                button.textContent =
+                    `📥 Importar ${eventos.length} eventos a OTIUM`;
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               RESULTADOS
+            ----------------------------------------- */
+
+            let importados = 0;
+
+            let errores = 0;
+
+            const erroresDetalle = [];
+
+
+            /* -----------------------------------------
+               IMPORTAR UNO POR UNO
+            ----------------------------------------- */
+
+            for (
+                let i = 0;
+                i < eventos.length;
+                i++
+            ) {
+
+                const evento =
+                    eventos[i];
+
+
+                try {
+
+                    console.log(
+                        `[OTIUM Excel] Importando ${i + 1}/${eventos.length}:`,
+                        evento
+                    );
+
+
+                    /* ---------------------------------
+                       VALIDAR ID
+                    --------------------------------- */
+
+                    const eventoId =
+                        String(
+                            evento.id ||
+                            ""
+                        ).trim();
+
+
+                    if (!eventoId) {
+
+                        throw new Error(
+                            "El evento no tiene ID."
+                        );
+
+                    }
+
+
+                    /* ---------------------------------
+                       REFERENCIA FIRESTORE
+                    --------------------------------- */
+
+                    const eventoRef =
+                        doc(
+                            db,
+                            "eventos",
+                            eventoId
+                        );
+
+
+                    /* ---------------------------------
+                       ESCRIBIR EVENTO
+                    --------------------------------- */
+
+                    await setDoc(
+                        eventoRef,
+                        {
+                            ...evento
+                        }
+                    );
+
+
+                    importados++;
+
+
+                    console.log(
+                        `[OTIUM Excel] Evento importado correctamente: ${eventoId}`
+                    );
+
+
+                    /* ---------------------------------
+                       ACTUALIZAR BOTÓN
+                    --------------------------------- */
+
+                    button.textContent =
+                        `⏳ Importando ${i + 1}/${eventos.length}...`;
+
+                }
+
+                catch (error) {
+
+                    errores++;
+
+
+                    const eventoId =
+                        evento &&
+                        evento.id
+                            ? evento.id
+                            : `fila ${i + 1}`;
+
+
+                    erroresDetalle.push(
+                        `${eventoId}: ${error.message}`
+                    );
+
+
+                    console.error(
+                        `[OTIUM Excel] Error importando ${eventoId}:`,
+                        error
+                    );
+
+                }
+
+            }
+
+
+            /* -----------------------------------------
+               RESULTADO FINAL
+            ----------------------------------------- */
+
+            console.log(
+                "[OTIUM Excel] Importación finalizada."
+            );
+
+
+            console.log(
+                "[OTIUM Excel] Importados:",
+                importados
+            );
+
+
+            console.log(
+                "[OTIUM Excel] Errores:",
+                errores
+            );
+
+
+            /* -----------------------------------------
+               MENSAJE FINAL
+            ----------------------------------------- */
+
+            let mensaje =
+                `Importación finalizada.\n\n` +
+                `✅ Importados correctamente: ${importados}\n` +
+                `❌ Con errores: ${errores}`;
+
+
+            if (
+                erroresDetalle.length > 0
+            ) {
+
+                mensaje +=
+                    `\n\nDetalles de errores:\n` +
+                    erroresDetalle.join(
+                        "\n"
+                    );
+
+            }
+
+
+            alert(
+                mensaje
+            );
+
+
+            /* -----------------------------------------
+               RESTAURAR BOTÓN
+            ----------------------------------------- */
+
+            button.disabled =
+                false;
+
+            button.style.opacity =
+                "1";
+
+            button.style.cursor =
+                "pointer";
+
+
+            if (
+                errores === 0
+            ) {
+
+                button.textContent =
+                    `✅ ${importados} eventos importados`;
+
+            }
+
+            else {
+
+                button.textContent =
+                    `⚠️ ${importados} importados / ${errores} con error`;
+
+            }
+
+
+            /* -----------------------------------------
+               ACTUALIZAR NOTA
+            ----------------------------------------- */
+
+            if (note) {
+
+                note.textContent =
+                    errores === 0
+                        ? "✅ Los eventos fueron guardados correctamente en Firestore."
+                        : "⚠️ La importación terminó, pero algunos eventos tuvieron errores.";
+
+            }
+
+        }
+    );
 
             console.log(
                 "[OTIUM Excel] Botón de importación presionado."
@@ -7349,7 +7653,7 @@ function actualizarControlesImportacion() {
             );
 
         }
-    );
+    ;
 
 
     controls.appendChild(
@@ -7392,4 +7696,3 @@ function actualizarControlesImportacion() {
         "[OTIUM Excel] Controles de importación actualizados correctamente."
     );
 
-}
