@@ -5949,6 +5949,62 @@ function normalizeExcelValue(
 /* =====================================================
    LEER ARCHIVO EXCEL
 ===================================================== */
+
+async function readExcelFile(file) {
+
+    if (!file) {
+        throw new Error("No se seleccionó ningún archivo Excel.");
+    }
+
+    if (typeof XLSX === "undefined") {
+        throw new Error(
+            "SheetJS (XLSX) no está disponible. Verifica que la librería XLSX esté cargada."
+        );
+    }
+
+    try {
+
+        const arrayBuffer = await file.arrayBuffer();
+
+        const workbook = XLSX.read(arrayBuffer, {
+            type: "array",
+            cellDates: true
+        });
+
+        if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+            throw new Error("El archivo Excel no contiene ninguna hoja.");
+        }
+
+        const firstSheetName = workbook.SheetNames[0];
+
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        if (!worksheet) {
+            throw new Error("No se pudo leer la primera hoja del archivo Excel.");
+        }
+
+        const rows = XLSX.utils.sheet_to_json(worksheet, {
+            defval: "",
+            raw: false
+        });
+
+        return {
+            rows: rows,
+            sheetName: firstSheetName,
+            fileName: file.name,
+            rowCount: rows.length
+        };
+
+    } catch (error) {
+
+        console.error(
+            "[OTIUM Excel] Error leyendo archivo:",
+            error
+        );
+
+        throw error;
+    }
+}
 /* =====================================================
    VINCULAR LECTOR EXCEL
 ===================================================== */
