@@ -7,8 +7,10 @@
 
    OBJETIVOS:
    - Mantener compatibilidad con el sistema actual.
-   - Optimizar consultas de eventos.
-   - No cargar eventos históricos innecesariamente.
+   - Soportar fechaInicio + fechaTermino.
+   - Soportar eventos de un solo día.
+   - Soportar eventos de varios días.
+   - Mantener compatibilidad con campo fecha antiguo.
    - Mantener favoritos, recordatorios e invitaciones.
    - Incorporar funciones para limpieza administrativa.
    - NO elimina datos automáticamente.
@@ -63,13 +65,11 @@ function usuarioActual() {
 
 /**
  * Devuelve el primer valor válido de una lista.
- *
- * Se utiliza principalmente para mantener compatibilidad
- * con versiones antiguas de OTIUM donde algunos campos
- * tenían nombres diferentes.
  */
 function firstValue(...values) {
+
     for (const value of values) {
+
         if (
             value !== undefined &&
             value !== null &&
@@ -88,7 +88,11 @@ function firstValue(...values) {
  * entre números y strings.
  */
 function normalizeId(value) {
-    if (value === undefined || value === null) {
+
+    if (
+        value === undefined ||
+        value === null
+    ) {
         return "";
     }
 
@@ -99,7 +103,11 @@ function normalizeId(value) {
 /**
  * Verifica que exista un valor obligatorio.
  */
-function requireValue(value, message) {
+function requireValue(
+    value,
+    message
+) {
+
     if (
         value === undefined ||
         value === null ||
@@ -120,62 +128,372 @@ function requireValue(value, message) {
  * Obtiene la fecha actual en formato:
  *
  * YYYY-MM-DD
- *
- * Importante:
- * Se utilizan los valores locales del navegador.
- *
- * Compatible con los campos:
- * - fecha
- * - fechaInicio
- * - fechaTermino
  */
 function obtenerFechaActualISO() {
 
     const hoy = new Date();
 
-    const año = hoy.getFullYear();
+    const año =
+        hoy.getFullYear();
 
-    const mes = String(
-        hoy.getMonth() + 1
-    ).padStart(2, "0");
+    const mes =
+        String(
+            hoy.getMonth() + 1
+        ).padStart(2, "0");
 
-    const dia = String(
-        hoy.getDate()
-    ).padStart(2, "0");
+    const dia =
+        String(
+            hoy.getDate()
+        ).padStart(2, "0");
 
     return `${año}-${mes}-${dia}`;
 }
 
 
 /**
+ * Convierte diferentes formatos de fecha
+ * a YYYY-MM-DD cuando es posible.
+ *
+ * Soporta:
+ *
+ * - YYYY-MM-DD
+ * - YYYY-MM-DDTHH:mm:ss
+ * - DD-MM-YYYY
+ * - DD/MM/YYYY
+ * - Date
+ * - Firestore Timestamp
+ */
+function normalizarFecha(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return null;
+    }
+
+
+    /* -----------------------------------------------------
+       Firestore Timestamp
+    ----------------------------------------------------- */
+
+    if (
+        typeof value === "object" &&
+        typeof value.toDate === "function"
+    ) {
+
+        return normalizarFecha(
+            value.toDate()
+        );
+    }
+
+
+    /* -----------------------------------------------------
+       Date
+    ----------------------------------------------------- */
+
+    if (
+        value instanceof Date
+    ) {
+
+        if (
+            Number.isNaN(
+                value.getTime()
+            )
+        ) {
+            return null;
+        }
+
+        const año =
+            value.getFullYear();
+
+        const mes =
+            String(
+                value.getMonth() + 1
+            ).padStart(2, "0");
+
+        const dia =
+            String(
+                value.getDate()
+            ).padStart(2, "0");
+
+        return `${año}-${mes}-${dia}`;
+    }
+
+
+    /* -----------------------------------------------------
+       String
+    ----------------------------------------------------- */
+
+    const texto =
+        String(value)
+            .trim();
+
+    if (!texto) {
+        return null;
+    }
+
+
+    /* -----------------------------------------------------
+       YYYY-MM-DD
+       YYYY-MM-DDTHH:mm:ss
+    ----------------------------------------------------- */
+
+    const isoMatch =
+        texto.match(
+            /^(\d{4})-(\d{2})-(\d{2})/
+        );
+
+    if (isoMatch) {
+
+        return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+    }
+
+
+    /* -----------------------------------------------------
+       DD/MM/YYYY
+    ----------------------------------------------------- */
+
+    const slashMatch =
+        texto.match(
+            /^(\d{1,2})\/(\d{1,2})\/(\d{4})/
+        );
+
+    if (slashMatch) {
+
+        const dia =
+            String(
+                slashMatch[1]
+            ).padStart(2, "0");
+
+        const mes =
+            String(
+                slashMatch[2]
+            ).padStart(2, "0");
+
+        const año =
+            slashMatch[3];
+
+        return `${año}-${mes}-${dia}`;
+    }
+
+
+    /* -----------------------------------------------------
+       DD-MM-YYYY
+    ----------------------------------------------------- */
+
+    const dashMatch =
+        texto.match(
+            /^(\d{1,2})-(\d{1,2})-(\d{4})/
+        );
+
+    if (dashMatch) {
+
+        const dia =
+            String(
+                dashMatch[1]
+            ).padStart(2, "0");
+
+        const mes =
+            String(
+                dashMatch[2]
+            ).padStart(2, "0");
+
+        const año =
+            dashMatch[3];
+
+        return `${año}-${mes}-${dia}`;
+    }
+
+
+    return null;
+}
+
+
+/**
+ * Obtiene la fecha inicial de un evento.
+ *
+ * Prioridad:
+ *
+ * 1. fechaInicio
+ * 2. fecha
+ */
+function obtenerFechaInicioEvento(evento) {
+
+    return normalizarFecha(
+        firstValue(
+            evento.fechaInicio,
+            evento.fecha
+        )
+    );
+}
+
+
+/**
+ * Obtiene la fecha final de un evento.
+ *
+ * Prioridad:
+ *
+ * 1. fechaTermino
+ * 2. fechaInicio
+ * 3. fecha
+ */
+function obtenerFechaTerminoEvento(evento) {
+
+    return normalizarFecha(
+        firstValue(
+            evento.fechaTermino,
+            evento.fechaInicio,
+            evento.fecha
+        )
+    );
+}
+
+
+/**
+ * Determina si un evento está vigente.
+ *
+ * Un evento está vigente cuando:
+ *
+ * fechaInicio <= hoy
+ *
+ * Y
+ *
+ * fechaTermino >= hoy
+ *
+ * Para eventos futuros:
+ *
+ * fechaInicio >= hoy
+ *
+ * Para eventos de un solo día:
+ *
+ * fechaInicio === fechaTermino
+ */
+function eventoEstaVigente(
+    evento,
+    fechaActual
+) {
+
+    const fechaInicio =
+        obtenerFechaInicioEvento(
+            evento
+        );
+
+    const fechaTermino =
+        obtenerFechaTerminoEvento(
+            evento
+        );
+
+
+    if (
+        !fechaInicio &&
+        !fechaTermino
+    ) {
+        return false;
+    }
+
+
+    const inicio =
+        fechaInicio ||
+        fechaTermino;
+
+    const termino =
+        fechaTermino ||
+        fechaInicio;
+
+
+    return (
+        inicio <= fechaActual &&
+        termino >= fechaActual
+    );
+}
+
+
+/**
+ * Determina si un evento es futuro o vigente.
+ */
+function eventoEsVisible(
+    evento,
+    fechaActual
+) {
+
+    const fechaInicio =
+        obtenerFechaInicioEvento(
+            evento
+        );
+
+    const fechaTermino =
+        obtenerFechaTerminoEvento(
+            evento
+        );
+
+
+    if (
+        !fechaInicio &&
+        !fechaTermino
+    ) {
+        return false;
+    }
+
+
+    const inicio =
+        fechaInicio ||
+        fechaTermino;
+
+    const termino =
+        fechaTermino ||
+        fechaInicio;
+
+
+    /*
+       El evento es visible si:
+       - todavía no termina
+       - o comienza hoy/futuro
+    */
+
+    return (
+        termino >= fechaActual ||
+        inicio >= fechaActual
+    );
+}
+
+
+/**
  * Calcula una fecha límite retrocediendo cierta cantidad
  * de días desde hoy.
- *
- * Ejemplo:
- *
- * obtenerFechaLimiteLimpieza(90)
- *
- * devuelve la fecha correspondiente a hace 90 días.
  */
-function obtenerFechaLimiteLimpieza(dias = 90) {
+function obtenerFechaLimiteLimpieza(
+    dias = 90
+) {
 
-    const fecha = new Date();
+    const fecha =
+        new Date();
 
-    fecha.setHours(0, 0, 0, 0);
-
-    fecha.setDate(
-        fecha.getDate() - Number(dias)
+    fecha.setHours(
+        0,
+        0,
+        0,
+        0
     );
 
-    const año = fecha.getFullYear();
+    fecha.setDate(
+        fecha.getDate() -
+        Number(dias)
+    );
 
-    const mes = String(
-        fecha.getMonth() + 1
-    ).padStart(2, "0");
+    const año =
+        fecha.getFullYear();
 
-    const dia = String(
-        fecha.getDate()
-    ).padStart(2, "0");
+    const mes =
+        String(
+            fecha.getMonth() + 1
+        ).padStart(2, "0");
+
+    const dia =
+        String(
+            fecha.getDate()
+        ).padStart(2, "0");
 
     return `${año}-${mes}-${dia}`;
 }
@@ -187,13 +505,10 @@ function obtenerFechaLimiteLimpieza(dias = 90) {
 
 /**
  * Convierte un documento Firestore a objeto de evento.
- *
- * Mantiene:
- * - id
- * - firestoreId
- * - todos los campos almacenados
  */
-function mapearEvento(docSnap) {
+function mapearEvento(
+    docSnap
+) {
 
     return {
         id: docSnap.id,
@@ -209,32 +524,31 @@ function mapearEvento(docSnap) {
 
 /**
  * GUARDAR EVENTO
- *
- * Requiere usuario autenticado.
- *
- * La autenticación real y las reglas de Firestore
- * siguen siendo las encargadas de proteger los datos.
  */
-export async function saveEvent(eventData) {
+export async function saveEvent(
+    eventData
+) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión para publicar un evento."
         );
     }
 
-    if (!eventData || typeof eventData !== "object") {
+    if (
+        !eventData ||
+        typeof eventData !== "object"
+    ) {
+
         throw new Error(
             "Los datos del evento no son válidos."
         );
     }
 
-
-    /* -----------------------------------------------------
-       COPIA DE LOS DATOS
-    ----------------------------------------------------- */
 
     const data = {
         ...eventData
@@ -243,12 +557,10 @@ export async function saveEvent(eventData) {
 
     /* -----------------------------------------------------
        USUARIO PROPIETARIO
-
-       OTIUM utiliza actualmente "usuarioId".
-       Se elimina userId para evitar duplicidad.
     ----------------------------------------------------- */
 
-    data.usuarioId = user.uid;
+    data.usuarioId =
+        user.uid;
 
     delete data.userId;
 
@@ -258,7 +570,9 @@ export async function saveEvent(eventData) {
     ----------------------------------------------------- */
 
     if (!data.createdAt) {
-        data.createdAt = serverTimestamp();
+
+        data.createdAt =
+            serverTimestamp();
     }
 
 
@@ -266,13 +580,14 @@ export async function saveEvent(eventData) {
        GUARDAR
     ----------------------------------------------------- */
 
-    const docRef = await addDoc(
-        collection(
-            db,
-            EVENTOS_COLLECTION
-        ),
-        data
-    );
+    const docRef =
+        await addDoc(
+            collection(
+                db,
+                EVENTOS_COLLECTION
+            ),
+            data
+        );
 
     return docRef.id;
 }
@@ -285,8 +600,7 @@ export async function saveEvent(eventData) {
 /**
  * OBTENER EVENTOS
  *
- * Compatible con las diferentes estructuras de fechas
- * utilizadas por OTIUM.
+ * Compatible con:
  *
  * EVENTOS NUEVOS:
  * - fechaInicio
@@ -295,37 +609,17 @@ export async function saveEvent(eventData) {
  * EVENTOS ANTIGUOS:
  * - fecha
  *
- * REGLA:
+ * Se consultan los documentos de eventos y posteriormente
+ * se determina su vigencia de forma segura en JavaScript.
  *
- * Un evento se considera vigente cuando:
- *
- * 1. fechaTermino >= hoy
- *
- * O
- *
- * 2. fechaInicio >= hoy
- *
- * O
- *
- * 3. fecha >= hoy
- *
- * Esto permite mostrar:
- *
- * - eventos de un solo día
- * - eventos de varios días
- * - eventos que comenzaron antes de hoy
- *   pero todavía no terminan
- * - eventos nuevos importados desde Excel
- * - eventos antiguos de OTIUM
- *
- * IMPORTANTE:
- * No elimina eventos.
- * Solo consulta y unifica resultados.
+ * Esto evita perder eventos cuando alguno de los documentos
+ * utiliza una estructura de fechas distinta.
  */
 export async function getEvents() {
 
     const fechaActual =
         obtenerFechaActualISO();
+
 
     const eventosRef =
         collection(
@@ -335,188 +629,270 @@ export async function getEvents() {
 
 
     /* -----------------------------------------------------
-       CONSULTA 1
+       OBTENER EVENTOS
        
-       Eventos cuya fechaTermino todavía no ha pasado.
+       Primero intentamos las consultas optimizadas.
        
-       Ejemplo:
-       
-       fechaTermino = 2026-09-20
-       hoy          = 2026-09-13
-       
-       El evento se incluye aunque haya comenzado antes.
+       Si existen documentos con estructuras de fechas
+       diferentes, se utiliza una consulta de respaldo.
     ----------------------------------------------------- */
 
-    const qFechaTermino = query(
-        eventosRef,
-        where(
-            "fechaTermino",
-            ">=",
-            fechaActual
-        )
-    );
+    const resultados =
+        new Map();
+
+
+    /* -----------------------------------------------------
+       CONSULTA 1
+       fechaTermino
+    ----------------------------------------------------- */
+
+    try {
+
+        const qFechaTermino =
+            query(
+                eventosRef,
+                where(
+                    "fechaTermino",
+                    ">=",
+                    fechaActual
+                )
+            );
+
+        const snapshotFechaTermino =
+            await getDocs(
+                qFechaTermino
+            );
+
+        snapshotFechaTermino.docs.forEach(
+            docSnap => {
+
+                resultados.set(
+                    docSnap.id,
+                    mapearEvento(
+                        docSnap
+                    )
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "[OTIUM] Consulta fechaTermino no disponible:",
+            error
+        );
+    }
 
 
     /* -----------------------------------------------------
        CONSULTA 2
-       
-       Eventos cuya fechaInicio es hoy o posterior.
-       
-       Esto permite recuperar eventos nuevos que todavía
-       no han comenzado.
+       fechaInicio
     ----------------------------------------------------- */
 
-    const qFechaInicio = query(
-        eventosRef,
-        where(
-            "fechaInicio",
-            ">=",
-            fechaActual
-        )
-    );
+    try {
+
+        const qFechaInicio =
+            query(
+                eventosRef,
+                where(
+                    "fechaInicio",
+                    ">=",
+                    fechaActual
+                )
+            );
+
+        const snapshotFechaInicio =
+            await getDocs(
+                qFechaInicio
+            );
+
+        snapshotFechaInicio.docs.forEach(
+            docSnap => {
+
+                resultados.set(
+                    docSnap.id,
+                    mapearEvento(
+                        docSnap
+                    )
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "[OTIUM] Consulta fechaInicio no disponible:",
+            error
+        );
+    }
 
 
     /* -----------------------------------------------------
        CONSULTA 3
-       
-       Compatibilidad con eventos antiguos que utilizan
-       solamente el campo "fecha".
+       fecha antigua
     ----------------------------------------------------- */
 
-    const qFechaAntigua = query(
-        eventosRef,
-        where(
-            "fecha",
-            ">=",
-            fechaActual
-        )
-    );
+    try {
 
+        const qFechaAntigua =
+            query(
+                eventosRef,
+                where(
+                    "fecha",
+                    ">=",
+                    fechaActual
+                )
+            );
 
-    /* -----------------------------------------------------
-       EJECUTAR LAS TRES CONSULTAS
-    ----------------------------------------------------- */
+        const snapshotFechaAntigua =
+            await getDocs(
+                qFechaAntigua
+            );
 
-    const [
-        snapshotFechaTermino,
-        snapshotFechaInicio,
-        snapshotFechaAntigua
-    ] = await Promise.all([
-
-        getDocs(
-            qFechaTermino
-        ),
-
-        getDocs(
-            qFechaInicio
-        ),
-
-        getDocs(
-            qFechaAntigua
-        )
-
-    ]);
-
-
-    /* -----------------------------------------------------
-       UNIFICAR RESULTADOS
-       
-       El mismo evento puede aparecer en:
-       
-       - fechaTermino
-       - fechaInicio
-       - fecha
-       
-       El Set evita duplicados.
-    ----------------------------------------------------- */
-
-    const eventos = [];
-
-    const ids = new Set();
-
-
-    /* -----------------------------------------------------
-       FUNCIÓN INTERNA PARA AGREGAR EVENTOS
-    ----------------------------------------------------- */
-
-    const agregarEventos = (
-        documentos
-    ) => {
-
-        documentos.forEach(
+        snapshotFechaAntigua.docs.forEach(
             docSnap => {
 
-                if (
-                    !ids.has(
-                        docSnap.id
+                resultados.set(
+                    docSnap.id,
+                    mapearEvento(
+                        docSnap
                     )
-                ) {
-
-                    ids.add(
-                        docSnap.id
-                    );
-
-                    eventos.push(
-                        mapearEvento(
-                            docSnap
-                        )
-                    );
-                }
+                );
             }
         );
-    };
+
+    } catch (error) {
+
+        console.warn(
+            "[OTIUM] Consulta fecha antigua no disponible:",
+            error
+        );
+    }
 
 
     /* -----------------------------------------------------
-       AGREGAR RESULTADOS
+       FILTRAR RESULTADOS
+       
+       La consulta Firestore puede devolver:
+       
+       - eventos futuros
+       - eventos vigentes
+       
+       Aquí se aplica la regla definitiva.
     ----------------------------------------------------- */
 
-    agregarEventos(
-        snapshotFechaTermino.docs
-    );
-
-    agregarEventos(
-        snapshotFechaInicio.docs
-    );
-
-    agregarEventos(
-        snapshotFechaAntigua.docs
-    );
+    let eventos =
+        Array.from(
+            resultados.values()
+        ).filter(
+            evento =>
+                eventoEsVisible(
+                    evento,
+                    fechaActual
+                )
+        );
 
 
     /* -----------------------------------------------------
-       ORDENAR EVENTOS
+       RESPALDO
        
-       Preferencia:
+       Si las consultas optimizadas no recuperaron ningún
+       evento, hacemos una lectura completa como mecanismo
+       de compatibilidad para documentos con fechas que
+       Firestore no pudo comparar directamente.
        
+       Esto NO modifica ni elimina datos.
+    ----------------------------------------------------- */
+
+    if (
+        eventos.length === 0
+    ) {
+
+        console.warn(
+            "[OTIUM] No se encontraron eventos mediante consultas optimizadas. Ejecutando consulta de respaldo..."
+        );
+
+        const snapshot =
+            await getDocs(
+                eventosRef
+            );
+
+        eventos =
+            snapshot.docs
+                .map(
+                    mapearEvento
+                )
+                .filter(
+                    evento =>
+                        eventoEsVisible(
+                            evento,
+                            fechaActual
+                        )
+                );
+    }
+
+
+    /* -----------------------------------------------------
+       ELIMINAR DUPLICADOS
+    ----------------------------------------------------- */
+
+    const ids =
+        new Set();
+
+    eventos =
+        eventos.filter(
+            evento => {
+
+                if (
+                    ids.has(
+                        evento.id
+                    )
+                ) {
+                    return false;
+                }
+
+                ids.add(
+                    evento.id
+                );
+
+                return true;
+            }
+        );
+
+
+    /* -----------------------------------------------------
+       ORDENAR
+       
+       Prioridad:
        1. fechaInicio
        2. fecha
-       
-       Esto permite que los eventos nuevos queden
-       ordenados cronológicamente.
     ----------------------------------------------------- */
 
     eventos.sort(
         (a, b) => {
 
             const fechaA =
-                firstValue(
-                    a.fechaInicio,
-                    a.fecha
-                ) || "9999-12-31";
+                obtenerFechaInicioEvento(
+                    a
+                ) ||
+                "9999-12-31";
 
             const fechaB =
-                firstValue(
-                    b.fechaInicio,
-                    b.fecha
-                ) || "9999-12-31";
+                obtenerFechaInicioEvento(
+                    b
+                ) ||
+                "9999-12-31";
 
-            return String(
-                fechaA
-            ).localeCompare(
-                String(fechaB)
+            return fechaA.localeCompare(
+                fechaB
             );
         }
+    );
+
+
+    console.log(
+        "OTIUM - Eventos cargados desde Firestore:",
+        eventos.length
     );
 
 
@@ -529,30 +905,24 @@ export async function getEvents() {
 ========================================================= */
 
 /**
- * OBTENER TODOS LOS EVENTOS
+ * Obtiene todos los eventos.
  *
- * Esta función reemplaza el comportamiento anterior
- * de getEvents().
- *
- * NO debe utilizarse normalmente en Home, búsqueda,
- * listados públicos, etc.
- *
- * Está pensada principalmente para:
- *
+ * Pensado para:
  * - administración
  * - mantenimiento
  * - detectar duplicados
  * - revisar eventos antiguos
- * - limpieza de Firestore
+ * - limpieza
  */
 export async function getAllEvents() {
 
-    const snapshot = await getDocs(
-        collection(
-            db,
-            EVENTOS_COLLECTION
-        )
-    );
+    const snapshot =
+        await getDocs(
+            collection(
+                db,
+                EVENTOS_COLLECTION
+            )
+        );
 
     return snapshot.docs.map(
         mapearEvento
@@ -565,45 +935,36 @@ export async function getAllEvents() {
 ========================================================= */
 
 /**
- * OBTENER EVENTOS PASADOS
+ * Obtiene eventos cuya fecha de término ya pasó.
  *
- * Devuelve eventos cuya fecha sea anterior a hoy.
- *
- * Ejemplo:
- *
- * hoy = 2026-09-13
- *
- * devuelve:
- * 2026-09-12
- * 2026-09-01
- * 2026-08-15
- * etc.
+ * Compatible con:
+ * - fechaTermino
+ * - fechaInicio
+ * - fecha
  */
 export async function getPastEvents() {
 
     const fechaActual =
         obtenerFechaActualISO();
 
-    const eventosRef =
-        collection(
-            db,
-            EVENTOS_COLLECTION
-        );
+    const eventos =
+        await getAllEvents();
 
-    const q = query(
-        eventosRef,
-        where(
-            "fecha",
-            "<",
-            fechaActual
-        )
-    );
+    return eventos.filter(
+        evento => {
 
-    const snapshot =
-        await getDocs(q);
+            const fechaTermino =
+                obtenerFechaTerminoEvento(
+                    evento
+                );
 
-    return snapshot.docs.map(
-        mapearEvento
+            if (!fechaTermino) {
+                return false;
+            }
+
+            return fechaTermino <
+                fechaActual;
+        }
     );
 }
 
@@ -613,23 +974,14 @@ export async function getPastEvents() {
 ========================================================= */
 
 /**
- * OBTENER EVENTOS ANTIGUOS
+ * Obtiene eventos cuya fecha de término es anterior
+ * a la fecha límite.
  *
  * Por defecto:
+ * 90 días.
  *
- * 90 días
- *
- * Ejemplo:
- *
- * getEventsForCleanup()
- *
- * devuelve eventos cuya fecha sea anterior
- * a hace 90 días.
- *
- * IMPORTANTE:
- * Esta función SOLO consulta.
- *
- * NO elimina eventos.
+ * SOLO consulta.
+ * NO elimina.
  */
 export async function getEventsForCleanup(
     dias = 90
@@ -644,36 +996,38 @@ export async function getEventsForCleanup(
         ) ||
         diasNumericos < 1
     ) {
+
         throw new Error(
             "La cantidad de días debe ser un número mayor que 0."
         );
     }
+
 
     const fechaLimite =
         obtenerFechaLimiteLimpieza(
             diasNumericos
         );
 
-    const eventosRef =
-        collection(
-            db,
-            EVENTOS_COLLECTION
-        );
 
-    const q = query(
-        eventosRef,
-        where(
-            "fecha",
-            "<",
-            fechaLimite
-        )
-    );
+    const eventos =
+        await getAllEvents();
 
-    const snapshot =
-        await getDocs(q);
 
-    return snapshot.docs.map(
-        mapearEvento
+    return eventos.filter(
+        evento => {
+
+            const fechaTermino =
+                obtenerFechaTerminoEvento(
+                    evento
+                );
+
+            if (!fechaTermino) {
+                return false;
+            }
+
+            return fechaTermino <
+                fechaLimite;
+        }
     );
 }
 
@@ -682,10 +1036,6 @@ export async function getEventsForCleanup(
    OBTENER EVENTO POR ID
 ========================================================= */
 
-/**
- * Obtiene un evento específico mediante su ID
- * de documento Firestore.
- */
 export async function getEventById(
     id
 ) {
@@ -695,6 +1045,7 @@ export async function getEventById(
         "El ID del evento es obligatorio."
     );
 
+
     const docRef =
         doc(
             db,
@@ -702,14 +1053,19 @@ export async function getEventById(
             normalizeId(id)
         );
 
+
     const snapshot =
         await getDoc(
             docRef
         );
 
-    if (!snapshot.exists()) {
+
+    if (
+        !snapshot.exists()
+    ) {
         return null;
     }
+
 
     return mapearEvento(
         snapshot
@@ -721,28 +1077,18 @@ export async function getEventById(
    OBTENER EVENTOS DEL USUARIO
 ========================================================= */
 
-/**
- * Obtiene los eventos publicados por el usuario actual.
- *
- * Se mantienen las tres consultas de compatibilidad:
- *
- * - usuarioId
- * - userId
- * - ownerId
- *
- * Esto evita romper eventos creados con versiones
- * anteriores de OTIUM.
- */
 export async function getUserEvents() {
 
     const user =
         usuarioActual();
 
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión para ver tus eventos."
         );
     }
+
 
     const eventosRef =
         collection(
@@ -750,13 +1096,14 @@ export async function getUserEvents() {
             EVENTOS_COLLECTION
         );
 
+
     const resultados = [];
 
-    const ids = new Set();
+    const ids =
+        new Set();
 
 
     /* -----------------------------------------------------
-       CONSULTA 1
        usuarioId
     ----------------------------------------------------- */
 
@@ -769,6 +1116,7 @@ export async function getUserEvents() {
                 user.uid
             )
         );
+
 
     const snapshotUsuarioId =
         await getDocs(
@@ -800,7 +1148,6 @@ export async function getUserEvents() {
 
 
     /* -----------------------------------------------------
-       CONSULTA 2
        userId
     ----------------------------------------------------- */
 
@@ -813,6 +1160,7 @@ export async function getUserEvents() {
                 user.uid
             )
         );
+
 
     const snapshotUserId =
         await getDocs(
@@ -844,7 +1192,6 @@ export async function getUserEvents() {
 
 
     /* -----------------------------------------------------
-       CONSULTA 3
        ownerId
     ----------------------------------------------------- */
 
@@ -857,6 +1204,7 @@ export async function getUserEvents() {
                 user.uid
             )
         );
+
 
     const snapshotOwnerId =
         await getDocs(
@@ -895,9 +1243,6 @@ export async function getUserEvents() {
    ACTUALIZAR EVENTO
 ========================================================= */
 
-/**
- * Actualiza un evento existente.
- */
 export async function updateEvent(
     id,
     eventData
@@ -908,14 +1253,17 @@ export async function updateEvent(
         "El ID del evento es obligatorio."
     );
 
+
     if (
         !eventData ||
         typeof eventData !== "object"
     ) {
+
         throw new Error(
             "Los datos del evento no son válidos."
         );
     }
+
 
     const docRef =
         doc(
@@ -924,10 +1272,12 @@ export async function updateEvent(
             normalizeId(id)
         );
 
+
     await updateDoc(
         docRef,
         eventData
     );
+
 
     return true;
 }
@@ -937,16 +1287,6 @@ export async function updateEvent(
    ELIMINAR EVENTO
 ========================================================= */
 
-/**
- * Elimina un evento de Firestore.
- *
- * IMPORTANTE:
- * Esta operación NO elimina automáticamente las imágenes
- * alojadas en Cloudflare Worker.
- *
- * La limpieza de imágenes se deberá realizar
- * posteriormente.
- */
 export async function deleteEvent(
     id
 ) {
@@ -956,6 +1296,7 @@ export async function deleteEvent(
         "El ID del evento es obligatorio."
     );
 
+
     const docRef =
         doc(
             db,
@@ -963,9 +1304,11 @@ export async function deleteEvent(
             normalizeId(id)
         );
 
+
     await deleteDoc(
         docRef
     );
+
 
     return true;
 }
@@ -985,22 +1328,27 @@ export async function addFavorite(
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión para guardar favoritos."
         );
     }
+
 
     requireValue(
         eventId,
         "El ID del evento es obligatorio."
     );
 
+
     const favoritosRef =
         collection(
             db,
             FAVORITOS_COLLECTION
         );
+
 
     const q =
         query(
@@ -1019,26 +1367,36 @@ export async function addFavorite(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
 
-    if (!snapshot.empty) {
+
+    if (
+        !snapshot.empty
+    ) {
+
         return snapshot.docs[0].id;
     }
+
 
     const docRef =
         await addDoc(
             favoritosRef,
             {
-                userId: user.uid,
+                userId:
+                    user.uid,
+
                 eventId:
                     normalizeId(
                         eventId
                     ),
+
                 createdAt:
                     serverTimestamp()
             }
         );
+
 
     return docRef.id;
 }
@@ -1054,13 +1412,16 @@ export async function isFavorite(
     const user =
         usuarioActual();
 
+
     if (!user) {
         return false;
     }
 
+
     if (!eventId) {
         return false;
     }
+
 
     const q =
         query(
@@ -1082,8 +1443,10 @@ export async function isFavorite(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
+
 
     return !snapshot.empty;
 }
@@ -1099,15 +1462,19 @@ export async function removeFavorite(
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión."
         );
     }
 
+
     if (!eventId) {
         return false;
     }
+
 
     const q =
         query(
@@ -1129,8 +1496,10 @@ export async function removeFavorite(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
+
 
     for (
         const docSnap of snapshot.docs
@@ -1140,6 +1509,7 @@ export async function removeFavorite(
             docSnap.ref
         );
     }
+
 
     return true;
 }
@@ -1153,11 +1523,14 @@ export async function getUserFavorites() {
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión."
         );
     }
+
 
     const q =
         query(
@@ -1172,12 +1545,16 @@ export async function getUserFavorites() {
             )
         );
 
+
     const snapshot =
         await getDocs(q);
 
+
     return snapshot.docs.map(
         docSnap => ({
-            id: docSnap.id,
+            id:
+                docSnap.id,
+
             ...docSnap.data()
         })
     );
@@ -1198,22 +1575,27 @@ export async function addReminder(
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión para crear recordatorios."
         );
     }
+
 
     requireValue(
         eventId,
         "El ID del evento es obligatorio."
     );
 
+
     const recordatoriosRef =
         collection(
             db,
             RECORDATORIOS_COLLECTION
         );
+
 
     const q =
         query(
@@ -1232,26 +1614,36 @@ export async function addReminder(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
 
-    if (!snapshot.empty) {
+
+    if (
+        !snapshot.empty
+    ) {
+
         return snapshot.docs[0].id;
     }
+
 
     const docRef =
         await addDoc(
             recordatoriosRef,
             {
-                userId: user.uid,
+                userId:
+                    user.uid,
+
                 eventId:
                     normalizeId(
                         eventId
                     ),
+
                 createdAt:
                     serverTimestamp()
             }
         );
+
 
     return docRef.id;
 }
@@ -1267,12 +1659,14 @@ export async function isReminder(
     const user =
         usuarioActual();
 
+
     if (
         !user ||
         !eventId
     ) {
         return false;
     }
+
 
     const q =
         query(
@@ -1294,8 +1688,10 @@ export async function isReminder(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
+
 
     return !snapshot.empty;
 }
@@ -1311,15 +1707,19 @@ export async function removeReminder(
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión."
         );
     }
 
+
     if (!eventId) {
         return false;
     }
+
 
     const q =
         query(
@@ -1341,8 +1741,10 @@ export async function removeReminder(
             )
         );
 
+
     const snapshot =
         await getDocs(q);
+
 
     for (
         const docSnap of snapshot.docs
@@ -1352,6 +1754,7 @@ export async function removeReminder(
             docSnap.ref
         );
     }
+
 
     return true;
 }
@@ -1365,11 +1768,14 @@ export async function getUserReminders() {
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión."
         );
     }
+
 
     const q =
         query(
@@ -1384,12 +1790,16 @@ export async function getUserReminders() {
             )
         );
 
+
     const snapshot =
         await getDocs(q);
 
+
     return snapshot.docs.map(
         docSnap => ({
-            id: docSnap.id,
+            id:
+                docSnap.id,
+
             ...docSnap.data()
         })
     );
@@ -1410,20 +1820,25 @@ export async function createInvitation(
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión para crear una invitación."
         );
     }
 
+
     if (
         !invitationData ||
         typeof invitationData !== "object"
     ) {
+
         throw new Error(
             "Los datos de la invitación no son válidos."
         );
     }
+
 
     const data = {
         ...invitationData
@@ -1435,16 +1850,14 @@ export async function createInvitation(
     ----------------------------------------------------- */
 
     if (!data.usuarioId) {
-        data.usuarioId = user.uid;
+        data.usuarioId =
+            user.uid;
     }
 
 
-    /* -----------------------------------------------------
-       Compatibilidad con userId
-    ----------------------------------------------------- */
-
     if (!data.userId) {
-        data.userId = user.uid;
+        data.userId =
+            user.uid;
     }
 
 
@@ -1453,6 +1866,7 @@ export async function createInvitation(
     ----------------------------------------------------- */
 
     if (!data.createdAt) {
+
         data.createdAt =
             serverTimestamp();
     }
@@ -1466,6 +1880,7 @@ export async function createInvitation(
             ),
             data
         );
+
 
     return docRef.id;
 }
@@ -1483,6 +1898,7 @@ export async function getInvitationById(
         "El ID de la invitación es obligatorio."
     );
 
+
     const docRef =
         doc(
             db,
@@ -1490,17 +1906,24 @@ export async function getInvitationById(
             normalizeId(id)
         );
 
+
     const snapshot =
         await getDoc(
             docRef
         );
 
-    if (!snapshot.exists()) {
+
+    if (
+        !snapshot.exists()
+    ) {
         return null;
     }
 
+
     return {
-        id: snapshot.id,
+        id:
+            snapshot.id,
+
         ...snapshot.data()
     };
 }
@@ -1516,11 +1939,14 @@ export async function getUserInvitations() {
     const user =
         usuarioActual();
 
+
     if (!user) {
+
         throw new Error(
             "Debes iniciar sesión."
         );
     }
+
 
     const invitacionesRef =
         collection(
@@ -1528,9 +1954,11 @@ export async function getUserInvitations() {
             INVITACIONES_COLLECTION
         );
 
+
     const resultados = [];
 
-    const ids = new Set();
+    const ids =
+        new Set();
 
 
     /* -----------------------------------------------------
@@ -1546,6 +1974,7 @@ export async function getUserInvitations() {
                 user.uid
             )
         );
+
 
     const snapshotUsuarioId =
         await getDocs(
@@ -1567,7 +1996,9 @@ export async function getUserInvitations() {
                 );
 
                 resultados.push({
-                    id: docSnap.id,
+                    id:
+                        docSnap.id,
+
                     ...docSnap.data()
                 });
             }
@@ -1589,6 +2020,7 @@ export async function getUserInvitations() {
             )
         );
 
+
     const snapshotUserId =
         await getDocs(
             qUserId
@@ -1609,7 +2041,9 @@ export async function getUserInvitations() {
                 );
 
                 resultados.push({
-                    id: docSnap.id,
+                    id:
+                        docSnap.id,
+
                     ...docSnap.data()
                 });
             }
@@ -1637,11 +2071,13 @@ export async function getInvitationByEventId(
         "El ID del evento es obligatorio."
     );
 
+
     const invitacionesRef =
         collection(
             db,
             INVITACIONES_COLLECTION
         );
+
 
     const idNormalizado =
         normalizeId(
@@ -1663,17 +2099,22 @@ export async function getInvitationByEventId(
             )
         );
 
+
     const snapshotEventId =
         await getDocs(
             qEventId
         );
 
-    if (!snapshotEventId.empty) {
+
+    if (
+        !snapshotEventId.empty
+    ) {
 
         return {
             id:
                 snapshotEventId
-                    .docs[0].id,
+                    .docs[0]
+                    .id,
 
             ...snapshotEventId
                 .docs[0]
@@ -1696,17 +2137,22 @@ export async function getInvitationByEventId(
             )
         );
 
+
     const snapshotEventoId =
         await getDocs(
             qEventoId
         );
 
-    if (!snapshotEventoId.empty) {
+
+    if (
+        !snapshotEventoId.empty
+    ) {
 
         return {
             id:
                 snapshotEventoId
-                    .docs[0].id,
+                    .docs[0]
+                    .id,
 
             ...snapshotEventoId
                 .docs[0]
@@ -1732,14 +2178,17 @@ export async function updateInvitation(
         "El ID de la invitación es obligatorio."
     );
 
+
     if (
         !invitationData ||
         typeof invitationData !== "object"
     ) {
+
         throw new Error(
             "Los datos de la invitación no son válidos."
         );
     }
+
 
     const docRef =
         doc(
@@ -1748,10 +2197,12 @@ export async function updateInvitation(
             normalizeId(id)
         );
 
+
     await updateDoc(
         docRef,
         invitationData
     );
+
 
     return true;
 }
@@ -1769,6 +2220,7 @@ export async function deleteInvitation(
         "El ID de la invitación es obligatorio."
     );
 
+
     const docRef =
         doc(
             db,
@@ -1776,9 +2228,11 @@ export async function deleteInvitation(
             normalizeId(id)
         );
 
+
     await deleteDoc(
         docRef
     );
+
 
     return true;
 }
@@ -1788,10 +2242,6 @@ export async function deleteInvitation(
    EXPORTACIÓN
 ========================================================= */
 
-/**
- * Se mantiene la exportación de db para módulos
- * que ya la utilicen directamente.
- */
 export {
     db
 };
