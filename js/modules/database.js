@@ -50,6 +50,8 @@ const FAVORITOS_COLLECTION = "favoritos";
 const RECORDATORIOS_COLLECTION = "recordatorios";
 const INVITACIONES_COLLECTION = "invitaciones";
 
+const TIMEZONE_CHILE = "America/Santiago";
+
 
 /* =========================================================
    UTILIDADES GENERALES
@@ -71,9 +73,7 @@ function usuarioActual() {
  * tenían nombres diferentes.
  */
 function firstValue(...values) {
-
     for (const value of values) {
-
         if (
             value !== undefined &&
             value !== null &&
@@ -92,7 +92,6 @@ function firstValue(...values) {
  * entre números y strings.
  */
 function normalizeId(value) {
-
     if (
         value === undefined ||
         value === null
@@ -111,7 +110,6 @@ function requireValue(
     value,
     message
 ) {
-
     if (
         value === undefined ||
         value === null ||
@@ -129,30 +127,125 @@ function requireValue(
 ========================================================= */
 
 /**
- * Obtiene la fecha actual en formato:
+ * Devuelve la fecha actual de Chile en formato:
  *
  * YYYY-MM-DD
  *
- * Se utilizan los valores locales del navegador.
+ * IMPORTANTE:
+ * Se utiliza explícitamente America/Santiago para que
+ * OTIUM no dependa de la zona horaria configurada en
+ * el computador o teléfono del usuario.
  */
 function obtenerFechaActualISO() {
+    const ahora = new Date();
 
-    const hoy = new Date();
+    const partes = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone: TIMEZONE_CHILE,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    ).formatToParts(ahora);
 
-    const año =
-        hoy.getFullYear();
+    const valores = {};
 
-    const mes =
-        String(
-            hoy.getMonth() + 1
-        ).padStart(2, "0");
+    for (const parte of partes) {
+        if (parte.type !== "literal") {
+            valores[parte.type] = parte.value;
+        }
+    }
 
-    const dia =
-        String(
-            hoy.getDate()
-        ).padStart(2, "0");
+    return `${valores.year}-${valores.month}-${valores.day}`;
+}
 
-    return `${año}-${mes}-${dia}`;
+
+/**
+ * Convierte una fecha Date a YYYY-MM-DD usando
+ * explícitamente la zona horaria de Chile.
+ */
+function dateAISOChile(date) {
+    if (!(date instanceof Date)) {
+        return null;
+    }
+
+    if (Number.isNaN(date.getTime())) {
+        return null;
+    }
+
+    const partes = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone: TIMEZONE_CHILE,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    ).formatToParts(date);
+
+    const valores = {};
+
+    for (const parte of partes) {
+        if (parte.type !== "literal") {
+            valores[parte.type] = parte.value;
+        }
+    }
+
+    if (
+        !valores.year ||
+        !valores.month ||
+        !valores.day
+    ) {
+        return null;
+    }
+
+    return `${valores.year}-${valores.month}-${valores.day}`;
+}
+
+
+/**
+ * Valida que una fecha YYYY-MM-DD sea realmente válida.
+ *
+ * Evita aceptar fechas imposibles como:
+ * 2026-02-31
+ */
+function validarFechaISO(fechaISO) {
+    if (
+        typeof fechaISO !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(fechaISO)
+    ) {
+        return false;
+    }
+
+    const partes = fechaISO.split("-").map(Number);
+
+    const año = partes[0];
+    const mes = partes[1];
+    const dia = partes[2];
+
+    if (
+        mes < 1 ||
+        mes > 12 ||
+        dia < 1 ||
+        dia > 31
+    ) {
+        return false;
+    }
+
+    const fecha = new Date(
+        Date.UTC(
+            año,
+            mes - 1,
+            dia
+        )
+    );
+
+    return (
+        fecha.getUTCFullYear() === año &&
+        fecha.getUTCMonth() === mes - 1 &&
+        fecha.getUTCDate() === dia
+    );
 }
 
 
@@ -164,13 +257,24 @@ function obtenerFechaActualISO() {
  *
  * - YYYY-MM-DD
  * - YYYY-MM-DDTHH:mm:ss
- * - DD-MM-YYYY
+ * - YYYY/MM/DD
+ * - YYYY/MM/DDTHH:mm:ss
  * - DD/MM/YYYY
+ * - DD-MM-YYYY
  * - Date
  * - Firestore Timestamp
+ *
+ * IMPORTANTE:
+ *
+ * - Las fechas escritas como texto se interpretan
+ *   como fechas de calendario y no se convierten
+ *   mediante new Date(), evitando desplazamientos
+ *   por zona horaria.
+ *
+ * - Los objetos Date y Firestore Timestamp se convierten
+ *   usando America/Santiago.
  */
 function normalizarFecha(value) {
-
     if (
         value === undefined ||
         value === null ||
@@ -188,7 +292,6 @@ function normalizarFecha(value) {
         typeof value === "object" &&
         typeof value.toDate === "function"
     ) {
-
         return normalizarFecha(
             value.toDate()
         );
@@ -202,29 +305,7 @@ function normalizarFecha(value) {
     if (
         value instanceof Date
     ) {
-
-        if (
-            Number.isNaN(
-                value.getTime()
-            )
-        ) {
-            return null;
-        }
-
-        const año =
-            value.getFullYear();
-
-        const mes =
-            String(
-                value.getMonth() + 1
-            ).padStart(2, "0");
-
-        const dia =
-            String(
-                value.getDate()
-            ).padStart(2, "0");
-
-        return `${año}-${mes}-${dia}`;
+        return dateAISOChile(value);
     }
 
 
@@ -232,9 +313,7 @@ function normalizarFecha(value) {
        String
     ----------------------------------------------------- */
 
-    const texto =
-        String(value)
-            .trim();
+    const texto = String(value).trim();
 
     if (!texto) {
         return null;
@@ -244,16 +323,62 @@ function normalizarFecha(value) {
     /* -----------------------------------------------------
        YYYY-MM-DD
        YYYY-MM-DDTHH:mm:ss
+       YYYY-MM-DD HH:mm:ss
     ----------------------------------------------------- */
 
-    const isoMatch =
-        texto.match(
-            /^(\d{4})-(\d{2})-(\d{2})/
-        );
+    const isoMatch = texto.match(
+        /^(\d{4})-(\d{1,2})-(\d{1,2})/
+    );
 
     if (isoMatch) {
+        const año = isoMatch[1];
 
-        return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+        const mes = String(
+            isoMatch[2]
+        ).padStart(2, "0");
+
+        const dia = String(
+            isoMatch[3]
+        ).padStart(2, "0");
+
+        const resultado = `${año}-${mes}-${dia}`;
+
+        if (validarFechaISO(resultado)) {
+            return resultado;
+        }
+
+        return null;
+    }
+
+
+    /* -----------------------------------------------------
+       YYYY/MM/DD
+       YYYY/MM/DDTHH:mm:ss
+       YYYY/MM/DD HH:mm:ss
+    ----------------------------------------------------- */
+
+    const yearSlashMatch = texto.match(
+        /^(\d{4})\/(\d{1,2})\/(\d{1,2})/
+    );
+
+    if (yearSlashMatch) {
+        const año = yearSlashMatch[1];
+
+        const mes = String(
+            yearSlashMatch[2]
+        ).padStart(2, "0");
+
+        const dia = String(
+            yearSlashMatch[3]
+        ).padStart(2, "0");
+
+        const resultado = `${año}-${mes}-${dia}`;
+
+        if (validarFechaISO(resultado)) {
+            return resultado;
+        }
+
+        return null;
     }
 
 
@@ -261,27 +386,28 @@ function normalizarFecha(value) {
        DD/MM/YYYY
     ----------------------------------------------------- */
 
-    const slashMatch =
-        texto.match(
-            /^(\d{1,2})\/(\d{1,2})\/(\d{4})/
-        );
+    const slashMatch = texto.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})/
+    );
 
     if (slashMatch) {
+        const dia = String(
+            slashMatch[1]
+        ).padStart(2, "0");
 
-        const dia =
-            String(
-                slashMatch[1]
-            ).padStart(2, "0");
+        const mes = String(
+            slashMatch[2]
+        ).padStart(2, "0");
 
-        const mes =
-            String(
-                slashMatch[2]
-            ).padStart(2, "0");
+        const año = slashMatch[3];
 
-        const año =
-            slashMatch[3];
+        const resultado = `${año}-${mes}-${dia}`;
 
-        return `${año}-${mes}-${dia}`;
+        if (validarFechaISO(resultado)) {
+            return resultado;
+        }
+
+        return null;
     }
 
 
@@ -289,29 +415,48 @@ function normalizarFecha(value) {
        DD-MM-YYYY
     ----------------------------------------------------- */
 
-    const dashMatch =
-        texto.match(
-            /^(\d{1,2})-(\d{1,2})-(\d{4})/
-        );
+    const dashMatch = texto.match(
+        /^(\d{1,2})-(\d{1,2})-(\d{4})/
+    );
 
     if (dashMatch) {
+        const dia = String(
+            dashMatch[1]
+        ).padStart(2, "0");
 
-        const dia =
-            String(
-                dashMatch[1]
-            ).padStart(2, "0");
+        const mes = String(
+            dashMatch[2]
+        ).padStart(2, "0");
 
-        const mes =
-            String(
-                dashMatch[2]
-            ).padStart(2, "0");
+        const año = dashMatch[3];
 
-        const año =
-            dashMatch[3];
+        const resultado = `${año}-${mes}-${dia}`;
 
-        return `${año}-${mes}-${dia}`;
+        if (validarFechaISO(resultado)) {
+            return resultado;
+        }
+
+        return null;
     }
 
+
+    /* -----------------------------------------------------
+       Último intento:
+       fechas que puedan venir como texto completo
+       interpretable por JavaScript.
+    ----------------------------------------------------- */
+
+    const fechaIntentada = new Date(texto);
+
+    if (
+        !Number.isNaN(
+            fechaIntentada.getTime()
+        )
+    ) {
+        return dateAISOChile(
+            fechaIntentada
+        );
+    }
 
     return null;
 }
@@ -324,9 +469,11 @@ function normalizarFecha(value) {
  *
  * 1. fechaInicio
  * 2. fecha
+ *
+ * fechaTermino NO reemplaza a fechaInicio aquí,
+ * porque representa el término del evento.
  */
 function obtenerFechaInicioEvento(evento) {
-
     return normalizarFecha(
         firstValue(
             evento.fechaInicio,
@@ -337,22 +484,67 @@ function obtenerFechaInicioEvento(evento) {
 
 
 /**
- * Obtiene la fecha final de un evento.
+ * Obtiene la fecha final efectiva de un evento.
  *
- * Prioridad:
+ * REGLA PRINCIPAL DE OTIUM:
  *
- * 1. fechaTermino
- * 2. fechaInicio
- * 3. fecha
+ * 1. Si existe fechaTermino -> fechaTermino MANDA.
+ * 2. Si no existe fechaTermino -> usar fechaInicio.
+ * 3. Si tampoco existe fechaInicio -> usar fecha antigua.
+ *
+ * Esto permite manejar:
+ *
+ * - evento de un día:
+ *   fechaInicio = 2026-09-18
+ *
+ * - evento de varios días:
+ *   fechaInicio = 2026-09-18
+ *   fechaTermino = 2026-09-20
+ *
+ * - evento antiguo:
+ *   fecha = 2026-09-18
  */
 function obtenerFechaTerminoEvento(evento) {
+    if (!evento || typeof evento !== "object") {
+        return null;
+    }
+
+
+    /* -----------------------------------------------------
+       REGLA 1:
+       Si existe fechaTermino, esa fecha manda.
+    ----------------------------------------------------- */
+
+    const fechaTermino = normalizarFecha(
+        evento.fechaTermino
+    );
+
+    if (fechaTermino) {
+        return fechaTermino;
+    }
+
+
+    /* -----------------------------------------------------
+       REGLA 2:
+       Si no existe fechaTermino, usamos fechaInicio.
+    ----------------------------------------------------- */
+
+    const fechaInicio = normalizarFecha(
+        evento.fechaInicio
+    );
+
+    if (fechaInicio) {
+        return fechaInicio;
+    }
+
+
+    /* -----------------------------------------------------
+       REGLA 3:
+       Compatibilidad con campo fecha antiguo.
+    ----------------------------------------------------- */
 
     return normalizarFecha(
-        firstValue(
-            evento.fechaTermino,
-            evento.fechaInicio,
-            evento.fecha
-        )
+        evento.fecha
     );
 }
 
@@ -360,65 +552,59 @@ function obtenerFechaTerminoEvento(evento) {
 /**
  * Determina si un evento es visible.
  *
- * Un evento se mantiene visible mientras su fecha final
- * sea hoy o posterior.
+ * REGLA:
  *
- * Esto permite:
+ * Un evento permanece visible mientras su fecha final
+ * efectiva sea hoy o posterior.
  *
- * - eventos de un día
- * - eventos de varios días
- * - eventos que comenzaron antes de hoy
- * - eventos que comienzan hoy
- * - eventos futuros
+ * Por lo tanto:
+ *
+ * - Evento de un día:
+ *   termina hoy -> visible.
+ *
+ * - Evento de varios días:
+ *   fechaTermino futura -> visible.
+ *
+ * - Evento iniciado anteriormente pero todavía vigente:
+ *   fechaTermino >= hoy -> visible.
+ *
+ * - Evento completamente pasado:
+ *   fechaTermino < hoy -> no visible.
  */
 function eventoEsVisible(
     evento,
     fechaActual
 ) {
-
-    const fechaInicio =
-        obtenerFechaInicioEvento(
-            evento
-        );
-
     const fechaTermino =
         obtenerFechaTerminoEvento(
             evento
         );
 
-
-    if (
-        !fechaInicio &&
-        !fechaTermino
-    ) {
+    if (!fechaTermino) {
         return false;
     }
 
-
-    const inicio =
-        fechaInicio ||
-        fechaTermino;
-
-    const termino =
-        fechaTermino ||
-        fechaInicio;
-
-
     return (
-        termino >= fechaActual ||
-        inicio >= fechaActual
+        fechaTermino >= fechaActual
     );
 }
 
 
 /**
  * Determina si un evento está vigente exactamente hoy.
+ *
+ * Para un evento de varios días:
+ *
+ * fechaInicio <= hoy <= fechaTermino
+ *
+ * Para un evento de un día:
+ *
+ * fechaInicio = fechaTermino = hoy
  */
 function eventoEstaVigente(
     evento,
     fechaActual
 ) {
-
     const fechaInicio =
         obtenerFechaInicioEvento(
             evento
@@ -429,14 +615,12 @@ function eventoEstaVigente(
             evento
         );
 
-
     if (
         !fechaInicio &&
         !fechaTermino
     ) {
         return false;
     }
-
 
     const inicio =
         fechaInicio ||
@@ -445,7 +629,6 @@ function eventoEstaVigente(
     const termino =
         fechaTermino ||
         fechaInicio;
-
 
     return (
         inicio <= fechaActual &&
@@ -456,38 +639,59 @@ function eventoEstaVigente(
 
 /**
  * Calcula una fecha límite retrocediendo cierta cantidad
- * de días desde hoy.
+ * de días desde hoy en horario de Chile.
+ *
+ * Por defecto:
+ * 90 días.
  */
 function obtenerFechaLimiteLimpieza(
     dias = 90
 ) {
+    const diasNumericos = Number(dias);
 
-    const fecha =
-        new Date();
+    if (
+        !Number.isFinite(
+            diasNumericos
+        )
+    ) {
+        return null;
+    }
 
-    fecha.setHours(
-        0,
-        0,
-        0,
-        0
+    /*
+     * Obtenemos primero la fecha actual de Chile.
+     * Se trabaja con UTC internamente para manipular
+     * únicamente el calendario y evitar desplazamientos.
+     */
+    const fechaActual = obtenerFechaActualISO();
+
+    const partes = fechaActual
+        .split("-")
+        .map(Number);
+
+    const fecha = new Date(
+        Date.UTC(
+            partes[0],
+            partes[1] - 1,
+            partes[2]
+        )
     );
 
-    fecha.setDate(
-        fecha.getDate() -
-        Number(dias)
+    fecha.setUTCDate(
+        fecha.getUTCDate() -
+        diasNumericos
     );
 
     const año =
-        fecha.getFullYear();
+        fecha.getUTCFullYear();
 
     const mes =
         String(
-            fecha.getMonth() + 1
+            fecha.getUTCMonth() + 1
         ).padStart(2, "0");
 
     const dia =
         String(
-            fecha.getDate()
+            fecha.getUTCDate()
         ).padStart(2, "0");
 
     return `${año}-${mes}-${dia}`;
@@ -509,7 +713,6 @@ function obtenerFechaLimiteLimpieza(
 function mapearEvento(
     docSnap
 ) {
-
     return {
         id: docSnap.id,
         firestoreId: docSnap.id,
@@ -530,24 +733,19 @@ function mapearEvento(
 export async function saveEvent(
     eventData
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión para publicar un evento."
         );
     }
 
-
     if (
         !eventData ||
         typeof eventData !== "object"
     ) {
-
         throw new Error(
             "Los datos del evento no son válidos."
         );
@@ -565,7 +763,6 @@ export async function saveEvent(
 
     /* -----------------------------------------------------
        USUARIO PROPIETARIO
-       
        OTIUM utiliza actualmente "usuarioId".
        Se elimina userId para evitar duplicidad.
     ----------------------------------------------------- */
@@ -581,7 +778,6 @@ export async function saveEvent(
     ----------------------------------------------------- */
 
     if (!data.createdAt) {
-
         data.createdAt =
             serverTimestamp();
     }
@@ -600,7 +796,6 @@ export async function saveEvent(
             data
         );
 
-
     return docRef.id;
 }
 
@@ -612,14 +807,12 @@ export async function saveEvent(
 /**
  * OBTENER EVENTOS
  *
- * IMPORTANTE:
- *
- * En esta versión se obtiene la colección completa y
- * posteriormente se filtra en JavaScript.
+ * Obtiene la colección completa y posteriormente
+ * filtra en JavaScript.
  *
  * Esto evita que eventos importados desde Excel queden
- * fuera por diferencias en el formato o estructura de
- * sus campos de fecha.
+ * fuera por diferencias en el formato o estructura
+ * de sus campos de fecha.
  *
  * Campos compatibles:
  *
@@ -638,10 +831,8 @@ export async function saveEvent(
  * NO elimina ningún documento.
  */
 export async function getEvents() {
-
     const fechaActual =
         obtenerFechaActualISO();
-
 
     const eventosRef =
         collection(
@@ -652,14 +843,6 @@ export async function getEvents() {
 
     /* -----------------------------------------------------
        LEER TODOS LOS EVENTOS
-       
-       Esta es la parte importante de la corrección.
-       
-       Antes se utilizaban consultas independientes con
-       where() sobre fechaInicio / fechaTermino / fecha.
-       
-       Ahora primero obtenemos los documentos reales de
-       Firestore y después aplicamos el filtro de fechas.
     ----------------------------------------------------- */
 
     const snapshot =
@@ -667,6 +850,10 @@ export async function getEvents() {
             eventosRef
         );
 
+    console.log(
+        "[OTIUM] Fecha actual Chile:",
+        fechaActual
+    );
 
     console.log(
         "[OTIUM] Documentos encontrados en Firestore:",
@@ -686,9 +873,6 @@ export async function getEvents() {
 
     /* -----------------------------------------------------
        MOSTRAR INFORMACIÓN DE FECHAS EN CONSOLA
-       
-       Esto permite detectar fácilmente si algún documento
-       tiene una estructura diferente.
     ----------------------------------------------------- */
 
     console.log(
@@ -708,7 +892,23 @@ export async function getEvents() {
                     evento.fechaTermino,
 
                 fecha:
-                    evento.fecha
+                    evento.fecha,
+
+                fechaInicioNormalizada:
+                    obtenerFechaInicioEvento(
+                        evento
+                    ),
+
+                fechaTerminoNormalizada:
+                    obtenerFechaTerminoEvento(
+                        evento
+                    ),
+
+                visible:
+                    eventoEsVisible(
+                        evento,
+                        fechaActual
+                    )
             })
         )
     );
@@ -735,11 +935,9 @@ export async function getEvents() {
     const ids =
         new Set();
 
-
     eventos =
         eventos.filter(
             evento => {
-
                 if (
                     ids.has(
                         evento.id
@@ -748,11 +946,9 @@ export async function getEvents() {
                     return false;
                 }
 
-
                 ids.add(
                     evento.id
                 );
-
 
                 return true;
             }
@@ -761,29 +957,24 @@ export async function getEvents() {
 
     /* -----------------------------------------------------
        ORDENAR POR FECHA DE INICIO
-       
        Prioridad:
-       
        1. fechaInicio
        2. fecha
     ----------------------------------------------------- */
 
     eventos.sort(
         (a, b) => {
-
             const fechaA =
                 obtenerFechaInicioEvento(
                     a
                 ) ||
                 "9999-12-31";
 
-
             const fechaB =
                 obtenerFechaInicioEvento(
                     b
                 ) ||
                 "9999-12-31";
-
 
             return fechaA.localeCompare(
                 fechaB
@@ -801,14 +992,12 @@ export async function getEvents() {
         eventos.length
     );
 
-
     console.log(
         "[OTIUM] IDs de eventos cargados:",
         eventos.map(
             evento => evento.id
         )
     );
-
 
     return eventos;
 }
@@ -830,7 +1019,6 @@ export async function getEvents() {
  * - limpieza
  */
 export async function getAllEvents() {
-
     const snapshot =
         await getDocs(
             collection(
@@ -838,7 +1026,6 @@ export async function getAllEvents() {
                 EVENTOS_COLLECTION
             )
         );
-
 
     return snapshot.docs.map(
         mapearEvento
@@ -853,35 +1040,29 @@ export async function getAllEvents() {
 /**
  * Obtiene eventos cuya fecha de término ya pasó.
  *
- * Compatible con:
+ * REGLA:
  *
- * - fechaTermino
- * - fechaInicio
- * - fecha
+ * - fechaTermino manda cuando existe.
+ * - si no existe, fechaInicio.
+ * - si tampoco existe, fecha antigua.
  */
 export async function getPastEvents() {
-
     const fechaActual =
         obtenerFechaActualISO();
-
 
     const eventos =
         await getAllEvents();
 
-
     return eventos.filter(
         evento => {
-
             const fechaTermino =
                 obtenerFechaTerminoEvento(
                     evento
                 );
 
-
             if (!fechaTermino) {
                 return false;
             }
-
 
             return (
                 fechaTermino <
@@ -901,7 +1082,6 @@ export async function getPastEvents() {
  * a la fecha límite.
  *
  * Por defecto:
- *
  * 90 días.
  *
  * IMPORTANTE:
@@ -912,10 +1092,8 @@ export async function getPastEvents() {
 export async function getEventsForCleanup(
     dias = 90
 ) {
-
     const diasNumericos =
         Number(dias);
-
 
     if (
         !Number.isFinite(
@@ -923,36 +1101,29 @@ export async function getEventsForCleanup(
         ) ||
         diasNumericos < 1
     ) {
-
         throw new Error(
             "La cantidad de días debe ser un número mayor que 0."
         );
     }
-
 
     const fechaLimite =
         obtenerFechaLimiteLimpieza(
             diasNumericos
         );
 
-
     const eventos =
         await getAllEvents();
 
-
     return eventos.filter(
         evento => {
-
             const fechaTermino =
                 obtenerFechaTerminoEvento(
                     evento
                 );
 
-
             if (!fechaTermino) {
                 return false;
             }
-
 
             return (
                 fechaTermino <
@@ -974,12 +1145,10 @@ export async function getEventsForCleanup(
 export async function getEventById(
     id
 ) {
-
     requireValue(
         id,
         "El ID del evento es obligatorio."
     );
-
 
     const docRef =
         doc(
@@ -988,19 +1157,16 @@ export async function getEventById(
             normalizeId(id)
         );
 
-
     const snapshot =
         await getDoc(
             docRef
         );
-
 
     if (
         !snapshot.exists()
     ) {
         return null;
     }
-
 
     return mapearEvento(
         snapshot
@@ -1022,25 +1188,20 @@ export async function getEventById(
  * - ownerId
  */
 export async function getUserEvents() {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión para ver tus eventos."
         );
     }
-
 
     const eventosRef =
         collection(
             db,
             EVENTOS_COLLECTION
         );
-
 
     const resultados = [];
 
@@ -1063,26 +1224,21 @@ export async function getUserEvents() {
             )
         );
 
-
     const snapshotUsuarioId =
         await getDocs(
             qUsuarioId
         );
 
-
     snapshotUsuarioId.docs.forEach(
         docSnap => {
-
             if (
                 !ids.has(
                     docSnap.id
                 )
             ) {
-
                 ids.add(
                     docSnap.id
                 );
-
 
                 resultados.push(
                     mapearEvento(
@@ -1109,26 +1265,21 @@ export async function getUserEvents() {
             )
         );
 
-
     const snapshotUserId =
         await getDocs(
             qUserId
         );
 
-
     snapshotUserId.docs.forEach(
         docSnap => {
-
             if (
                 !ids.has(
                     docSnap.id
                 )
             ) {
-
                 ids.add(
                     docSnap.id
                 );
-
 
                 resultados.push(
                     mapearEvento(
@@ -1155,26 +1306,21 @@ export async function getUserEvents() {
             )
         );
 
-
     const snapshotOwnerId =
         await getDocs(
             qOwnerId
         );
 
-
     snapshotOwnerId.docs.forEach(
         docSnap => {
-
             if (
                 !ids.has(
                     docSnap.id
                 )
             ) {
-
                 ids.add(
                     docSnap.id
                 );
-
 
                 resultados.push(
                     mapearEvento(
@@ -1184,7 +1330,6 @@ export async function getUserEvents() {
             }
         }
     );
-
 
     return resultados;
 }
@@ -1201,23 +1346,19 @@ export async function updateEvent(
     id,
     eventData
 ) {
-
     requireValue(
         id,
         "El ID del evento es obligatorio."
     );
 
-
     if (
         !eventData ||
         typeof eventData !== "object"
     ) {
-
         throw new Error(
             "Los datos del evento no son válidos."
         );
     }
-
 
     const docRef =
         doc(
@@ -1226,12 +1367,10 @@ export async function updateEvent(
             normalizeId(id)
         );
 
-
     await updateDoc(
         docRef,
         eventData
     );
-
 
     return true;
 }
@@ -1252,12 +1391,10 @@ export async function updateEvent(
 export async function deleteEvent(
     id
 ) {
-
     requireValue(
         id,
         "El ID del evento es obligatorio."
     );
-
 
     const docRef =
         doc(
@@ -1266,11 +1403,9 @@ export async function deleteEvent(
             normalizeId(id)
         );
 
-
     await deleteDoc(
         docRef
     );
-
 
     return true;
 }
@@ -1286,31 +1421,25 @@ export async function deleteEvent(
 export async function addFavorite(
     eventId
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión para guardar favoritos."
         );
     }
-
 
     requireValue(
         eventId,
         "El ID del evento es obligatorio."
     );
 
-
     const favoritosRef =
         collection(
             db,
             FAVORITOS_COLLECTION
         );
-
 
     const q =
         query(
@@ -1329,18 +1458,14 @@ export async function addFavorite(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     if (
         !snapshot.empty
     ) {
-
         return snapshot.docs[0].id;
     }
-
 
     const docRef =
         await addDoc(
@@ -1359,7 +1484,6 @@ export async function addFavorite(
             }
         );
 
-
     return docRef.id;
 }
 
@@ -1370,20 +1494,16 @@ export async function addFavorite(
 export async function isFavorite(
     eventId
 ) {
-
     const user =
         usuarioActual();
-
 
     if (!user) {
         return false;
     }
 
-
     if (!eventId) {
         return false;
     }
-
 
     const q =
         query(
@@ -1405,10 +1525,8 @@ export async function isFavorite(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     return !snapshot.empty;
 }
@@ -1420,23 +1538,18 @@ export async function isFavorite(
 export async function removeFavorite(
     eventId
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión."
         );
     }
 
-
     if (!eventId) {
         return false;
     }
-
 
     const q =
         query(
@@ -1458,20 +1571,16 @@ export async function removeFavorite(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     for (
         const docSnap of snapshot.docs
     ) {
-
         await deleteDoc(
             docSnap.ref
         );
     }
-
 
     return true;
 }
@@ -1481,18 +1590,14 @@ export async function removeFavorite(
  * Obtener favoritos del usuario.
  */
 export async function getUserFavorites() {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión."
         );
     }
-
 
     const q =
         query(
@@ -1507,10 +1612,8 @@ export async function getUserFavorites() {
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     return snapshot.docs.map(
         docSnap => ({
@@ -1533,31 +1636,25 @@ export async function getUserFavorites() {
 export async function addReminder(
     eventId
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión para crear recordatorios."
         );
     }
-
 
     requireValue(
         eventId,
         "El ID del evento es obligatorio."
     );
 
-
     const recordatoriosRef =
         collection(
             db,
             RECORDATORIOS_COLLECTION
         );
-
 
     const q =
         query(
@@ -1576,18 +1673,14 @@ export async function addReminder(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     if (
         !snapshot.empty
     ) {
-
         return snapshot.docs[0].id;
     }
-
 
     const docRef =
         await addDoc(
@@ -1606,7 +1699,6 @@ export async function addReminder(
             }
         );
 
-
     return docRef.id;
 }
 
@@ -1617,10 +1709,8 @@ export async function addReminder(
 export async function isReminder(
     eventId
 ) {
-
     const user =
         usuarioActual();
-
 
     if (
         !user ||
@@ -1628,7 +1718,6 @@ export async function isReminder(
     ) {
         return false;
     }
-
 
     const q =
         query(
@@ -1650,10 +1739,8 @@ export async function isReminder(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     return !snapshot.empty;
 }
@@ -1665,23 +1752,18 @@ export async function isReminder(
 export async function removeReminder(
     eventId
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión."
         );
     }
 
-
     if (!eventId) {
         return false;
     }
-
 
     const q =
         query(
@@ -1703,20 +1785,16 @@ export async function removeReminder(
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     for (
         const docSnap of snapshot.docs
     ) {
-
         await deleteDoc(
             docSnap.ref
         );
     }
-
 
     return true;
 }
@@ -1726,18 +1804,14 @@ export async function removeReminder(
  * Obtener recordatorios del usuario.
  */
 export async function getUserReminders() {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión."
         );
     }
-
 
     const q =
         query(
@@ -1752,10 +1826,8 @@ export async function getUserReminders() {
             )
         );
 
-
     const snapshot =
         await getDocs(q);
-
 
     return snapshot.docs.map(
         docSnap => ({
@@ -1778,29 +1850,23 @@ export async function getUserReminders() {
 export async function createInvitation(
     invitationData
 ) {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión para crear una invitación."
         );
     }
 
-
     if (
         !invitationData ||
         typeof invitationData !== "object"
     ) {
-
         throw new Error(
             "Los datos de la invitación no son válidos."
         );
     }
-
 
     const data = {
         ...invitationData
@@ -1812,14 +1878,11 @@ export async function createInvitation(
     ----------------------------------------------------- */
 
     if (!data.usuarioId) {
-
         data.usuarioId =
             user.uid;
     }
 
-
     if (!data.userId) {
-
         data.userId =
             user.uid;
     }
@@ -1830,7 +1893,6 @@ export async function createInvitation(
     ----------------------------------------------------- */
 
     if (!data.createdAt) {
-
         data.createdAt =
             serverTimestamp();
     }
@@ -1845,7 +1907,6 @@ export async function createInvitation(
             data
         );
 
-
     return docRef.id;
 }
 
@@ -1856,12 +1917,10 @@ export async function createInvitation(
 export async function getInvitationById(
     id
 ) {
-
     requireValue(
         id,
         "El ID de la invitación es obligatorio."
     );
-
 
     const docRef =
         doc(
@@ -1870,19 +1929,16 @@ export async function getInvitationById(
             normalizeId(id)
         );
 
-
     const snapshot =
         await getDoc(
             docRef
         );
-
 
     if (
         !snapshot.exists()
     ) {
         return null;
     }
-
 
     return {
         id:
@@ -1899,25 +1955,20 @@ export async function getInvitationById(
  * Se mantienen usuarioId y userId por compatibilidad.
  */
 export async function getUserInvitations() {
-
     const user =
         usuarioActual();
 
-
     if (!user) {
-
         throw new Error(
             "Debes iniciar sesión."
         );
     }
-
 
     const invitacionesRef =
         collection(
             db,
             INVITACIONES_COLLECTION
         );
-
 
     const resultados = [];
 
@@ -1939,26 +1990,21 @@ export async function getUserInvitations() {
             )
         );
 
-
     const snapshotUsuarioId =
         await getDocs(
             qUsuarioId
         );
 
-
     snapshotUsuarioId.docs.forEach(
         docSnap => {
-
             if (
                 !ids.has(
                     docSnap.id
                 )
             ) {
-
                 ids.add(
                     docSnap.id
                 );
-
 
                 resultados.push({
                     id:
@@ -1985,26 +2031,21 @@ export async function getUserInvitations() {
             )
         );
 
-
     const snapshotUserId =
         await getDocs(
             qUserId
         );
 
-
     snapshotUserId.docs.forEach(
         docSnap => {
-
             if (
                 !ids.has(
                     docSnap.id
                 )
             ) {
-
                 ids.add(
                     docSnap.id
                 );
-
 
                 resultados.push({
                     id:
@@ -2015,7 +2056,6 @@ export async function getUserInvitations() {
             }
         }
     );
-
 
     return resultados;
 }
@@ -2031,19 +2071,16 @@ export async function getUserInvitations() {
 export async function getInvitationByEventId(
     eventId
 ) {
-
     requireValue(
         eventId,
         "El ID del evento es obligatorio."
     );
-
 
     const invitacionesRef =
         collection(
             db,
             INVITACIONES_COLLECTION
         );
-
 
     const idNormalizado =
         normalizeId(
@@ -2065,15 +2102,14 @@ export async function getInvitationByEventId(
             )
         );
 
-
     const snapshotEventId =
-        await getDocs(qEventId);
-
+        await getDocs(
+            qEventId
+        );
 
     if (
         !snapshotEventId.empty
     ) {
-
         return {
             id:
                 snapshotEventId
@@ -2101,15 +2137,14 @@ export async function getInvitationByEventId(
             )
         );
 
-
     const snapshotEventoId =
-        await getDocs(qEventoId);
-
+        await getDocs(
+            qEventoId
+        );
 
     if (
         !snapshotEventoId.empty
     ) {
-
         return {
             id:
                 snapshotEventoId
@@ -2122,7 +2157,6 @@ export async function getInvitationByEventId(
         };
     }
 
-
     return null;
 }
 
@@ -2134,23 +2168,19 @@ export async function updateInvitation(
     id,
     invitationData
 ) {
-
     requireValue(
         id,
         "El ID de la invitación es obligatorio."
     );
 
-
     if (
         !invitationData ||
         typeof invitationData !== "object"
     ) {
-
         throw new Error(
             "Los datos de la invitación no son válidos."
         );
     }
-
 
     const docRef =
         doc(
@@ -2159,12 +2189,10 @@ export async function updateInvitation(
             normalizeId(id)
         );
 
-
     await updateDoc(
         docRef,
         invitationData
     );
-
 
     return true;
 }
@@ -2176,12 +2204,10 @@ export async function updateInvitation(
 export async function deleteInvitation(
     id
 ) {
-
     requireValue(
         id,
         "El ID de la invitación es obligatorio."
     );
-
 
     const docRef =
         doc(
@@ -2190,11 +2216,9 @@ export async function deleteInvitation(
             normalizeId(id)
         );
 
-
     await deleteDoc(
         docRef
     );
-
 
     return true;
 }
@@ -2211,3 +2235,4 @@ export async function deleteInvitation(
 export {
     db
 };
+
