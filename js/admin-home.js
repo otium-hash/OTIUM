@@ -5963,6 +5963,10 @@ function bindExcelReader() {
 
     if (!input) {
 
+        console.warn(
+            "[OTIUM Excel] No se encontró #excelFile."
+        );
+
         return;
 
     }
@@ -5989,14 +5993,60 @@ function bindExcelReader() {
         "true";
 
 
+    /*
+       Usamos una función anónima para
+       evitar que un ReferenceError en
+       handleExcelFileChange detenga
+       toda la inicialización del lector.
+    */
+
     input.addEventListener(
         "change",
-        handleExcelFileChange
+        async function (event) {
+
+            try {
+
+                if (
+                    typeof handleExcelFileChange ===
+                    "function"
+                ) {
+
+                    await handleExcelFileChange(
+                        event
+                    );
+
+                    return;
+
+                }
+
+
+                console.error(
+                    "[OTIUM Excel] ERROR: handleExcelFileChange no está definida."
+                );
+
+
+                alert(
+                    "El lector Excel no está disponible. Revisa la consola para más información."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "[OTIUM Excel] Error al procesar el archivo:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    console.log(
+        "[OTIUM Excel] Lector vinculado correctamente."
     );
 
 }
-
-
 /* =====================================================
    OBTENER DATOS EXCEL
    Preparado para Paso 6C
