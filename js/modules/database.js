@@ -3,7 +3,7 @@
    Firebase Firestore
 
    VERSIÓN OPTIMIZADA
-   Fecha: 2026-09-09
+   Fecha: 2026-09-13
 
    OBJETIVOS:
    - Mantener compatibilidad con el sistema actual.
@@ -124,8 +124,10 @@ function requireValue(value, message) {
  * Importante:
  * Se utilizan los valores locales del navegador.
  *
- * Esto es compatible con el campo "fecha" utilizado
- * actualmente por create-event.js.
+ * Compatible con los campos:
+ * - fecha
+ * - fechaInicio
+ * - fechaTermino
  */
 function obtenerFechaActualISO() {
 
@@ -241,7 +243,7 @@ export async function saveEvent(eventData) {
 
     /* -----------------------------------------------------
        USUARIO PROPIETARIO
-       
+
        OTIUM utiliza actualmente "usuarioId".
        Se elimina userId para evitar duplicidad.
     ----------------------------------------------------- */
@@ -265,7 +267,10 @@ export async function saveEvent(eventData) {
     ----------------------------------------------------- */
 
     const docRef = await addDoc(
-        collection(db, EVENTOS_COLLECTION),
+        collection(
+            db,
+            EVENTOS_COLLECTION
+        ),
         data
     );
 
@@ -280,44 +285,66 @@ export async function saveEvent(eventData) {
 /**
  * OBTENER EVENTOS
  *
+ * Compatible con las diferentes estructuras de fechas
+ * utilizadas por OTIUM.
+ *
+ * EVENTOS NUEVOS:
+ * - fechaInicio
+ * - fechaTermino
+ *
+ * EVENTOS ANTIGUOS:
+ * - fecha
+ *
+ * REGLA:
+ *
+ * Un evento se considera vigente cuando:
+ *
+ * 1. fechaTermino >= hoy
+ *
+ * O
+ *
+ * 2. fechaInicio >= hoy
+ *
+ * O
+ *
+ * 3. fecha >= hoy
+ *
+ * Esto permite mostrar:
+ *
+ * - eventos de un solo día
+ * - eventos de varios días
+ * - eventos que comenzaron antes de hoy
+ *   pero todavía no terminan
+ * - eventos nuevos importados desde Excel
+ * - eventos antiguos de OTIUM
+ *
  * IMPORTANTE:
- *
- * Antes:
- *   Se descargaban TODOS los eventos.
- *
- * Ahora:
- *   Solo se descargan eventos cuya fecha sea:
- *
- *   fecha >= hoy
- *
- * Como create-event.js guarda "fecha" como:
- *
- *   YYYY-MM-DD
- *
- * la comparación lexicográfica de Firestore funciona
- * correctamente.
- *
- * Esto reduce lecturas innecesarias cuando la base
- * empiece a crecer.
+ * No elimina eventos.
+ * Solo consulta y unifica resultados.
  */
 export async function getEvents() {
 
-    const fechaActual = obtenerFechaActualISO();
+    const fechaActual =
+        obtenerFechaActualISO();
 
-    const eventosRef = collection(
-        db,
-        EVENTOS_COLLECTION
-    );
+    const eventosRef =
+        collection(
+            db,
+            EVENTOS_COLLECTION
+        );
 
 
     /* -----------------------------------------------------
-       OTIUM ACTUAL
+       CONSULTA 1
        
-       Un evento sigue vigente mientras su
-       fechaTermino sea hoy o posterior.
+       Eventos cuya fechaTermino todavía no ha pasado.
        
-       Esto permite mostrar eventos de varios días
-       aunque hayan comenzado antes de hoy.
+       Ejemplo:
+       
+       fechaTermino = 2026-09-20
+       hoy          = 2026-09-13
+       
+       El evento se incluye aunque haya comenzado antes.
     ----------------------------------------------------- */
 
     const qFechaTermino = query(
@@ -331,9 +358,28 @@ export async function getEvents() {
 
 
     /* -----------------------------------------------------
-       COMPATIBILIDAD CON EVENTOS ANTIGUOS
+       CONSULTA 2
        
-       Algunos eventos antiguos pueden utilizar
+       Eventos cuya fechaInicio es hoy o posterior.
+       
+       Esto permite recuperar eventos nuevos que todavía
+       no han comenzado.
+    ----------------------------------------------------- */
+
+    const qFechaInicio = query(
+        eventosRef,
+        where(
+            "fechaInicio",
+            ">=",
+            fechaActual
+        )
+    );
+
+
+    /* -----------------------------------------------------
+       CONSULTA 3
+       
+       Compatibilidad con eventos antiguos que utilizan
        solamente el campo "fecha".
     ----------------------------------------------------- */
 
@@ -348,23 +394,40 @@ export async function getEvents() {
 
 
     /* -----------------------------------------------------
-       EJECUTAR AMBAS CONSULTAS
+       EJECUTAR LAS TRES CONSULTAS
     ----------------------------------------------------- */
 
     const [
         snapshotFechaTermino,
+        snapshotFechaInicio,
         snapshotFechaAntigua
     ] = await Promise.all([
-        getDocs(qFechaTermino),
-        getDocs(qFechaAntigua)
+
+        getDocs(
+            qFechaTermino
+        ),
+
+        getDocs(
+            qFechaInicio
+        ),
+
+        getDocs(
+            qFechaAntigua
+        )
+
     ]);
 
 
     /* -----------------------------------------------------
        UNIFICAR RESULTADOS
        
-       Evita duplicados si algún documento tuviera
-       tanto fechaTermino como fecha.
+       El mismo evento puede aparecer en:
+       
+       - fechaTermino
+       - fechaInicio
+       - fecha
+       
+       El Set evita duplicados.
     ----------------------------------------------------- */
 
     const eventos = [];
@@ -373,43 +436,86 @@ export async function getEvents() {
 
 
     /* -----------------------------------------------------
-       EVENTOS NUEVOS
-       
-       Utilizan fechaTermino.
+       FUNCIÓN INTERNA PARA AGREGAR EVENTOS
     ----------------------------------------------------- */
 
-    snapshotFechaTermino.docs.forEach(
-        docSnap => {
+    const agregarEventos = (
+        documentos
+    ) => {
 
-            if (!ids.has(docSnap.id)) {
+        documentos.forEach(
+            docSnap => {
 
-                ids.add(docSnap.id);
+                if (
+                    !ids.has(
+                        docSnap.id
+                    )
+                ) {
 
-                eventos.push(
-                    mapearEvento(docSnap)
-                );
+                    ids.add(
+                        docSnap.id
+                    );
+
+                    eventos.push(
+                        mapearEvento(
+                            docSnap
+                        )
+                    );
+                }
             }
-        }
+        );
+    };
+
+
+    /* -----------------------------------------------------
+       AGREGAR RESULTADOS
+    ----------------------------------------------------- */
+
+    agregarEventos(
+        snapshotFechaTermino.docs
+    );
+
+    agregarEventos(
+        snapshotFechaInicio.docs
+    );
+
+    agregarEventos(
+        snapshotFechaAntigua.docs
     );
 
 
     /* -----------------------------------------------------
-       EVENTOS ANTIGUOS
+       ORDENAR EVENTOS
        
-       Utilizan fecha.
+       Preferencia:
+       
+       1. fechaInicio
+       2. fecha
+       
+       Esto permite que los eventos nuevos queden
+       ordenados cronológicamente.
     ----------------------------------------------------- */
 
-    snapshotFechaAntigua.docs.forEach(
-        docSnap => {
+    eventos.sort(
+        (a, b) => {
 
-            if (!ids.has(docSnap.id)) {
+            const fechaA =
+                firstValue(
+                    a.fechaInicio,
+                    a.fecha
+                ) || "9999-12-31";
 
-                ids.add(docSnap.id);
+            const fechaB =
+                firstValue(
+                    b.fechaInicio,
+                    b.fecha
+                ) || "9999-12-31";
 
-                eventos.push(
-                    mapearEvento(docSnap)
-                );
-            }
+            return String(
+                fechaA
+            ).localeCompare(
+                String(fechaB)
+            );
         }
     );
 
@@ -465,22 +571,24 @@ export async function getAllEvents() {
  *
  * Ejemplo:
  *
- * hoy = 2026-09-09
+ * hoy = 2026-09-13
  *
  * devuelve:
- * 2026-09-08
+ * 2026-09-12
  * 2026-09-01
  * 2026-08-15
  * etc.
  */
 export async function getPastEvents() {
 
-    const fechaActual = obtenerFechaActualISO();
+    const fechaActual =
+        obtenerFechaActualISO();
 
-    const eventosRef = collection(
-        db,
-        EVENTOS_COLLECTION
-    );
+    const eventosRef =
+        collection(
+            db,
+            EVENTOS_COLLECTION
+        );
 
     const q = query(
         eventosRef,
@@ -491,7 +599,8 @@ export async function getPastEvents() {
         )
     );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
     return snapshot.docs.map(
         mapearEvento
@@ -526,10 +635,13 @@ export async function getEventsForCleanup(
     dias = 90
 ) {
 
-    const diasNumericos = Number(dias);
+    const diasNumericos =
+        Number(dias);
 
     if (
-        !Number.isFinite(diasNumericos) ||
+        !Number.isFinite(
+            diasNumericos
+        ) ||
         diasNumericos < 1
     ) {
         throw new Error(
@@ -542,10 +654,11 @@ export async function getEventsForCleanup(
             diasNumericos
         );
 
-    const eventosRef = collection(
-        db,
-        EVENTOS_COLLECTION
-    );
+    const eventosRef =
+        collection(
+            db,
+            EVENTOS_COLLECTION
+        );
 
     const q = query(
         eventosRef,
@@ -556,7 +669,8 @@ export async function getEventsForCleanup(
         )
     );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
     return snapshot.docs.map(
         mapearEvento
@@ -572,28 +686,34 @@ export async function getEventsForCleanup(
  * Obtiene un evento específico mediante su ID
  * de documento Firestore.
  */
-export async function getEventById(id) {
+export async function getEventById(
+    id
+) {
 
     requireValue(
         id,
         "El ID del evento es obligatorio."
     );
 
-    const docRef = doc(
-        db,
-        EVENTOS_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            EVENTOS_COLLECTION,
+            normalizeId(id)
+        );
 
-    const snapshot = await getDoc(
-        docRef
-    );
+    const snapshot =
+        await getDoc(
+            docRef
+        );
 
     if (!snapshot.exists()) {
         return null;
     }
 
-    return mapearEvento(snapshot);
+    return mapearEvento(
+        snapshot
+    );
 }
 
 
@@ -615,7 +735,8 @@ export async function getEventById(id) {
  */
 export async function getUserEvents() {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -623,12 +744,14 @@ export async function getUserEvents() {
         );
     }
 
-    const eventosRef = collection(
-        db,
-        EVENTOS_COLLECTION
-    );
+    const eventosRef =
+        collection(
+            db,
+            EVENTOS_COLLECTION
+        );
 
     const resultados = [];
+
     const ids = new Set();
 
 
@@ -637,28 +760,39 @@ export async function getUserEvents() {
        usuarioId
     ----------------------------------------------------- */
 
-    const qUsuarioId = query(
-        eventosRef,
-        where(
-            "usuarioId",
-            "==",
-            user.uid
-        )
-    );
+    const qUsuarioId =
+        query(
+            eventosRef,
+            where(
+                "usuarioId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshotUsuarioId =
-        await getDocs(qUsuarioId);
+        await getDocs(
+            qUsuarioId
+        );
 
 
     snapshotUsuarioId.docs.forEach(
         docSnap => {
 
-            if (!ids.has(docSnap.id)) {
+            if (
+                !ids.has(
+                    docSnap.id
+                )
+            ) {
 
-                ids.add(docSnap.id);
+                ids.add(
+                    docSnap.id
+                );
 
                 resultados.push(
-                    mapearEvento(docSnap)
+                    mapearEvento(
+                        docSnap
+                    )
                 );
             }
         }
@@ -670,28 +804,39 @@ export async function getUserEvents() {
        userId
     ----------------------------------------------------- */
 
-    const qUserId = query(
-        eventosRef,
-        where(
-            "userId",
-            "==",
-            user.uid
-        )
-    );
+    const qUserId =
+        query(
+            eventosRef,
+            where(
+                "userId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshotUserId =
-        await getDocs(qUserId);
+        await getDocs(
+            qUserId
+        );
 
 
     snapshotUserId.docs.forEach(
         docSnap => {
 
-            if (!ids.has(docSnap.id)) {
+            if (
+                !ids.has(
+                    docSnap.id
+                )
+            ) {
 
-                ids.add(docSnap.id);
+                ids.add(
+                    docSnap.id
+                );
 
                 resultados.push(
-                    mapearEvento(docSnap)
+                    mapearEvento(
+                        docSnap
+                    )
                 );
             }
         }
@@ -703,28 +848,39 @@ export async function getUserEvents() {
        ownerId
     ----------------------------------------------------- */
 
-    const qOwnerId = query(
-        eventosRef,
-        where(
-            "ownerId",
-            "==",
-            user.uid
-        )
-    );
+    const qOwnerId =
+        query(
+            eventosRef,
+            where(
+                "ownerId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshotOwnerId =
-        await getDocs(qOwnerId);
+        await getDocs(
+            qOwnerId
+        );
 
 
     snapshotOwnerId.docs.forEach(
         docSnap => {
 
-            if (!ids.has(docSnap.id)) {
+            if (
+                !ids.has(
+                    docSnap.id
+                )
+            ) {
 
-                ids.add(docSnap.id);
+                ids.add(
+                    docSnap.id
+                );
 
                 resultados.push(
-                    mapearEvento(docSnap)
+                    mapearEvento(
+                        docSnap
+                    )
                 );
             }
         }
@@ -761,11 +917,12 @@ export async function updateEvent(
         );
     }
 
-    const docRef = doc(
-        db,
-        EVENTOS_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            EVENTOS_COLLECTION,
+            normalizeId(id)
+        );
 
     await updateDoc(
         docRef,
@@ -790,18 +947,21 @@ export async function updateEvent(
  * La limpieza de imágenes se deberá realizar
  * posteriormente.
  */
-export async function deleteEvent(id) {
+export async function deleteEvent(
+    id
+) {
 
     requireValue(
         id,
         "El ID del evento es obligatorio."
     );
 
-    const docRef = doc(
-        db,
-        EVENTOS_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            EVENTOS_COLLECTION,
+            normalizeId(id)
+        );
 
     await deleteDoc(
         docRef
@@ -822,7 +982,8 @@ export async function addFavorite(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -835,39 +996,49 @@ export async function addFavorite(
         "El ID del evento es obligatorio."
     );
 
-    const favoritosRef = collection(
-        db,
-        FAVORITOS_COLLECTION
-    );
+    const favoritosRef =
+        collection(
+            db,
+            FAVORITOS_COLLECTION
+        );
 
-    const q = query(
-        favoritosRef,
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            favoritosRef,
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
     if (!snapshot.empty) {
         return snapshot.docs[0].id;
     }
 
-    const docRef = await addDoc(
-        favoritosRef,
-        {
-            userId: user.uid,
-            eventId: normalizeId(eventId),
-            createdAt: serverTimestamp()
-        }
-    );
+    const docRef =
+        await addDoc(
+            favoritosRef,
+            {
+                userId: user.uid,
+                eventId:
+                    normalizeId(
+                        eventId
+                    ),
+                createdAt:
+                    serverTimestamp()
+            }
+        );
 
     return docRef.id;
 }
@@ -880,7 +1051,8 @@ export async function isFavorite(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         return false;
@@ -890,24 +1062,28 @@ export async function isFavorite(
         return false;
     }
 
-    const q = query(
-        collection(
-            db,
-            FAVORITOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                FAVORITOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
     return !snapshot.empty;
 }
@@ -920,7 +1096,8 @@ export async function removeFavorite(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -932,26 +1109,32 @@ export async function removeFavorite(
         return false;
     }
 
-    const q = query(
-        collection(
-            db,
-            FAVORITOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                FAVORITOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
-    for (const docSnap of snapshot.docs) {
+    for (
+        const docSnap of snapshot.docs
+    ) {
 
         await deleteDoc(
             docSnap.ref
@@ -967,7 +1150,8 @@ export async function removeFavorite(
  */
 export async function getUserFavorites() {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -975,19 +1159,21 @@ export async function getUserFavorites() {
         );
     }
 
-    const q = query(
-        collection(
-            db,
-            FAVORITOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                FAVORITOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            )
+        );
 
-    const snapshot = await getDocs(q);
+    const snapshot =
+        await getDocs(q);
 
     return snapshot.docs.map(
         docSnap => ({
@@ -1009,7 +1195,8 @@ export async function addReminder(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -1028,19 +1215,22 @@ export async function addReminder(
             RECORDATORIOS_COLLECTION
         );
 
-    const q = query(
-        recordatoriosRef,
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            recordatoriosRef,
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
     const snapshot =
         await getDocs(q);
@@ -1049,14 +1239,19 @@ export async function addReminder(
         return snapshot.docs[0].id;
     }
 
-    const docRef = await addDoc(
-        recordatoriosRef,
-        {
-            userId: user.uid,
-            eventId: normalizeId(eventId),
-            createdAt: serverTimestamp()
-        }
-    );
+    const docRef =
+        await addDoc(
+            recordatoriosRef,
+            {
+                userId: user.uid,
+                eventId:
+                    normalizeId(
+                        eventId
+                    ),
+                createdAt:
+                    serverTimestamp()
+            }
+        );
 
     return docRef.id;
 }
@@ -1069,28 +1264,35 @@ export async function isReminder(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
-    if (!user || !eventId) {
+    if (
+        !user ||
+        !eventId
+    ) {
         return false;
     }
 
-    const q = query(
-        collection(
-            db,
-            RECORDATORIOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                RECORDATORIOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
     const snapshot =
         await getDocs(q);
@@ -1106,7 +1308,8 @@ export async function removeReminder(
     eventId
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -1118,27 +1321,32 @@ export async function removeReminder(
         return false;
     }
 
-    const q = query(
-        collection(
-            db,
-            RECORDATORIOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        ),
-        where(
-            "eventId",
-            "==",
-            normalizeId(eventId)
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                RECORDATORIOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            ),
+            where(
+                "eventId",
+                "==",
+                normalizeId(
+                    eventId
+                )
+            )
+        );
 
     const snapshot =
         await getDocs(q);
 
-    for (const docSnap of snapshot.docs) {
+    for (
+        const docSnap of snapshot.docs
+    ) {
 
         await deleteDoc(
             docSnap.ref
@@ -1154,7 +1362,8 @@ export async function removeReminder(
  */
 export async function getUserReminders() {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -1162,17 +1371,18 @@ export async function getUserReminders() {
         );
     }
 
-    const q = query(
-        collection(
-            db,
-            RECORDATORIOS_COLLECTION
-        ),
-        where(
-            "userId",
-            "==",
-            user.uid
-        )
-    );
+    const q =
+        query(
+            collection(
+                db,
+                RECORDATORIOS_COLLECTION
+            ),
+            where(
+                "userId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshot =
         await getDocs(q);
@@ -1197,7 +1407,8 @@ export async function createInvitation(
     invitationData
 ) {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -1242,17 +1453,19 @@ export async function createInvitation(
     ----------------------------------------------------- */
 
     if (!data.createdAt) {
-        data.createdAt = serverTimestamp();
+        data.createdAt =
+            serverTimestamp();
     }
 
 
-    const docRef = await addDoc(
-        collection(
-            db,
-            INVITACIONES_COLLECTION
-        ),
-        data
-    );
+    const docRef =
+        await addDoc(
+            collection(
+                db,
+                INVITACIONES_COLLECTION
+            ),
+            data
+        );
 
     return docRef.id;
 }
@@ -1270,14 +1483,17 @@ export async function getInvitationById(
         "El ID de la invitación es obligatorio."
     );
 
-    const docRef = doc(
-        db,
-        INVITACIONES_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            INVITACIONES_COLLECTION,
+            normalizeId(id)
+        );
 
     const snapshot =
-        await getDoc(docRef);
+        await getDoc(
+            docRef
+        );
 
     if (!snapshot.exists()) {
         return null;
@@ -1297,7 +1513,8 @@ export async function getInvitationById(
  */
 export async function getUserInvitations() {
 
-    const user = usuarioActual();
+    const user =
+        usuarioActual();
 
     if (!user) {
         throw new Error(
@@ -1312,6 +1529,7 @@ export async function getUserInvitations() {
         );
 
     const resultados = [];
+
     const ids = new Set();
 
 
@@ -1319,25 +1537,34 @@ export async function getUserInvitations() {
        usuarioId
     ----------------------------------------------------- */
 
-    const qUsuarioId = query(
-        invitacionesRef,
-        where(
-            "usuarioId",
-            "==",
-            user.uid
-        )
-    );
+    const qUsuarioId =
+        query(
+            invitacionesRef,
+            where(
+                "usuarioId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshotUsuarioId =
-        await getDocs(qUsuarioId);
+        await getDocs(
+            qUsuarioId
+        );
 
 
     snapshotUsuarioId.docs.forEach(
         docSnap => {
 
-            if (!ids.has(docSnap.id)) {
+            if (
+                !ids.has(
+                    docSnap.id
+                )
+            ) {
 
-                ids.add(docSnap.id);
+                ids.add(
+                    docSnap.id
+                );
 
                 resultados.push({
                     id: docSnap.id,
@@ -1352,25 +1579,34 @@ export async function getUserInvitations() {
        userId
     ----------------------------------------------------- */
 
-    const qUserId = query(
-        invitacionesRef,
-        where(
-            "userId",
-            "==",
-            user.uid
-        )
-    );
+    const qUserId =
+        query(
+            invitacionesRef,
+            where(
+                "userId",
+                "==",
+                user.uid
+            )
+        );
 
     const snapshotUserId =
-        await getDocs(qUserId);
+        await getDocs(
+            qUserId
+        );
 
 
     snapshotUserId.docs.forEach(
         docSnap => {
 
-            if (!ids.has(docSnap.id)) {
+            if (
+                !ids.has(
+                    docSnap.id
+                )
+            ) {
 
-                ids.add(docSnap.id);
+                ids.add(
+                    docSnap.id
+                );
 
                 resultados.push({
                     id: docSnap.id,
@@ -1408,30 +1644,40 @@ export async function getInvitationByEventId(
         );
 
     const idNormalizado =
-        normalizeId(eventId);
+        normalizeId(
+            eventId
+        );
 
 
     /* -----------------------------------------------------
        eventId
     ----------------------------------------------------- */
 
-    const qEventId = query(
-        invitacionesRef,
-        where(
-            "eventId",
-            "==",
-            idNormalizado
-        )
-    );
+    const qEventId =
+        query(
+            invitacionesRef,
+            where(
+                "eventId",
+                "==",
+                idNormalizado
+            )
+        );
 
     const snapshotEventId =
-        await getDocs(qEventId);
+        await getDocs(
+            qEventId
+        );
 
     if (!snapshotEventId.empty) {
 
         return {
-            id: snapshotEventId.docs[0].id,
-            ...snapshotEventId.docs[0].data()
+            id:
+                snapshotEventId
+                    .docs[0].id,
+
+            ...snapshotEventId
+                .docs[0]
+                .data()
         };
     }
 
@@ -1440,23 +1686,31 @@ export async function getInvitationByEventId(
        eventoId
     ----------------------------------------------------- */
 
-    const qEventoId = query(
-        invitacionesRef,
-        where(
-            "eventoId",
-            "==",
-            idNormalizado
-        )
-    );
+    const qEventoId =
+        query(
+            invitacionesRef,
+            where(
+                "eventoId",
+                "==",
+                idNormalizado
+            )
+        );
 
     const snapshotEventoId =
-        await getDocs(qEventoId);
+        await getDocs(
+            qEventoId
+        );
 
     if (!snapshotEventoId.empty) {
 
         return {
-            id: snapshotEventoId.docs[0].id,
-            ...snapshotEventoId.docs[0].data()
+            id:
+                snapshotEventoId
+                    .docs[0].id,
+
+            ...snapshotEventoId
+                .docs[0]
+                .data()
         };
     }
 
@@ -1487,11 +1741,12 @@ export async function updateInvitation(
         );
     }
 
-    const docRef = doc(
-        db,
-        INVITACIONES_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            INVITACIONES_COLLECTION,
+            normalizeId(id)
+        );
 
     await updateDoc(
         docRef,
@@ -1514,11 +1769,12 @@ export async function deleteInvitation(
         "El ID de la invitación es obligatorio."
     );
 
-    const docRef = doc(
-        db,
-        INVITACIONES_COLLECTION,
-        normalizeId(id)
-    );
+    const docRef =
+        doc(
+            db,
+            INVITACIONES_COLLECTION,
+            normalizeId(id)
+        );
 
     await deleteDoc(
         docRef
