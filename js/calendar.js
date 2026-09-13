@@ -1,3 +1,21 @@
+/* =========================================================
+   OTIUM - CALENDARIO
+   Cargar y mostrar eventos en calendario mensual
+
+   VERSIÓN:
+   2026-09-13
+
+   OBJETIVOS:
+   - Soportar fechaInicio + fechaTermino.
+   - Soportar eventos de un solo día.
+   - Soportar eventos de varios días.
+   - Mantener compatibilidad con campo fecha antiguo.
+   - Mantener compatibilidad con date / fechaEvento.
+   - Mostrar eventos correctamente en cada día.
+   - Mantener navegación mensual.
+   ========================================================= */
+
+
 import {
     getEvents
 } from "./modules/database.js";
@@ -12,15 +30,18 @@ const calendarContainer =
         "calendarContainer"
     );
 
+
 const monthTitle =
     document.getElementById(
         "calendarMonth"
     );
 
+
 const previousButton =
     document.getElementById(
         "previousMonth"
     );
+
 
 const nextButton =
     document.getElementById(
@@ -35,7 +56,7 @@ const nextButton =
 if (!calendarContainer) {
 
     console.error(
-        "No existe #calendarContainer"
+        "OTIUM - No existe #calendarContainer"
     );
 
 }
@@ -96,6 +117,359 @@ const diasSemana = [
 
 
 /* =====================================================
+   NORMALIZAR FECHA
+===================================================== */
+
+/*
+ * Convierte una fecha a texto YYYY-MM-DD.
+ *
+ * Soporta:
+ *
+ * - YYYY-MM-DD
+ * - YYYY-MM-DDTHH:mm:ss
+ * - Date
+ * - Timestamp Firestore
+ * - objetos con toDate()
+ */
+
+function normalizeDate(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    /* =========================================
+       STRING
+    ========================================= */
+
+    if (
+        typeof value === "string"
+    ) {
+
+        return value
+            .substring(0, 10);
+
+    }
+
+
+    /* =========================================
+       FIRESTORE TIMESTAMP
+    ========================================= */
+
+    if (
+        typeof value.toDate === "function"
+    ) {
+
+        const date =
+            value.toDate();
+
+        return formatDateLocal(
+            date
+        );
+
+    }
+
+
+    /* =========================================
+       DATE
+    ========================================= */
+
+    if (
+        value instanceof Date
+    ) {
+
+        return formatDateLocal(
+            value
+        );
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================================
+   FORMATEAR DATE LOCAL
+===================================================== */
+
+function formatDateLocal(
+    date
+) {
+
+    if (
+        !(date instanceof Date) ||
+        isNaN(date.getTime())
+    ) {
+
+        return "";
+
+    }
+
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   OBTENER FECHA INICIO
+===================================================== */
+
+function getEventStartDate(
+    evento
+) {
+
+    if (!evento) {
+
+        return "";
+
+    }
+
+
+    /*
+     * NUEVA ESTRUCTURA
+     */
+
+    const fechaInicio =
+        evento.fechaInicio;
+
+
+    if (fechaInicio) {
+
+        return normalizeDate(
+            fechaInicio
+        );
+
+    }
+
+
+    /*
+     * COMPATIBILIDAD
+     */
+
+    const fecha =
+        evento.fecha ||
+        evento.date ||
+        evento.fechaEvento ||
+        "";
+
+
+    return normalizeDate(
+        fecha
+    );
+
+}
+
+
+/* =====================================================
+   OBTENER FECHA TÉRMINO
+===================================================== */
+
+function getEventEndDate(
+    evento
+) {
+
+    if (!evento) {
+
+        return "";
+
+    }
+
+
+    /*
+     * NUEVA ESTRUCTURA
+     */
+
+    const fechaTermino =
+        evento.fechaTermino;
+
+
+    if (fechaTermino) {
+
+        return normalizeDate(
+            fechaTermino
+        );
+
+    }
+
+
+    /*
+     * SI NO EXISTE FECHA TÉRMINO,
+     * EL EVENTO TERMINA EL MISMO DÍA
+     * DE LA FECHA DE INICIO.
+     */
+
+    return getEventStartDate(
+        evento
+    );
+
+}
+
+
+/* =====================================================
+   COMPARAR FECHAS YYYY-MM-DD
+===================================================== */
+
+function compareDateStrings(
+    fechaA,
+    fechaB
+) {
+
+    if (
+        !fechaA ||
+        !fechaB
+    ) {
+
+        return 0;
+
+    }
+
+
+    if (
+        fechaA < fechaB
+    ) {
+
+        return -1;
+
+    }
+
+
+    if (
+        fechaA > fechaB
+    ) {
+
+        return 1;
+
+    }
+
+
+    return 0;
+
+}
+
+
+/* =====================================================
+   OBTENER EVENTOS DE UN DÍA
+===================================================== */
+
+function getEventsForDay(
+    year,
+    month,
+    day
+) {
+
+    /*
+     * Construimos la fecha del día
+     * en formato YYYY-MM-DD.
+     */
+
+    const fechaDia =
+        `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+
+    return eventos.filter(
+        (evento) => {
+
+            const fechaInicio =
+                getEventStartDate(
+                    evento
+                );
+
+
+            if (!fechaInicio) {
+
+                return false;
+
+            }
+
+
+            const fechaTermino =
+                getEventEndDate(
+                    evento
+                ) ||
+                fechaInicio;
+
+
+            /*
+             * Si por algún motivo la fecha
+             * de término es anterior a la
+             * fecha de inicio, usamos la
+             * fecha de inicio como término.
+             */
+
+            const fechaFin =
+                compareDateStrings(
+                    fechaTermino,
+                    fechaInicio
+                ) < 0
+                    ? fechaInicio
+                    : fechaTermino;
+
+
+            /*
+             * EVENTO DE UN DÍA
+             */
+
+            if (
+                fechaInicio === fechaFin
+            ) {
+
+                return (
+                    fechaDia === fechaInicio
+                );
+
+            }
+
+
+            /*
+             * EVENTO DE VARIOS DÍAS
+             *
+             * Aparece en todos los días
+             * comprendidos entre inicio
+             * y término, ambos inclusive.
+             */
+
+            return (
+                fechaDia >= fechaInicio &&
+                fechaDia <= fechaFin
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
    CARGAR EVENTOS
 ===================================================== */
 
@@ -108,8 +482,41 @@ async function loadCalendar() {
 
 
         console.log(
-            "EVENTOS DEL CALENDARIO:",
+            "OTIUM - EVENTOS DEL CALENDARIO:",
             eventos
+        );
+
+
+        console.log(
+            "OTIUM - Cantidad de eventos:",
+            eventos.length
+        );
+
+
+        /*
+         * Mostrar fechas que utilizará
+         * el calendario para depuración.
+         */
+
+        eventos.forEach(
+            (evento) => {
+
+                console.log(
+                    "OTIUM - Evento calendario:",
+                    evento.firestoreId ||
+                    evento.id ||
+                    "",
+                    "| fechaInicio:",
+                    getEventStartDate(
+                        evento
+                    ),
+                    "| fechaTermino:",
+                    getEventEndDate(
+                        evento
+                    )
+                );
+
+            }
         );
 
 
@@ -119,7 +526,7 @@ async function loadCalendar() {
     } catch (error) {
 
         console.error(
-            "Error cargando eventos del calendario:",
+            "OTIUM - Error cargando eventos del calendario:",
             error
         );
 
@@ -150,81 +557,6 @@ async function loadCalendar() {
 
 
 /* =====================================================
-   OBTENER EVENTOS DE UN DÍA
-===================================================== */
-
-function getEventsForDay(
-    year,
-    month,
-    day
-) {
-
-    return eventos.filter(
-        (evento) => {
-
-            const fecha =
-                evento.date ||
-                evento.fecha ||
-                evento.fechaEvento ||
-                "";
-
-            if (!fecha) {
-
-                return false;
-
-            }
-
-
-            /*
-             * Normalizar fecha.
-             *
-             * Firestore puede contener:
-             * YYYY-MM-DD
-             */
-
-            const fechaTexto =
-                String(fecha)
-                    .substring(0, 10);
-
-
-            const partes =
-                fechaTexto.split("-");
-
-
-            if (
-                partes.length !== 3
-            ) {
-
-                return false;
-
-            }
-
-
-            const eventYear =
-                Number(partes[0]);
-
-            const eventMonth =
-                Number(partes[1]) - 1;
-
-            const eventDay =
-                Number(partes[2]);
-
-
-            return (
-
-                eventYear === year &&
-                eventMonth === month &&
-                eventDay === day
-
-            );
-
-        }
-    );
-
-}
-
-
-/* =====================================================
    RENDERIZAR CALENDARIO
 ===================================================== */
 
@@ -233,7 +565,7 @@ function renderCalendar() {
     if (!calendarContainer) {
 
         console.error(
-            "No existe #calendarContainer"
+            "OTIUM - No existe #calendarContainer"
         );
 
         return;
@@ -361,19 +693,22 @@ function renderCalendar() {
 
 
     /* ================================================
-       DÍAS DEL MES
+       FECHA ACTUAL
     ================================================= */
 
     const today =
         new Date();
 
 
+    /* ================================================
+       DÍAS DEL MES
+    ================================================= */
+
     for (
         let day = 1;
         day <= daysInMonth;
         day++
     ) {
-
 
         const dayEvents =
             getEventsForDay(
@@ -423,6 +758,7 @@ function renderCalendar() {
                 const eventId =
                     evento.firestoreId ||
                     evento.id ||
+                    evento.eventId ||
                     "";
 
 
@@ -433,7 +769,12 @@ function renderCalendar() {
                     "Evento";
 
 
+                /*
+                 * NUEVA ESTRUCTURA
+                 */
+
                 const hora =
+                    evento.horaInicio ||
                     evento.time ||
                     evento.hora ||
                     "";
@@ -539,22 +880,27 @@ function escapeHTML(
 ) {
 
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -577,6 +923,7 @@ if (previousButton) {
                 currentDate.getMonth() - 1
             );
 
+
             renderCalendar();
 
         }
@@ -598,6 +945,7 @@ if (nextButton) {
             currentDate.setMonth(
                 currentDate.getMonth() + 1
             );
+
 
             renderCalendar();
 
