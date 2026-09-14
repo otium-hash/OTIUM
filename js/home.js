@@ -1,7 +1,6 @@
-
 /* =====================================================
    OTIUM - HOME
-   Versión 20260908 CORREGIDA
+   Versión 20260914
 
    FUNCIONES:
 
@@ -15,18 +14,19 @@
    - Compatible con configuracion/home
    - Compatible con patrocinadores existentes
 
-   CORRECCIONES:
-   - Botones anterior / siguiente del Hero corregidos
-   - Compatible con .hero-prev / .hero-next
-   - Compatible con .hero-arrow.prev / .hero-arrow.next
-   - Evita propagación del click de las flechas al slide
-   - Mantiene slides originales de index.html
-   - Agrega slides configurados desde Firestore
-   - No elimina slides originales
-   - Mantiene autoplay
-   - Mantiene dots
-   - Firebase usa la misma versión que firebase-config.js
-   - Nunca usa searchArea con insertBefore()
+   CORRECCIONES 20260914:
+   - Click sobre la imagen del carrusel ahora abre el enlace.
+   - El enlace cubre todo el slide configurado.
+   - Soporta enlace / enlace / link / url.
+   - Soporta URLs externas e internas.
+   - Los slides de eventos siguen abriendo event-details.html.
+   - Las flechas y dots no activan el enlace del slide.
+   - Mantiene slides originales de index.html.
+   - Agrega slides configurados desde Firestore.
+   - No elimina slides originales.
+   - Mantiene autoplay.
+   - Mantiene dots.
+   - Firebase usa la misma versión que firebase-config.js.
 ===================================================== */
 
 
@@ -113,6 +113,30 @@ function escapeHTML(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
+}
+
+
+/* =====================================================
+   NORMALIZAR ENLACES
+===================================================== */
+
+function getLink(item) {
+
+    if (!item) {
+        return "";
+    }
+
+
+    const link =
+        item.enlace ??
+        item.link ??
+        item.url ??
+        "";
+
+
+    return safeText(link)
+        .trim();
 
 }
 
@@ -339,6 +363,7 @@ function getEventDate(event) {
 
 
     const value =
+        event.fechaInicio ??
         event.fecha ??
         event.date ??
         "";
@@ -548,11 +573,6 @@ function showSlide(index) {
         index;
 
 
-    /*
-     * Mantener sincronizado el estado interno
-     * con los slides reales del DOM.
-     */
-
     carouselSlides =
         slides;
 
@@ -613,13 +633,6 @@ function startCarousel() {
     stopCarousel();
 
 
-    /*
-     * carouselSlides representa TODOS los slides:
-     *
-     * - originales de index.html
-     * - configurados desde Firestore
-     */
-
     if (
         carouselSlides.length <= 1
     ) {
@@ -659,23 +672,6 @@ function bindHeroControls() {
     if (!hero) return;
 
 
-    /*
-     * IMPORTANTE:
-     *
-     * El CSS actual de OTIUM utiliza:
-     *
-     * .hero-arrow
-     * .hero-prev
-     * .hero-next
-     *
-     * Algunas versiones anteriores utilizaban:
-     *
-     * .hero-arrow.prev
-     * .hero-arrow.next
-     *
-     * Por eso soportamos ambas estructuras.
-     */
-
     const prev =
         hero.querySelector(
             ".hero-prev, .hero-arrow.prev"
@@ -704,10 +700,6 @@ function bindHeroControls() {
         prev.addEventListener(
             "click",
             event => {
-
-                /*
-                 * Evitar que el clic llegue al slide.
-                 */
 
                 event.preventDefault();
 
@@ -753,10 +745,6 @@ function bindHeroControls() {
         next.addEventListener(
             "click",
             event => {
-
-                /*
-                 * Evitar que el clic llegue al slide.
-                 */
 
                 event.preventDefault();
 
@@ -909,23 +897,12 @@ function renderFallbackHero() {
     stopCarousel();
 
 
-    /*
-     * Si anteriormente se habían creado slides
-     * configurados, solamente eliminamos esos.
-     *
-     * Los slides originales permanecen intactos.
-     */
-
     hero.querySelectorAll(
         '.hero-slide[data-otium-configured="true"]'
     ).forEach(
         slide => slide.remove()
     );
 
-
-    /*
-     * Obtener los slides originales.
-     */
 
     const slides =
         getHeroSlides();
@@ -949,6 +926,56 @@ function renderFallbackHero() {
     bindHeroControls();
 
     showSlide(0);
+
+}
+
+
+/* =====================================================
+   CREAR ENLACE PARA SLIDE
+===================================================== */
+
+function createSlideLink(
+    link,
+    content
+) {
+
+    const cleanLink =
+        safeText(link)
+            .trim();
+
+
+    if (!cleanLink) {
+
+        return content;
+
+    }
+
+
+    const external =
+        cleanLink.startsWith(
+            "http://"
+        ) ||
+        cleanLink.startsWith(
+            "https://"
+        );
+
+
+    return `
+
+        <a
+            href="${escapeHTML(cleanLink)}"
+            class="hero-slide-link"
+            ${
+                external
+                    ? 'target="_blank" rel="noopener noreferrer"'
+                    : ""
+            }
+            aria-label="Abrir contenido"
+        >
+            ${content}
+        </a>
+
+    `;
 
 }
 
@@ -1000,7 +1027,15 @@ function createEventSlide(
         getEventId(event);
 
 
-    slide.innerHTML = `
+    const eventLink =
+        eventId
+            ? `event-details.html?id=${encodeURIComponent(
+                eventId
+            )}`
+            : "";
+
+
+    const content = `
 
         ${
             image
@@ -1079,22 +1114,22 @@ function createEventSlide(
     `;
 
 
-    if (eventId) {
+    /*
+     * Todo el slide se convierte en enlace.
+     * De esta forma la imagen también es clickeable.
+     */
 
-        slide.style.cursor =
-            "pointer";
+    slide.innerHTML =
+        createSlideLink(
+            eventLink,
+            content
+        );
 
 
-        slide.addEventListener(
-            "click",
-            () => {
+    if (eventLink) {
 
-                window.location.href =
-                    `event-details.html?id=${encodeURIComponent(
-                        eventId
-                    )}`;
-
-            }
+        slide.classList.add(
+            "hero-slide-clickable"
         );
 
     }
@@ -1141,14 +1176,24 @@ function createBannerSlide(item) {
         "";
 
 
+    /*
+     * Obtener enlace de Firestore.
+     */
+
     const link =
-        item.enlace ??
-        item.link ??
-        item.url ??
-        "";
+        getLink(item);
 
 
-    slide.innerHTML = `
+    console.log(
+        "[OTIUM Home] Banner:",
+        {
+            titulo: title,
+            enlace: link
+        }
+    );
+
+
+    const content = `
 
         ${
             image
@@ -1197,42 +1242,32 @@ function createBannerSlide(item) {
     `;
 
 
+    /*
+     * IMPORTANTE:
+     *
+     * Antes el click dependía de un listener
+     * sobre el article.
+     *
+     * Ahora el slide completo es un enlace real.
+     *
+     * Por lo tanto:
+     *
+     * - click sobre imagen -> funciona
+     * - click sobre texto -> funciona
+     * - click sobre botón -> funciona
+     */
+
+    slide.innerHTML =
+        createSlideLink(
+            link,
+            content
+        );
+
+
     if (link) {
 
-        slide.style.cursor =
-            "pointer";
-
-
-        slide.addEventListener(
-            "click",
-            event => {
-
-                event.preventDefault();
-
-
-                if (
-                    link.startsWith(
-                        "http://"
-                    ) ||
-                    link.startsWith(
-                        "https://"
-                    )
-                ) {
-
-                    window.open(
-                        link,
-                        "_blank",
-                        "noopener,noreferrer"
-                    );
-
-                } else {
-
-                    window.location.href =
-                        link;
-
-                }
-
-            }
+        slide.classList.add(
+            "hero-slide-clickable"
         );
 
     }
@@ -1287,7 +1322,6 @@ function renderConfiguredCarousel(
 
     /* ---------------------------------------------
        ELIMINAR SOLAMENTE LOS SLIDES CONFIGURADOS
-       ANTERIORMENTE
     --------------------------------------------- */
 
     hero.querySelectorAll(
@@ -1387,10 +1421,6 @@ function renderConfiguredCarousel(
             }
 
 
-            /*
-             * Marcar el slide como dinámico.
-             */
-
             slide.dataset.otiumConfigured =
                 "true";
 
@@ -1411,12 +1441,6 @@ function renderConfiguredCarousel(
        INSERTAR SLIDES CONFIGURADOS
     --------------------------------------------- */
 
-    /*
-     * Buscamos el primer slide ORIGINAL.
-     *
-     * Los configurados quedarán antes de ellos.
-     */
-
     const firstOriginalSlide =
         Array.from(
             hero.children
@@ -1434,11 +1458,6 @@ function renderConfiguredCarousel(
         firstOriginalSlide
     ) {
 
-        /*
-         * Insertamos en reversa para conservar
-         * exactamente el orden de Firestore.
-         */
-
         configuredSlides
             .slice()
             .reverse()
@@ -1454,11 +1473,6 @@ function renderConfiguredCarousel(
             );
 
     } else {
-
-        /*
-         * Si no existen slides originales,
-         * agregamos los configurados normalmente.
-         */
 
         configuredSlides.forEach(
             configured => {
@@ -1496,22 +1510,12 @@ function renderConfiguredCarousel(
                     );
 
 
-                /*
-                 * Slide configurado:
-                 * utiliza duración de Firestore.
-                 */
-
                 if (configured) {
 
                     return configured.duration;
 
                 }
 
-
-                /*
-                 * Slide original:
-                 * duración estándar.
-                 */
 
                 return 6500;
 
@@ -1876,13 +1880,6 @@ function renderSponsors(
     }
 
 
-    /* ---------------------------------------------
-       SIN CONFIGURACIÓN
-
-       Se conserva intacto el banner estático
-       que ya existe en index.html.
-    --------------------------------------------- */
-
     if (
         !Array.isArray(
             configuredItems
@@ -2109,11 +2106,6 @@ function bindSearch() {
     }
 
 
-    /*
-       Evitar registrar dos veces el evento
-       si Home se inicializa nuevamente.
-    */
-
     if (
         searchForm.dataset.otiumBound
     ) {
@@ -2134,13 +2126,13 @@ function bindSearch() {
 
             const searchInput =
                 searchForm.querySelector(
-                    '[name="buscar"], [name="search"], #search'
+                    '[name="buscar"], [name="search"], #search, #homeSearchText'
                 );
 
 
             const cityInput =
                 searchForm.querySelector(
-                    '[name="ciudad"], [name="city"], #city'
+                    '[name="ciudad"], [name="city"], #city, #homeSearchLocation'
                 );
 
 
@@ -2416,11 +2408,6 @@ async function initHome() {
         );
 
 
-        /*
-         * Si Firebase falla, mantenemos el Home visual
-         * original.
-         */
-
         renderFallbackHero();
 
 
@@ -2444,4 +2431,3 @@ async function initHome() {
 ===================================================== */
 
 initHome();
-
