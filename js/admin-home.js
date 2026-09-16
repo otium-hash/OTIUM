@@ -72,9 +72,9 @@ import {
     getDoc,
     getDocs,
     setDoc,
+    updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-
 
 /* =====================================================
    ESTADO
@@ -899,7 +899,6 @@ function buildBannerPreview(
 
 }
 
-
 /* =====================================================
    ACTUALIZAR VISTA PREVIA
 ===================================================== */
@@ -1044,8 +1043,6 @@ function updateBannerPreview(
         };
 
 }
-
-
 /* =====================================================
    CARRUSEL
 ===================================================== */
@@ -3908,10 +3905,40 @@ function renderCleanupEvents() {
                                 </div>
 
 
-                                <small>
+                                                                <small>
                                     ID:
                                     ${esc(id)}
                                 </small>
+
+
+                                <div
+                                    style="
+                                        margin-top:12px;
+                                        display:flex;
+                                        gap:8px;
+                                        flex-wrap:wrap;
+                                    "
+                                >
+
+                                    <button
+                                        type="button"
+                                        class="admin-edit-event"
+                                        data-edit-event="${esc(id)}"
+                                        style="
+                                            border:0;
+                                            border-radius:8px;
+                                            padding:8px 14px;
+                                            background:#0d6efd;
+                                            color:#fff;
+                                            cursor:pointer;
+                                            font-weight:600;
+                                        "
+                                    >
+                                        ✏️ Editar evento
+                                    </button>
+
+                                </div>
+
 
                             </div>
 
@@ -3926,7 +3953,1252 @@ function renderCleanupEvents() {
     updateCleanupSelectionUI();
 
 }
+/* =====================================================
+   EDITAR EVENTO
+===================================================== */
 
+function buildEventEditForm(event) {
+
+    if (!event) {
+
+        return `
+            <div class="admin-empty">
+                Evento no encontrado.
+            </div>
+        `;
+
+    }
+
+    const id =
+        getEventId(event);
+
+    const image =
+        getEventImage(event);
+
+    return `
+        <div
+            class="event-edit-form"
+            data-event-edit-form="${esc(id)}"
+            style="
+                margin-top:16px;
+                padding:20px;
+                background:#fff;
+                border:1px solid #ddd;
+                border-radius:12px;
+            "
+        >
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:10px;
+                    margin-bottom:18px;
+                "
+            >
+
+                <div>
+
+                    <h3
+                        style="
+                            margin:0;
+                        "
+                    >
+                        ✏️ Editar evento
+                    </h3>
+
+                    <small>
+                        ID: ${esc(id)}
+                    </small>
+
+                </div>
+
+                <button
+                    type="button"
+                    data-close-event-edit
+                    style="
+                        border:0;
+                        border-radius:8px;
+                        padding:8px 12px;
+                        cursor:pointer;
+                    "
+                >
+                    ✕ Cerrar
+                </button>
+
+            </div>
+
+
+            <div
+                class="admin-grid"
+                style="
+                    display:grid;
+                    grid-template-columns:
+                        repeat(
+                            auto-fit,
+                            minmax(220px, 1fr)
+                        );
+                    gap:14px;
+                "
+            >
+
+                <div class="admin-field">
+
+                    <label>
+                        Nombre
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="nombre"
+                        value="${esc(
+                            event.nombre ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Categoría
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="categoria"
+                        value="${esc(
+                            event.categoria ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Subcategoría
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="subcategoria"
+                        value="${esc(
+                            event.subcategoria ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Fecha inicio
+                    </label>
+
+                    <input
+                        type="date"
+                        data-edit-field="fechaInicio"
+                        value="${esc(
+                            event.fechaInicio ??
+                            event.fecha ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Fecha término
+                    </label>
+
+                    <input
+                        type="date"
+                        data-edit-field="fechaTermino"
+                        value="${esc(
+                            event.fechaTermino ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Hora inicio
+                    </label>
+
+                    <input
+                        type="time"
+                        data-edit-field="horaInicio"
+                        value="${esc(
+                            event.horaInicio ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Hora término
+                    </label>
+
+                    <input
+                        type="time"
+                        data-edit-field="horaTermino"
+                        value="${esc(
+                            event.horaTermino ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Región
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="region"
+                        value="${esc(
+                            event.region ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Comuna
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="comuna"
+                        value="${esc(
+                            event.comuna ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Ciudad
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="ciudad"
+                        value="${esc(
+                            event.ciudad ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Lugar
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="lugar"
+                        value="${esc(
+                            event.lugar ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Dirección
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="direccion"
+                        value="${esc(
+                            event.direccion ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Precio
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="precio"
+                        value="${esc(
+                            event.precio ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Acceso
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="acceso"
+                        value="${esc(
+                            event.acceso ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Organizador
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="organizador"
+                        value="${esc(
+                            event.organizador ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Link del evento
+                    </label>
+
+                    <input
+                        type="url"
+                        data-edit-field="linkEvento"
+                        value="${esc(
+                            event.linkEvento ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Link de entradas
+                    </label>
+
+                    <input
+                        type="url"
+                        data-edit-field="linkEntradas"
+                        value="${esc(
+                            event.linkEntradas ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Instagram
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="instagram"
+                        value="${esc(
+                            event.instagram ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Facebook
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="facebook"
+                        value="${esc(
+                            event.facebook ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div
+                    class="admin-field"
+                    style="
+                        grid-column:
+                            1 / -1;
+                    "
+                >
+
+                    <label>
+                        Imagen del evento
+                    </label>
+
+                    <input
+                        type="url"
+                        data-edit-field="imagen"
+                        value="${esc(image)}"
+                        placeholder="https://..."
+                        autocomplete="off"
+                    >
+
+                    <small
+                        style="
+                            display:block;
+                            margin-top:5px;
+                            color:#666;
+                        "
+                    >
+                        Pega aquí la URL pública de la imagen.
+                        No se almacena la imagen en Firebase Storage.
+                    </small>
+
+
+                    <div
+                        data-event-image-preview
+                        style="
+                            margin-top:10px;
+                            ${
+                                image
+                                    ? ""
+                                    : "display:none;"
+                            }
+                        "
+                    >
+
+                        <img
+                            data-event-image-preview-img
+                            src="${esc(image)}"
+                            alt="Vista previa"
+                            style="
+                                display:block;
+                                width:100%;
+                                max-width:700px;
+                                max-height:300px;
+                                object-fit:cover;
+                                border-radius:10px;
+                                border:1px solid #ddd;
+                            "
+                        >
+
+                        <small
+                            data-event-image-status
+                            style="
+                                display:block;
+                                margin-top:6px;
+                            "
+                        >
+                            ${
+                                image
+                                    ? "Vista previa"
+                                    : ""
+                            }
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Fuente
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="fuente"
+                        value="${esc(
+                            event.fuente ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div class="admin-field">
+
+                    <label>
+                        Estado de verificación
+                    </label>
+
+                    <input
+                        type="text"
+                        data-edit-field="estadoVerificacion"
+                        value="${esc(
+                            event.estadoVerificacion ??
+                            ""
+                        )}"
+                    >
+
+                </div>
+
+
+                <div
+                    class="admin-field"
+                    style="
+                        grid-column:
+                            1 / -1;
+                    "
+                >
+
+                    <label>
+                        Descripción
+                    </label>
+
+                    <textarea
+                        data-edit-field="descripcion"
+                        rows="6"
+                        style="
+                            width:100%;
+                            resize:vertical;
+                        "
+                    >${esc(
+                        event.descripcion ??
+                        ""
+                    )}</textarea>
+
+                </div>
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    margin-top:20px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    type="button"
+                    data-save-event-edit="${esc(id)}"
+                    style="
+                        border:0;
+                        border-radius:8px;
+                        padding:10px 18px;
+                        background:#198754;
+                        color:#fff;
+                        cursor:pointer;
+                        font-weight:600;
+                    "
+                >
+                    💾 Guardar cambios
+                </button>
+
+
+                <button
+                    type="button"
+                    data-close-event-edit
+                    style="
+                        border:0;
+                        border-radius:8px;
+                        padding:10px 18px;
+                        background:#6c757d;
+                        color:#fff;
+                        cursor:pointer;
+                    "
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+
+            <div
+                data-event-edit-status
+                style="
+                    margin-top:12px;
+                    font-weight:600;
+                "
+            ></div>
+
+        </div>
+    `;
+
+}
+
+
+/* =====================================================
+   ABRIR EDITOR DE EVENTO
+===================================================== */
+
+function editEvent(eventId) {
+
+    const event =
+        events.find(
+            item =>
+                getEventId(item) ===
+                String(eventId)
+        );
+
+
+    if (!event) {
+
+        console.error(
+            "Evento no encontrado:",
+            eventId
+        );
+
+        return;
+
+    }
+
+
+    const row =
+        document.querySelector(
+            `[data-cleanup-event-id="${CSS.escape(
+                String(eventId)
+            )}"]`
+        );
+
+
+    if (!row) {
+
+        console.error(
+            "No se encontró la fila del evento:",
+            eventId
+        );
+
+        return;
+
+    }
+
+
+    document
+        .querySelectorAll(
+            "[data-event-edit-form]"
+        )
+        .forEach(
+            form => {
+
+                form.remove();
+
+            }
+        );
+
+
+    row.insertAdjacentHTML(
+        "afterend",
+        buildEventEditForm(event)
+    );
+
+
+    const form =
+        document.querySelector(
+            `[data-event-edit-form="${CSS.escape(
+                String(eventId)
+            )}"]`
+        );
+
+
+    if (!form) return;
+
+
+    bindEventImagePreview(
+        form
+    );
+
+}
+
+
+/* =====================================================
+   VISTA PREVIA DE IMAGEN DEL EVENTO
+===================================================== */
+
+function bindEventImagePreview(
+    form
+) {
+
+    if (!form) return;
+
+
+    const input =
+        form.querySelector(
+            '[data-edit-field="imagen"]'
+        );
+
+
+    const preview =
+        form.querySelector(
+            "[data-event-image-preview]"
+        );
+
+
+    const image =
+        form.querySelector(
+            "[data-event-image-preview-img]"
+        );
+
+
+    const status =
+        form.querySelector(
+            "[data-event-image-status]"
+        );
+
+
+    if (
+        !input ||
+        !preview ||
+        !image
+    ) {
+
+        return;
+
+    }
+
+
+    const update =
+        () => {
+
+            const url =
+                input.value.trim();
+
+
+            if (!url) {
+
+                preview.style.display =
+                    "none";
+
+                image.src =
+                    "";
+
+                if (status) {
+
+                    status.textContent =
+                        "";
+
+                }
+
+                return;
+
+            }
+
+
+            if (
+                !isValidImageUrl(url)
+            ) {
+
+                preview.style.display =
+                    "none";
+
+                image.src =
+                    "";
+
+                if (status) {
+
+                    status.textContent =
+                        "La URL debe comenzar con http:// o https://";
+
+                }
+
+                return;
+
+            }
+
+
+            preview.style.display =
+                "block";
+
+            image.src =
+                url;
+
+
+            if (status) {
+
+                status.textContent =
+                    "Cargando imagen...";
+
+            }
+
+
+            image.onload =
+                () => {
+
+                    if (status) {
+
+                        status.textContent =
+                            "Vista previa correcta";
+
+                    }
+
+                };
+
+
+            image.onerror =
+                () => {
+
+                    if (status) {
+
+                        status.textContent =
+                            "No se pudo cargar la imagen. Verifica que la URL sea pública.";
+
+                    }
+
+                };
+
+        };
+
+
+    input.addEventListener(
+        "input",
+        update
+    );
+
+
+    input.addEventListener(
+        "change",
+        update
+    );
+
+
+    update();
+
+}
+
+
+/* =====================================================
+   GUARDAR EVENTO EDITADO
+===================================================== */
+
+async function saveEditedEvent(
+    eventId,
+    form
+) {
+
+    if (
+        !eventId ||
+        !form
+    ) {
+
+        return;
+
+    }
+
+
+    const status =
+        form.querySelector(
+            "[data-event-edit-status]"
+        );
+
+
+    const saveButton =
+        form.querySelector(
+            "[data-save-event-edit]"
+        );
+
+
+    const event =
+        events.find(
+            item =>
+                getEventId(item) ===
+                String(eventId)
+        );
+
+
+    if (!event) {
+
+        if (status) {
+
+            status.textContent =
+                "No se encontró el evento.";
+
+        }
+
+        return;
+
+    }
+
+
+    const getValue =
+        field => {
+
+            const input =
+                form.querySelector(
+                    `[data-edit-field="${field}"]`
+                );
+
+            return input
+                ? input.value.trim()
+                : "";
+
+        };
+
+
+    const imagen =
+        getValue(
+            "imagen"
+        );
+
+
+    if (
+        imagen &&
+        !isValidImageUrl(imagen)
+    ) {
+
+        if (status) {
+
+            status.textContent =
+                "La URL de la imagen no es válida.";
+
+            status.style.color =
+                "#dc3545";
+
+        }
+
+        return;
+
+    }
+
+
+    const updatedEvent = {
+
+        nombre:
+            getValue("nombre"),
+
+        categoria:
+            getValue("categoria"),
+
+        subcategoria:
+            getValue("subcategoria"),
+
+        fechaInicio:
+            getValue("fechaInicio"),
+
+        fechaTermino:
+            getValue("fechaTermino"),
+
+        horaInicio:
+            getValue("horaInicio"),
+
+        horaTermino:
+            getValue("horaTermino"),
+
+        region:
+            getValue("region"),
+
+        comuna:
+            getValue("comuna"),
+
+        ciudad:
+            getValue("ciudad"),
+
+        lugar:
+            getValue("lugar"),
+
+        direccion:
+            getValue("direccion"),
+
+        descripcion:
+            getValue("descripcion"),
+
+        precio:
+            getValue("precio"),
+
+        acceso:
+            getValue("acceso"),
+
+        organizador:
+            getValue("organizador"),
+
+        linkEvento:
+            getValue("linkEvento"),
+
+        linkEntradas:
+            getValue("linkEntradas"),
+
+        instagram:
+            getValue("instagram"),
+
+        facebook:
+            getValue("facebook"),
+
+        imagen:
+            imagen,
+
+        fuente:
+            getValue("fuente"),
+
+        estadoVerificacion:
+            getValue("estadoVerificacion")
+
+    };
+
+
+    try {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                true;
+
+            saveButton.textContent =
+                "Guardando...";
+
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                "Guardando cambios...";
+
+            status.style.color =
+                "";
+
+        }
+
+
+        /*
+           IMPORTANTE:
+           Primero intentamos utilizar el ID real
+           de Firestore si getEvents() lo entrega.
+        */
+
+        const firestoreId =
+            event.firestoreId ??
+            event.documentId ??
+            event.docId ??
+            event._id ??
+            event.id;
+
+
+        if (!firestoreId) {
+
+            throw new Error(
+                "No se encontró el ID del documento de Firestore."
+            );
+
+        }
+
+
+        await updateDoc(
+            doc(
+                db,
+                "eventos",
+                String(firestoreId)
+            ),
+            updatedEvent
+        );
+
+
+        /*
+           Actualizamos también el objeto local
+           para que la pantalla refleje inmediatamente
+           los cambios.
+        */
+
+        Object.assign(
+            event,
+            updatedEvent
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "✓ Evento actualizado correctamente.";
+
+            status.style.color =
+                "#198754";
+
+        }
+
+
+        renderCleanupEvents();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error guardando evento:",
+            error
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "No se pudieron guardar los cambios. Revisa la consola.";
+
+            status.style.color =
+                "#dc3545";
+
+        }
+
+    }
+
+    finally {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+            saveButton.textContent =
+                "💾 Guardar cambios";
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   EVENTOS DE LOS BOTONES DE EDICIÓN
+===================================================== */
+
+function bindEventEditing() {
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const editButton =
+                event.target.closest(
+                    "[data-edit-event]"
+                );
+
+
+            if (editButton) {
+
+                const eventId =
+                    editButton.dataset.editEvent;
+
+
+                editEvent(
+                    eventId
+                );
+
+                return;
+
+            }
+
+
+            const closeButton =
+                event.target.closest(
+                    "[data-close-event-edit]"
+                );
+
+
+            if (closeButton) {
+
+                const form =
+                    closeButton.closest(
+                        "[data-event-edit-form]"
+                    );
+
+
+                if (form) {
+
+                    form.remove();
+
+                }
+
+                return;
+
+            }
+
+
+            const saveButton =
+                event.target.closest(
+                    "[data-save-event-edit]"
+                );
+
+
+            if (saveButton) {
+
+                const eventId =
+                    saveButton.dataset.saveEventEdit;
+
+
+                const form =
+                    saveButton.closest(
+                        "[data-event-edit-form]"
+                    );
+
+
+                saveEditedEvent(
+                    eventId,
+                    form
+                );
+
+            }
+
+        }
+    );
+
+}
 
 /* =====================================================
    ESTADÍSTICAS DE LIMPIEZA
@@ -6413,6 +7685,8 @@ bindCarouselTypeChange();
 bindCleanupSelection();
 
 bindCleanupFilters();
+
+bindEventEditing();
 
 bindExcelReader();
 
