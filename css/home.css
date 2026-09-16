@@ -2,7 +2,7 @@
 OTIUM HOME
 Diseño reconstruido según referencia visual OTIUM
 
-CORRECCIÓN 20260913:
+CORRECCIÓN 20260916:
 
 - Carrusel independiente del buscador.
 - Buscador debajo del carrusel.
@@ -13,7 +13,14 @@ CORRECCIÓN 20260913:
 - En móvil las imágenes originales de fondo se eliminan
   visualmente para evitar que dominen el espacio.
 - Los banners de Firestore conservan su proporción.
-- No se modifica el diseño del resto del Home.
+- Eventos destacados utilizan las clases reales generadas
+  por home.js:
+    .event-card
+    .event-card-image
+    .event-card-image img
+    .event-card-content
+- Las imágenes de eventos destacados quedan contenidas
+  dentro de sus respectivas tarjetas.
 ========================================================= */
 
 :root {
@@ -562,145 +569,291 @@ CATEGORÍAS
 
 
 /* =========================================================
-EVENTOS
+EVENTOS DESTACADOS
 ========================================================= */
+
+/*
+   IMPORTANTE:
+
+   home.js genera las tarjetas con:
+
+   .event-card
+   .event-card-image
+   .event-card-image img
+   .event-card-content
+
+   Las reglas antiguas .featured-card / .event-image /
+   .event-body no coincidían con el HTML generado por JS.
+
+   Esta sección corrige esa diferencia.
+*/
 
 .featured-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 12px;
+    align-items: stretch;
 }
 
-.featured-card {
+
+/* =========================================================
+TARJETA
+========================================================= */
+
+.event-card {
     min-width: 0;
+    min-height: 0;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
     border: 1px solid rgba(93, 127, 197, .43);
     border-radius: 13px;
+
     background: linear-gradient(
         180deg,
         #0b1b3d,
         #06112a
     );
+
+    cursor: pointer;
+
     transition:
         transform .2s ease,
-        border-color .2s ease;
+        border-color .2s ease,
+        box-shadow .2s ease;
 }
 
-.featured-card:hover {
+.event-card:hover {
     transform: translateY(-3px);
     border-color: #3d8fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,.22);
 }
 
-.event-image {
+
+/* =========================================================
+IMAGEN DE EVENTO DESTACADO
+========================================================= */
+
+.event-card-image {
     position: relative;
-    height: 145px;
-    overflow: hidden;
-    background: linear-gradient(
-        135deg,
-        #301d77,
-        #0b6fd2
-    );
-}
 
-.event-image img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    height: 145px;
+
+    min-height: 145px;
+    max-height: 145px;
+
+    flex: 0 0 145px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #301d77,
+            #0b6fd2
+        );
 }
 
-.event-image::after {
-    content: "";
+
+/*
+   La imagen queda completamente contenida
+   dentro de .event-card-image.
+
+   position:absolute + inset:0 evita que una imagen
+   con dimensiones propias pueda modificar el tamaño
+   de la tarjeta.
+*/
+
+.event-card-image img {
     position: absolute;
     inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+
+    max-width: none;
+    max-height: none;
+
+    object-fit: cover;
+    object-position: center center;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+}
+
+
+/*
+   Oscurecimiento inferior de la imagen.
+*/
+
+.event-card-image::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
     background: linear-gradient(
         0deg,
-        rgba(2,8,25,.65),
+        rgba(2,8,25,.55),
         transparent 60%
     );
 }
 
-.event-fallback {
-    height: 100%;
-    display: grid;
-    place-items: center;
-    padding: 15px;
-    text-align: center;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -.03em;
-}
 
-.event-heart {
-    position: absolute;
-    z-index: 3;
-    top: 9px;
-    right: 9px;
-    width: 30px;
-    height: 30px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(255,255,255,.22);
-    border-radius: 50%;
-    background: rgba(3,9,25,.55);
-    color: #fff;
-}
+/* =========================================================
+CONTENIDO DE LA TARJETA
+========================================================= */
 
-.event-body {
+.event-card-content {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
     padding: 11px;
 }
 
-.event-date-row {
-    display: flex;
-    gap: 9px;
-    align-items: center;
-    margin-bottom: 8px;
-}
 
-.event-date {
-    min-width: 37px;
-    padding: 5px 4px;
-    border-radius: 7px;
-    text-align: center;
-    background: #fff;
-    color: #0b1630;
+/* =========================================================
+CATEGORÍA
+========================================================= */
+
+.event-category {
+    display: inline-block;
+
+    max-width: 100%;
+
+    margin-bottom: 5px;
+
+    overflow: hidden;
+
+    color: #b8c8e6;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.event-title {
+
+/* =========================================================
+TÍTULO
+========================================================= */
+
+.event-card-content h3 {
+    min-width: 0;
+    max-width: 100%;
+
     margin: 0;
+
     color: #fff;
+
     font-size: 14px;
-    line-height: 1.2;
+    line-height: 1.25;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+
+    overflow: hidden;
 }
 
-.event-meta {
-    margin-top: 6px;
+
+/* =========================================================
+DESCRIPCIÓN
+========================================================= */
+
+.event-card-content p {
+    min-width: 0;
+    max-width: 100%;
+
+    margin: 7px 0 0;
+
     color: #8fa1c3;
+
+    font-size: 10px;
+    line-height: 1.4;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+FECHA / PRECIO
+========================================================= */
+
+.event-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-top: 9px;
+
+    color: #9cafce;
+
     font-size: 10px;
     line-height: 1.4;
 }
 
-.event-category {
-    color: #b8c8e6;
-    font-size: 10px;
+.event-card-meta span {
+    min-width: 0;
+    max-width: 100%;
 }
 
-.event-price {
-    margin-top: 9px;
-    text-align: right;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
+
+/* =========================================================
+ESTADO SIN EVENTOS
+========================================================= */
+
+.empty-message {
+    grid-column: 1 / -1;
+
+    margin: 0;
+
+    padding: 45px;
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    color: #91a3c7;
+
+    background: #07152f;
 }
 
 .featured-loading {
     grid-column: 1 / -1;
+
     padding: 45px;
+
     border-radius: 15px;
+
     text-align: center;
+
     color: #91a3c7;
+
     background: #07152f;
 }
 
@@ -1199,11 +1352,18 @@ MÓVIL
     }
 
     /*
-       EVENTOS
+       EVENTOS DESTACADOS
     */
 
     .featured-grid {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .event-card-image {
+        height: 125px;
+        min-height: 125px;
+        max-height: 125px;
+        flex-basis: 125px;
     }
 
     /*
@@ -1278,5 +1438,20 @@ MÓVILES PEQUEÑOS
 
     .hero-eyebrow {
         font-size: 9px;
+    }
+
+    .event-card-image {
+        height: 115px;
+        min-height: 115px;
+        max-height: 115px;
+        flex-basis: 115px;
+    }
+
+    .event-card-content {
+        padding: 9px;
+    }
+
+    .event-card-content h3 {
+        font-size: 13px;
     }
 }
