@@ -6223,6 +6223,745 @@ async function deleteSelectedEvents() {
 
 }
 
+/* =====================================================
+   ESTADÍSTICAS GENERALES DE OTIUM
+===================================================== */
+
+/**
+ * Obtiene la fecha principal del evento.
+ *
+ * Prioridad:
+ * 1. fechaTermino
+ * 2. fechaInicio
+ * 3. fecha
+ * 4. date
+ * 5. fechaEvento
+ */
+function getStatisticsEventDate(eventData) {
+
+    if (!eventData) {
+
+        return null;
+
+    }
+
+    const value =
+        eventData.fechaTermino ||
+        eventData.fechaInicio ||
+        eventData.fecha ||
+        eventData.date ||
+        eventData.fechaEvento ||
+        null;
+
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    /*
+     * Firestore Timestamp
+     */
+    if (
+        typeof value === "object" &&
+        typeof value.toDate === "function"
+    ) {
+
+        return value.toDate();
+
+    }
+
+
+    /*
+     * Date nativo
+     */
+    if (value instanceof Date) {
+
+        return value;
+
+    }
+
+
+    /*
+     * Texto ISO / fecha
+     */
+    const parsed =
+        new Date(value);
+
+
+    if (
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ) {
+
+        return parsed;
+
+    }
+
+
+    return null;
+
+}
+
+
+/**
+ * Obtiene el identificador del usuario
+ * que creó el evento.
+ *
+ * Mantiene compatibilidad con
+ * diferentes versiones del proyecto.
+ */
+function getStatisticsUserId(eventData) {
+
+    if (!eventData) {
+
+        return "";
+
+    }
+
+
+    return String(
+        eventData.usuarioId ||
+        eventData.userId ||
+        eventData.ownerId ||
+        ""
+    ).trim();
+
+}
+
+
+/**
+ * Obtiene un nombre identificable
+ * para mostrar al usuario.
+ */
+function getStatisticsUserLabel(
+    eventData,
+    userId
+) {
+
+    if (!eventData) {
+
+        return userId || "Sin usuario";
+
+    }
+
+
+    const possibleName =
+        eventData.usuarioNombre ||
+        eventData.userNombre ||
+        eventData.nombreUsuario ||
+        eventData.emailUsuario ||
+        eventData.email ||
+        "";
+
+
+    if (String(possibleName).trim()) {
+
+        return String(
+            possibleName
+        ).trim();
+
+    }
+
+
+    if (userId) {
+
+        return userId;
+
+    }
+
+
+    return "Sin usuario";
+
+}
+
+
+/**
+ * Escapa contenido HTML antes de
+ * insertarlo mediante innerHTML.
+ */
+function escapeStatisticsHtml(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/**
+ * Formatea una fecha para mostrar
+ * en las estadísticas.
+ */
+function formatStatisticsDate(
+    eventData
+) {
+
+    const date =
+        getStatisticsEventDate(
+            eventData
+        );
+
+
+    if (!date) {
+
+        return "Sin fecha";
+
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "es-CL",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    ).format(date);
+
+}
+
+
+/**
+ * Carga y muestra las estadísticas
+ * generales de OTIUM.
+ */
+async function loadStatistics() {
+
+    const status =
+        document.getElementById(
+            "statisticsStatus"
+        );
+
+
+    const totalElement =
+        document.getElementById(
+            "statisticsTotalEvents"
+        );
+
+
+    const activeElement =
+        document.getElementById(
+            "statisticsActiveEvents"
+        );
+
+
+    const pastElement =
+        document.getElementById(
+            "statisticsPastEvents"
+        );
+
+
+    const usersElement =
+        document.getElementById(
+            "statisticsUsersWithEvents"
+        );
+
+
+    const usersList =
+        document.getElementById(
+            "statisticsUsersList"
+        );
+
+
+    const eventsList =
+        document.getElementById(
+            "statisticsEventsList"
+        );
+
+
+    if (status) {
+
+        status.textContent =
+            "Cargando estadísticas...";
+
+    }
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "eventos"
+                )
+            );
+
+
+        const statisticsEvents = [];
+
+
+        snapshot.forEach(
+            docSnapshot => {
+
+                const data =
+                    docSnapshot.data() || {};
+
+
+                statisticsEvents.push({
+
+                    firestoreId:
+                        docSnapshot.id,
+
+                    ...data
+
+                });
+
+            }
+        );
+
+
+        /*
+         * Fecha actual.
+         */
+        const now =
+            new Date();
+
+
+        /*
+         * Clasificación:
+         *
+         * activo/futuro:
+         * fecha principal >= hoy
+         *
+         * finalizado:
+         * fecha principal < hoy
+         */
+        let activeCount = 0;
+
+        let pastCount = 0;
+
+
+        /*
+         * Agrupación por usuario.
+         */
+        const usersMap =
+            new Map();
+
+
+        statisticsEvents.forEach(
+            eventData => {
+
+                const eventDate =
+                    getStatisticsEventDate(
+                        eventData
+                    );
+
+
+                if (eventDate) {
+
+                    if (
+                        eventDate.getTime() >=
+                        now.getTime()
+                    ) {
+
+                        activeCount++;
+
+                    } else {
+
+                        pastCount++;
+
+                    }
+
+                }
+
+
+                const userId =
+                    getStatisticsUserId(
+                        eventData
+                    );
+
+
+                const userLabel =
+                    getStatisticsUserLabel(
+                        eventData,
+                        userId
+                    );
+
+
+                const key =
+                    userId ||
+                    `sin-usuario-${userLabel}`;
+
+
+                if (
+                    !usersMap.has(key)
+                ) {
+
+                    usersMap.set(
+                        key,
+                        {
+                            userId:
+                                userId,
+
+                            label:
+                                userLabel,
+
+                            total:
+                                0
+                        }
+                    );
+
+                }
+
+
+                const userStats =
+                    usersMap.get(key);
+
+
+                userStats.total++;
+
+            }
+        );
+
+
+        /*
+         * Actualizar tarjetas.
+         */
+        if (totalElement) {
+
+            totalElement.textContent =
+                statisticsEvents.length;
+
+        }
+
+
+        if (activeElement) {
+
+            activeElement.textContent =
+                activeCount;
+
+        }
+
+
+        if (pastElement) {
+
+            pastElement.textContent =
+                pastCount;
+
+        }
+
+
+        if (usersElement) {
+
+            usersElement.textContent =
+                usersMap.size;
+
+        }
+
+
+        /*
+         * Tabla de usuarios.
+         */
+        if (usersList) {
+
+            if (
+                usersMap.size === 0
+            ) {
+
+                usersList.innerHTML = `
+                    <div class="statistics-empty">
+                        No existen usuarios con eventos registrados.
+                    </div>
+                `;
+
+            } else {
+
+                const users =
+                    Array.from(
+                        usersMap.values()
+                    ).sort(
+                        (a, b) =>
+                            b.total -
+                            a.total
+                    );
+
+
+                usersList.innerHTML = `
+
+                    <table class="statistics-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Usuario</th>
+
+                                <th>ID usuario</th>
+
+                                <th>Eventos creados</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${users.map(
+                                user => `
+
+                                <tr>
+
+                                    <td>
+                                        ${escapeStatisticsHtml(
+                                            user.label
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        ${escapeStatisticsHtml(
+                                            user.userId ||
+                                            "Sin ID"
+                                        )}
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            ${user.total}
+                                        </strong>
+                                    </td>
+
+                                </tr>
+
+                            `
+                            ).join("")}
+
+                        </tbody>
+
+                    </table>
+
+                `;
+
+            }
+
+        }
+
+
+        /*
+         * Tabla de detalle de eventos.
+         */
+        if (eventsList) {
+
+            if (
+                statisticsEvents.length === 0
+            ) {
+
+                eventsList.innerHTML = `
+                    <div class="statistics-empty">
+                        No existen eventos registrados.
+                    </div>
+                `;
+
+            } else {
+
+                const sortedEvents =
+                    [...statisticsEvents]
+                        .sort(
+                            (
+                                a,
+                                b
+                            ) => {
+
+                                const dateA =
+                                    getStatisticsEventDate(
+                                        a
+                                    );
+
+                                const dateB =
+                                    getStatisticsEventDate(
+                                        b
+                                    );
+
+
+                                if (
+                                    !dateA &&
+                                    !dateB
+                                ) {
+
+                                    return 0;
+
+                                }
+
+
+                                if (!dateA) {
+
+                                    return 1;
+
+                                }
+
+
+                                if (!dateB) {
+
+                                    return -1;
+
+                                }
+
+
+                                return (
+                                    dateA.getTime() -
+                                    dateB.getTime()
+                                );
+
+                            }
+                        );
+
+
+                eventsList.innerHTML = `
+
+                    <table class="statistics-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Evento</th>
+
+                                <th>Fecha</th>
+
+                                <th>Usuario</th>
+
+                                <th>ID Firestore</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${sortedEvents.map(
+                                eventData => {
+
+                                    const userId =
+                                        getStatisticsUserId(
+                                            eventData
+                                        );
+
+
+                                    const userLabel =
+                                        getStatisticsUserLabel(
+                                            eventData,
+                                            userId
+                                        );
+
+
+                                    return `
+
+                                        <tr>
+
+                                            <td>
+                                                ${escapeStatisticsHtml(
+                                                    eventData.nombre ||
+                                                    "Sin nombre"
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${escapeStatisticsHtml(
+                                                    formatStatisticsDate(
+                                                        eventData
+                                                    )
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${escapeStatisticsHtml(
+                                                    userLabel
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${escapeStatisticsHtml(
+                                                    eventData.firestoreId
+                                                )}
+                                            </td>
+
+                                        </tr>
+
+                                    `;
+
+                                }
+                            ).join("")}
+
+                        </tbody>
+
+                    </table>
+
+                `;
+
+            }
+
+        }
+
+
+        if (status) {
+
+            status.textContent =
+                `Estadísticas actualizadas: ${statisticsEvents.length} eventos registrados.`;
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error cargando estadísticas:",
+            error
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "No fue posible cargar las estadísticas.";
+
+        }
+
+
+        if (usersList) {
+
+            usersList.innerHTML = `
+                <div class="statistics-empty">
+                    Error al cargar los usuarios.
+                </div>
+            `;
+
+        }
+
+
+        if (eventsList) {
+
+            eventsList.innerHTML = `
+                <div class="statistics-empty">
+                    Error al cargar los eventos.
+                </div>
+            `;
+
+        }
+
+    }
+
+}
 
 /* =====================================================
    TABS
@@ -6303,6 +7042,21 @@ function bindTabs() {
 
                     }
 
+
+                    /*
+                       Al abrir Estadísticas,
+                       cargar datos desde Firestore.
+                    */
+
+                    if (
+                        target ===
+                        "estadisticas"
+                    ) {
+
+                        loadStatistics();
+
+                    }
+
                 }
             );
 
@@ -6310,7 +7064,6 @@ function bindTabs() {
     );
 
 }
-
 
 /* =====================================================
    BOTONES PRINCIPALES
@@ -6389,6 +7142,21 @@ function bindButtons() {
         document.getElementById(
             "refreshCleanup"
         );
+
+    const refreshStatisticsButton =
+        document.getElementById(
+            "refreshStatistics"
+        );
+
+
+    if (refreshStatisticsButton) {
+
+        refreshStatisticsButton.addEventListener(
+            "click",
+            loadStatistics
+        );
+
+    }
 
 
     if (refreshButton) {
