@@ -300,6 +300,99 @@
 
 }
 
+
+
+/* =====================================================
+   ESTADÍSTICAS OTIUM
+===================================================== */
+
+.statistics-toolbar{
+  display:flex;
+  justify-content:flex-end;
+  margin:18px 0;
+}
+
+.statistics-status{
+  margin:14px 0;
+  color:#666;
+  font-size:.9rem;
+}
+
+.statistics-cards{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(150px,1fr));
+  gap:12px;
+  margin:18px 0 24px;
+}
+
+.statistics-card{
+  padding:18px;
+  border:1px solid #e5e5e5;
+  border-radius:12px;
+  background:#fff;
+}
+
+.statistics-card strong{
+  display:block;
+  font-size:1.7rem;
+  line-height:1.1;
+  margin-bottom:7px;
+}
+
+.statistics-card span{
+  color:#666;
+  font-size:.85rem;
+}
+
+.statistics-section{
+  margin:24px 0;
+}
+
+.statistics-section h3{
+  margin:0 0 12px;
+}
+
+.statistics-table-wrap{
+  width:100%;
+  overflow-x:auto;
+  border:1px solid #e5e5e5;
+  border-radius:12px;
+  background:#fff;
+}
+
+.statistics-table{
+  width:100%;
+  min-width:600px;
+  border-collapse:collapse;
+}
+
+.statistics-table th,
+.statistics-table td{
+  padding:10px 12px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+  vertical-align:top;
+}
+
+.statistics-table th{
+  background:#f7f7f7;
+  font-weight:700;
+}
+
+.statistics-empty{
+  padding:18px;
+  color:#777;
+  border:1px dashed #ddd;
+  border-radius:12px;
+  background:#fff;
+}
+
+@media(max-width:800px){
+  .statistics-cards{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
 </style>
 
 </head>
@@ -410,6 +503,14 @@
 
 
       <!-- NUEVA PESTAÑA -->
+
+      <button
+        class="admin-tab"
+        data-tab="estadisticas"
+      >
+        📊 Estadísticas
+      </button>
+
 
       <button
         class="admin-tab"
@@ -796,6 +897,106 @@
 
 
     <!-- =================================================
+         TAB - ESTADÍSTICAS
+    ================================================== -->
+
+    <section
+      id="tab-estadisticas"
+      class="admin-panel"
+    >
+
+      <div class="panel-head">
+
+        <div>
+
+          <h2>
+            📊 Estadísticas OTIUM
+          </h2>
+
+          <p>
+            Resumen general de eventos y eventos creados por cada usuario.
+          </p>
+
+        </div>
+
+        <button
+          id="refreshStatistics"
+          class="admin-add"
+        >
+          ↻ Actualizar
+        </button>
+
+      </div>
+
+      <div
+        id="statisticsStatus"
+        class="statistics-status"
+      >
+        Preparando estadísticas...
+      </div>
+
+      <div class="statistics-cards">
+
+        <div class="statistics-card">
+          <strong id="statisticsTotalEvents">0</strong>
+          <span>Total de eventos</span>
+        </div>
+
+        <div class="statistics-card">
+          <strong id="statisticsActiveEvents">0</strong>
+          <span>Eventos actuales / futuros</span>
+        </div>
+
+        <div class="statistics-card">
+          <strong id="statisticsPastEvents">0</strong>
+          <span>Eventos finalizados</span>
+        </div>
+
+        <div class="statistics-card">
+          <strong id="statisticsUsersWithEvents">0</strong>
+          <span>Usuarios con eventos</span>
+        </div>
+
+      </div>
+
+      <div class="statistics-section">
+
+        <h3>
+          Eventos creados por usuario
+        </h3>
+
+        <div
+          id="statisticsUsersList"
+          class="statistics-table-wrap"
+        >
+          <div class="statistics-empty">
+            Cargando...
+          </div>
+        </div>
+
+      </div>
+
+      <div class="statistics-section">
+
+        <h3>
+          Detalle de eventos
+        </h3>
+
+        <div
+          id="statisticsEventsList"
+          class="statistics-table-wrap"
+        >
+          <div class="statistics-empty">
+            Cargando...
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
          TAB - IMPORTAR EVENTOS
          PASO 6B - LECTOR EXCEL
     ================================================== -->
@@ -976,4 +1177,3 @@
 </body>
 
 </html>
-
