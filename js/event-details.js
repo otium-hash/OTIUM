@@ -28,12 +28,20 @@ import {
 } from "./modules/database.js";
 
 import {
-    auth
-} from "./modules/auth.js";
+    auth,
+    db
+} from "./modules/firebase-config.js";
 
 import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+import {
+    doc,
+    setDoc,
+    increment,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 
 /* =====================================================
@@ -192,6 +200,62 @@ const promoteButton =
 let currentEvent = null;
 let currentUser = null;
 let favoriteState = false;
+
+
+/* =====================================================
+   OTIUM - REGISTRAR VISITA DEL EVENTO
+===================================================== */
+
+async function registerEventView() {
+
+    if (!eventId) {
+        return;
+    }
+
+    try {
+
+        const realEventId =
+            currentEvent?.firestoreId ||
+            currentEvent?.id ||
+            eventId;
+
+        const statisticsRef =
+            doc(
+                db,
+                "estadisticas_eventos",
+                String(realEventId)
+            );
+
+        await setDoc(
+            statisticsRef,
+            {
+                eventId: String(realEventId),
+
+                views:
+                    increment(1),
+
+                lastViewAt:
+                    serverTimestamp()
+            },
+            {
+                merge: true
+            }
+        );
+
+        console.log(
+            "OTIUM - Visita registrada:",
+            realEventId
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "OTIUM - No fue posible registrar la visita:",
+            error
+        );
+
+    }
+}
 
 
 /* =====================================================
@@ -1589,6 +1653,9 @@ async function loadEvent() {
         renderEvent(
             currentEvent
         );
+
+
+        await registerEventView();
 
 
         if (eventLoading) {

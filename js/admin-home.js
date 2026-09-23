@@ -6510,6 +6510,69 @@ async function loadStatistics() {
             );
 
 
+        /*
+         * Estadísticas de visitas por evento.
+         *
+         * Colección:
+         * estadisticas_eventos
+         *
+         * Estructura:
+         * eventId
+         * views
+         * lastViewAt
+         */
+        const viewsSnapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "estadisticas_eventos"
+                )
+            );
+
+
+        const eventViewsMap =
+            new Map();
+
+
+        viewsSnapshot.forEach(
+            docSnapshot => {
+
+                const data =
+                    docSnapshot.data() || {};
+
+
+                const eventId =
+                    String(
+                        data.eventId ??
+                        docSnapshot.id ??
+                        ""
+                    ).trim();
+
+
+                if (!eventId) {
+
+                    return;
+
+                }
+
+
+                const views =
+                    Number(
+                        data.views ?? 0
+                    );
+
+
+                eventViewsMap.set(
+                    eventId,
+                    Number.isFinite(views)
+                        ? views
+                        : 0
+                );
+
+            }
+        );
+
+
         const statisticsEvents = [];
 
 
@@ -6520,18 +6583,40 @@ async function loadStatistics() {
                     docSnapshot.data() || {};
 
 
+                const firestoreId =
+                    docSnapshot.id;
+
+
+                const eventId =
+                    String(
+                        data.id ??
+                        data.firestoreId ??
+                        firestoreId ??
+                        ""
+                    ).trim();
+
+
                 statisticsEvents.push({
 
                     firestoreId:
-                        docSnapshot.id,
 
-                    ...data
+                        firestoreId,
+
+                    ...data,
+
+                    /*
+                     * Número de visitas registradas.
+                     */
+                    views:
+
+                        eventViewsMap.get(
+                            eventId
+                        ) ?? 0
 
                 });
 
             }
         );
-
 
         /*
          * Fecha actual.
@@ -6844,6 +6929,8 @@ async function loadStatistics() {
 
                                 <th>ID Firestore</th>
 
+                                <th>Visitas</th>
+
                             </tr>
 
                         </thead>
@@ -6895,6 +6982,14 @@ async function loadStatistics() {
                                                 ${escapeStatisticsHtml(
                                                     eventData.firestoreId
                                                 )}
+                                            </td>
+
+                                            <td>
+                                                <strong>
+                                                    ${Number(
+                                                        eventData.views ?? 0
+                                                    )}
+                                                </strong>
                                             </td>
 
                                         </tr>
