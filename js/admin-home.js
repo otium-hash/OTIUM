@@ -6690,7 +6690,6 @@ async function loadStatistics() {
                     userId ||
                     `sin-usuario-${userLabel}`;
 
-
                 if (
                     !usersMap.has(key)
                 ) {
@@ -6705,6 +6704,9 @@ async function loadStatistics() {
                                 userLabel,
 
                             total:
+                                0,
+
+                            views:
                                 0
                         }
                     );
@@ -6718,10 +6720,13 @@ async function loadStatistics() {
 
                 userStats.total++;
 
+                userStats.views +=
+                    Number(
+                        eventData.views ?? 0
+                    );
+
             }
         );
-
-
         /*
          * Actualizar tarjetas.
          */
@@ -6798,6 +6803,8 @@ async function loadStatistics() {
 
                                 <th>Eventos creados</th>
 
+                                <th>Visitas</th>
+
                             </tr>
 
                         </thead>
@@ -6825,6 +6832,12 @@ async function loadStatistics() {
                                     <td>
                                         <strong>
                                             ${user.total}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            ${user.views}
                                         </strong>
                                     </td>
 

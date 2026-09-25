@@ -82,6 +82,124 @@ const imageUploadStatus =
 
 
 /* =====================================================
+   FECHA Y HORARIO
+===================================================== */
+
+const startDateInput =
+    document.getElementById(
+        "date"
+    );
+
+const startTimeInput =
+    document.getElementById(
+        "time"
+    );
+
+const endDateInput =
+    document.getElementById(
+        "endDate"
+    );
+
+const endTimeInput =
+    document.getElementById(
+        "endTime"
+    );
+
+const sameDayCheckbox =
+    document.getElementById(
+        "sameDay"
+    );
+
+const endDateGroup =
+    document.getElementById(
+        "endDateGroup"
+    );
+
+
+/* =====================================================
+   FECHA Y HORARIO - SINCRONIZACIÓN
+===================================================== */
+
+function actualizarFechaTermino() {
+
+    if (
+        !endDateInput ||
+        !sameDayCheckbox
+    ) {
+        return;
+    }
+
+    if (
+        sameDayCheckbox.checked
+    ) {
+
+        if (
+            startDateInput
+        ) {
+            endDateInput.value =
+                startDateInput.value;
+        }
+
+        endDateInput.disabled =
+            true;
+
+        endDateInput.required =
+            false;
+
+        if (
+            endDateGroup
+        ) {
+            endDateGroup.classList.add(
+                "same-day-disabled"
+            );
+        }
+
+    } else {
+
+        endDateInput.disabled =
+            false;
+
+        endDateInput.required =
+            true;
+
+        if (
+            endDateGroup
+        ) {
+            endDateGroup.classList.remove(
+                "same-day-disabled"
+            );
+        }
+    }
+}
+
+
+sameDayCheckbox?.addEventListener(
+    "change",
+    actualizarFechaTermino
+);
+
+
+startDateInput?.addEventListener(
+    "change",
+    () => {
+
+        if (
+            sameDayCheckbox?.checked &&
+            endDateInput
+        ) {
+            endDateInput.value =
+                startDateInput.value;
+        }
+    }
+);
+
+
+/* Estado inicial */
+
+actualizarFechaTermino();
+
+
+/* =====================================================
    TIPO DE EVENTO
 ===================================================== */
 
@@ -188,7 +306,6 @@ const ageMaxInput =
 function obtenerBotonUbicacion() {
 
     const posiblesIds = [
-
         "useLocationButton",
         "useLocationBtn",
         "useCurrentLocation",
@@ -197,7 +314,6 @@ function obtenerBotonUbicacion() {
         "currentLocationBtn",
         "locationBtn",
         "useLocationButton"
-
     ];
 
     for (
@@ -212,11 +328,8 @@ function obtenerBotonUbicacion() {
         if (
             elemento
         ) {
-
             return elemento;
-
         }
-
     }
 
     const porClase =
@@ -227,7 +340,6 @@ function obtenerBotonUbicacion() {
         );
 
     return porClase || null;
-
 }
 
 
@@ -255,7 +367,6 @@ onAuthStateChanged(
                 ? currentUser.uid
                 : "No autenticado"
         );
-
     }
 );
 
@@ -270,13 +381,10 @@ function obtenerTipoEvento() {
         eventTypePrivate &&
         eventTypePrivate.checked
     ) {
-
         return "particular";
-
     }
 
     return "publico";
-
 }
 
 
@@ -292,9 +400,7 @@ function actualizarTipoEvento() {
     if (
         !attendanceSection
     ) {
-
         return;
-
     }
 
     if (
@@ -318,25 +424,19 @@ function actualizarTipoEvento() {
         if (
             requiresAttendance
         ) {
-
             requiresAttendance.checked =
                 false;
-
         }
 
         if (
             attendanceLink
         ) {
-
             attendanceLink.value =
                 "";
-
         }
-
     }
 
     actualizarConfirmacionAsistencia();
-
 }
 
 
@@ -349,9 +449,7 @@ function actualizarConfirmacionAsistencia() {
     if (
         !attendanceLinkGroup
     ) {
-
         return;
-
     }
 
     const activo =
@@ -381,14 +479,10 @@ function actualizarConfirmacionAsistencia() {
         if (
             attendanceLink
         ) {
-
             attendanceLink.value =
                 "";
-
         }
-
     }
-
 }
 
 
@@ -402,13 +496,10 @@ function obtenerTipoAcceso() {
         accessPaid &&
         accessPaid.checked
     ) {
-
         return "pagado";
-
     }
 
     return "gratis";
-
 }
 
 
@@ -428,46 +519,38 @@ function actualizarAcceso() {
         if (
             priceGroup
         ) {
-
             priceGroup
                 .classList
                 .add(
                     "visible"
                 );
-
         }
 
         if (
             priceInput
         ) {
-
             priceInput.disabled =
                 false;
 
             priceInput.required =
                 true;
-
         }
 
         if (
             freeEntry
         ) {
-
             freeEntry.checked =
                 false;
-
         }
 
         if (
             freeEntryBox
         ) {
-
             freeEntryBox
                 .classList
                 .remove(
                     "active"
                 );
-
         }
 
     } else {
@@ -475,19 +558,16 @@ function actualizarAcceso() {
         if (
             priceGroup
         ) {
-
             priceGroup
                 .classList
                 .remove(
                     "visible"
                 );
-
         }
 
         if (
             priceInput
         ) {
-
             priceInput.required =
                 false;
 
@@ -496,32 +576,25 @@ function actualizarAcceso() {
 
             priceInput.disabled =
                 true;
-
         }
 
         if (
             freeEntry
         ) {
-
             freeEntry.checked =
                 true;
-
         }
 
         if (
             freeEntryBox
         ) {
-
             freeEntryBox
                 .classList
                 .add(
                     "active"
                 );
-
         }
-
     }
-
 }
 
 
@@ -534,9 +607,7 @@ function actualizarEntradaGratuita() {
     if (
         !freeEntry
     ) {
-
         return;
-
     }
 
     if (
@@ -546,19 +617,15 @@ function actualizarEntradaGratuita() {
         if (
             accessFree
         ) {
-
             accessFree.checked =
                 true;
-
         }
 
         if (
             accessPaid
         ) {
-
             accessPaid.checked =
                 false;
-
         }
 
     } else {
@@ -566,25 +633,19 @@ function actualizarEntradaGratuita() {
         if (
             accessPaid
         ) {
-
             accessPaid.checked =
                 true;
-
         }
 
         if (
             accessFree
         ) {
-
             accessFree.checked =
                 false;
-
         }
-
     }
 
     actualizarAcceso();
-
 }
 
 
@@ -598,13 +659,10 @@ function obtenerTipoEdad() {
         ageRange &&
         ageRange.checked
     ) {
-
         return "rango";
-
     }
 
     return "todas";
-
 }
 
 
@@ -620,9 +678,7 @@ function actualizarEdad() {
     if (
         !ageRangeFields
     ) {
-
         return;
-
     }
 
     if (
@@ -638,19 +694,15 @@ function actualizarEdad() {
         if (
             ageMinInput
         ) {
-
             ageMinInput.required =
                 true;
-
         }
 
         if (
             ageMaxInput
         ) {
-
             ageMaxInput.required =
                 true;
-
         }
 
     } else {
@@ -664,29 +716,23 @@ function actualizarEdad() {
         if (
             ageMinInput
         ) {
-
             ageMinInput.required =
                 false;
 
             ageMinInput.value =
                 "";
-
         }
 
         if (
             ageMaxInput
         ) {
-
             ageMaxInput.required =
                 false;
 
             ageMaxInput.value =
                 "";
-
         }
-
     }
-
 }
 
 
@@ -740,9 +786,7 @@ ageRange?.addEventListener(
 ===================================================== */
 
 actualizarTipoEvento();
-
 actualizarAcceso();
-
 actualizarEdad();
 
 
@@ -765,11 +809,8 @@ if (
             if (
                 !file
             ) {
-
                 limpiarImagen();
-
                 return;
-
             }
 
             const validacion =
@@ -786,18 +827,14 @@ if (
                 );
 
                 limpiarImagen();
-
                 return;
-
             }
 
             mostrarVistaPrevia(
                 file
             );
-
         }
     );
-
 }
 
 
@@ -808,9 +845,7 @@ if (
 removeImageButton?.addEventListener(
     "click",
     () => {
-
         limpiarImagen();
-
     }
 );
 
@@ -826,13 +861,11 @@ function validarImagen(
     if (
         !file
     ) {
-
         return {
             ok: false,
             error:
                 "No se seleccionó ninguna imagen."
         };
-
     }
 
     if (
@@ -840,32 +873,27 @@ function validarImagen(
             file.type
         )
     ) {
-
         return {
             ok: false,
             error:
                 "Tipo de imagen no permitido. Usa JPG, PNG, WEBP o GIF."
         };
-
     }
 
     if (
         file.size >
         MAX_IMAGE_SIZE
     ) {
-
         return {
             ok: false,
             error:
                 "La imagen supera el máximo permitido de 5 MB."
         };
-
     }
 
     return {
         ok: true
     };
-
 }
 
 
@@ -881,9 +909,7 @@ function mostrarVistaPrevia(
         !imagePreviewContainer ||
         !imagePreview
     ) {
-
         return;
-
     }
 
     if (
@@ -896,7 +922,6 @@ function mostrarVistaPrevia(
         URL.revokeObjectURL(
             imagePreview.src
         );
-
     }
 
     const objectUrl =
@@ -919,14 +944,12 @@ function mostrarVistaPrevia(
 
         imageFileInfo.textContent =
             `${file.name} · ${formatearBytes(file.size)}`;
-
     }
 
     mostrarEstadoImagen(
         "",
         ""
     );
-
 }
 
 
@@ -939,10 +962,8 @@ function limpiarImagen() {
     if (
         imageInput
     ) {
-
         imageInput.value =
             "";
-
     }
 
     if (
@@ -959,13 +980,11 @@ function limpiarImagen() {
             URL.revokeObjectURL(
                 imagePreview.src
             );
-
         }
 
         imagePreview.removeAttribute(
             "src"
         );
-
     }
 
     if (
@@ -977,23 +996,19 @@ function limpiarImagen() {
             .remove(
                 "visible"
             );
-
     }
 
     if (
         imageFileInfo
     ) {
-
         imageFileInfo.textContent =
             "";
-
     }
 
     mostrarEstadoImagen(
         "",
         ""
     );
-
 }
 
 
@@ -1009,9 +1024,7 @@ function mostrarEstadoImagen(
     if (
         !imageUploadStatus
     ) {
-
         return;
-
     }
 
     imageUploadStatus.textContent =
@@ -1029,7 +1042,6 @@ function mostrarEstadoImagen(
             .add(
                 "visible"
             );
-
     }
 
     if (
@@ -1041,9 +1053,7 @@ function mostrarEstadoImagen(
             .add(
                 tipo
             );
-
     }
-
 }
 
 
@@ -1059,9 +1069,7 @@ async function subirImagen(
     if (
         !file
     ) {
-
         return null;
-
     }
 
     const validacion =
@@ -1072,21 +1080,17 @@ async function subirImagen(
     if (
         !validacion.ok
     ) {
-
         throw new Error(
             validacion.error
         );
-
     }
 
     if (
         !eventoId
     ) {
-
         throw new Error(
             "No se pudo determinar el ID del evento."
         );
-
     }
 
     mostrarEstadoImagen(
@@ -1157,7 +1161,6 @@ async function subirImagen(
                 responseText ||
                 "Respuesta inválida del servidor."
         };
-
     }
 
     console.log(
@@ -1169,22 +1172,18 @@ async function subirImagen(
         !response.ok ||
         !data.ok
     ) {
-
         throw new Error(
             data.error ||
             "No fue posible subir la imagen."
         );
-
     }
 
     if (
         !data.url
     ) {
-
         throw new Error(
             "El Worker no devolvió la URL de la imagen."
         );
-
     }
 
     mostrarEstadoImagen(
@@ -1193,7 +1192,6 @@ async function subirImagen(
     );
 
     return {
-
         url:
             data.url,
 
@@ -1208,9 +1206,7 @@ async function subirImagen(
         size:
             data.size ||
             file.size
-
     };
-
 }
 
 
@@ -1225,7 +1221,6 @@ locationButton?.addEventListener(
         event.preventDefault();
 
         await usarUbicacionActual();
-
     }
 );
 
@@ -1245,7 +1240,6 @@ async function usarUbicacionActual() {
         );
 
         return;
-
     }
 
     const textoOriginal =
@@ -1262,7 +1256,6 @@ async function usarUbicacionActual() {
 
         locationButton.textContent =
             "Obteniendo ubicación...";
-
     }
 
     try {
@@ -1313,7 +1306,6 @@ async function usarUbicacionActual() {
                 direccion.direccionCompleta ||
                 direccion.displayName ||
                 "";
-
         }
 
         if (
@@ -1323,7 +1315,6 @@ async function usarUbicacionActual() {
 
             cityElement.value =
                 direccion.ciudad;
-
         }
 
         if (
@@ -1333,7 +1324,6 @@ async function usarUbicacionActual() {
 
             regionElement.value =
                 direccion.region;
-
         }
 
         const latitudeElement =
@@ -1352,7 +1342,6 @@ async function usarUbicacionActual() {
 
             latitudeElement.value =
                 lat;
-
         }
 
         if (
@@ -1361,7 +1350,6 @@ async function usarUbicacionActual() {
 
             longitudeElement.value =
                 lon;
-
         }
 
         if (
@@ -1373,7 +1361,6 @@ async function usarUbicacionActual() {
 
             form.dataset.longitude =
                 lon;
-
         }
 
         mostrarMensajeUbicacion(
@@ -1425,7 +1412,6 @@ async function usarUbicacionActual() {
 
             mensaje =
                 "Se obtuvo tu ubicación, pero no fue posible convertirla en una dirección completa.";
-
         }
 
         mostrarMensajeUbicacion(
@@ -1445,11 +1431,8 @@ async function usarUbicacionActual() {
             locationButton.textContent =
                 textoOriginal ||
                 "📍 Usar mi ubicación actual";
-
         }
-
     }
-
 }
 
 
@@ -1479,10 +1462,8 @@ function obtenerCoordenadas() {
                         0
                 }
             );
-
         }
     );
-
 }
 
 
@@ -1530,7 +1511,6 @@ async function obtenerDireccion(
         throw new Error(
             "No se pudo obtener la dirección."
         );
-
     }
 
     const data =
@@ -1577,13 +1557,11 @@ async function obtenerDireccion(
                 calle +=
                     " " +
                     address.house_number;
-
             }
 
             partes.push(
                 calle
             );
-
         }
 
         if (
@@ -1593,7 +1571,6 @@ async function obtenerDireccion(
             partes.push(
                 address.neighbourhood
             );
-
         }
 
         if (
@@ -1604,7 +1581,6 @@ async function obtenerDireccion(
             partes.push(
                 address.suburb
             );
-
         }
 
         if (
@@ -1614,7 +1590,6 @@ async function obtenerDireccion(
             partes.push(
                 ciudad
             );
-
         }
 
         if (
@@ -1624,7 +1599,6 @@ async function obtenerDireccion(
             partes.push(
                 region
             );
-
         }
 
         if (
@@ -1634,14 +1608,12 @@ async function obtenerDireccion(
             partes.push(
                 address.country
             );
-
         }
 
         direccionCompleta =
             partes.join(
                 ", "
             );
-
     }
 
     return {
@@ -1667,9 +1639,7 @@ async function obtenerDireccion(
 
         raw:
             data
-
     };
-
 }
 
 
@@ -1690,9 +1660,7 @@ function mostrarMensajeUbicacion(
     if (
         !mensajeElement
     ) {
-
         return;
-
     }
 
     mensajeElement.textContent =
@@ -1712,9 +1680,7 @@ function mostrarMensajeUbicacion(
                     ? "error"
                     : "info"
         );
-
     }
-
 }
 
 
@@ -1750,7 +1716,6 @@ if (
                 );
 
                 return;
-
             }
 
 
@@ -1783,6 +1748,25 @@ if (
                     "time"
                 );
 
+            const fechaTerminoInput =
+                getValue(
+                    "endDate"
+                );
+
+            const horaTermino =
+                getValue(
+                    "endTime"
+                );
+
+            const mismoDia =
+                sameDayCheckbox?.checked ??
+                true;
+
+            const fechaTermino =
+                mismoDia
+                    ? fecha
+                    : fechaTerminoInput;
+
             const ciudad =
                 getValue(
                     "city"
@@ -1813,6 +1797,16 @@ if (
             const eventLink =
                 getValue(
                     "eventLink"
+                );
+
+            const instagram =
+                getValue(
+                    "instagram"
+                );
+
+            const facebook =
+                getValue(
+                    "facebook"
                 );
 
             const region =
@@ -1906,7 +1900,6 @@ if (
                     );
 
                     return;
-
                 }
 
                 if (
@@ -1919,7 +1912,6 @@ if (
                     );
 
                     return;
-
                 }
 
                 if (
@@ -1932,7 +1924,6 @@ if (
                     );
 
                     return;
-
                 }
 
                 if (
@@ -1945,7 +1936,6 @@ if (
                     );
 
                     return;
-
                 }
 
                 tieneRangoEdad =
@@ -1956,7 +1946,6 @@ if (
 
                 edadMaxima =
                     edadMaximaNumero;
-
             }
 
 
@@ -1976,7 +1965,48 @@ if (
                 );
 
                 return;
+            }
 
+
+            /* ==========================================
+               VALIDAR FECHA Y HORA DE TÉRMINO
+            ========================================== */
+
+            if (
+                !fechaTermino
+            ) {
+
+                alert(
+                    "Debes indicar la fecha de término del evento."
+                );
+
+                return;
+            }
+
+            if (
+                fechaTermino <
+                fecha
+            ) {
+
+                alert(
+                    "La fecha de término no puede ser anterior a la fecha de inicio."
+                );
+
+                return;
+            }
+
+            if (
+                fechaTermino === fecha &&
+                hora &&
+                horaTermino &&
+                horaTermino < hora
+            ) {
+
+                alert(
+                    "La hora de término no puede ser anterior a la hora de inicio cuando el evento termina el mismo día."
+                );
+
+                return;
             }
 
 
@@ -1994,7 +2024,6 @@ if (
                 );
 
                 return;
-
             }
 
             if (
@@ -2010,7 +2039,6 @@ if (
                 );
 
                 return;
-
             }
 
 
@@ -2030,10 +2058,38 @@ if (
                 );
 
                 return;
-
             }
+            /* ==========================================
+                VALIDAR REDES SOCIALES
+                ========================================== */
 
+            if (
+                instagram &&
+                !esUrlValida(
+                    instagram
+                )
+                ) {
 
+    alert(
+        "El enlace de Instagram no es válido."
+    );
+
+    return;
+}
+
+if (
+    facebook &&
+    !esUrlValida(
+        facebook
+    )
+) {
+
+    alert(
+        "El enlace de Facebook no es válido."
+    );
+
+    return;
+}
             /* ==========================================
                VALIDAR PRECIO
             ========================================== */
@@ -2048,7 +2104,6 @@ if (
                 );
 
                 return;
-
             }
 
 
@@ -2078,9 +2133,7 @@ if (
                     );
 
                     return;
-
                 }
-
             }
 
 
@@ -2099,7 +2152,6 @@ if (
                     selectedImage
                         ? "Publicando y subiendo imagen..."
                         : "Publicando evento...";
-
             }
 
             mostrarMensajeGeneral(
@@ -2146,9 +2198,7 @@ if (
                     restaurarBotonPublicar();
 
                     return;
-
                 }
-
             }
 
 
@@ -2172,7 +2222,6 @@ if (
 
                 modalidadTicketing =
                     "externa";
-
             }
 
 
@@ -2194,11 +2243,29 @@ if (
                 tipoEvento:
                     tipoEvento,
 
+
+                /* ======================================
+                   FECHA Y HORARIO
+                ====================================== */
+
                 fecha:
                     fecha,
 
                 hora:
                     hora,
+
+                fechaInicio:
+                    fecha,
+
+                fechaTermino:
+                    fechaTermino,
+
+                horaInicio:
+                    hora,
+
+                horaTermino:
+                    horaTermino,
+
 
                 ciudad:
                     ciudad,
@@ -2230,7 +2297,6 @@ if (
 
                     edadMaxima:
                         edadMaxima
-
                 },
 
 
@@ -2249,12 +2315,17 @@ if (
 
 
                 /* ======================================
-                   ENLACE
-                ====================================== */
+   ENLACE
+====================================== */
 
-                enlaceEvento:
-                    eventLink,
+enlaceEvento:
+    eventLink,
 
+instagram:
+    instagram,
+
+facebook:
+    facebook,
 
                 /* ======================================
                    TICKETING
@@ -2279,7 +2350,6 @@ if (
 
                     stock:
                         entradasDisponibles
-
                 },
 
 
@@ -2306,7 +2376,6 @@ if (
 
                     totalConfirmados:
                         0
-
                 },
 
 
@@ -2332,7 +2401,6 @@ if (
 
                     sponsor:
                         false
-
                 },
 
 
@@ -2345,7 +2413,6 @@ if (
 
                 estadoPromocion:
                     "inactivo"
-
             };
 
 
@@ -2370,9 +2437,7 @@ if (
 
                     eventData.latitude =
                         numeroLat;
-
                 }
-
             }
 
             if (
@@ -2392,9 +2457,7 @@ if (
 
                     eventData.longitude =
                         numeroLon;
-
                 }
-
             }
 
 
@@ -2440,7 +2503,6 @@ if (
                 restaurarBotonPublicar();
 
                 return;
-
             }
 
 
@@ -2495,7 +2557,6 @@ if (
 
                             imagenEstado:
                                 "ok"
-
                         }
                     );
 
@@ -2527,7 +2588,6 @@ if (
                                     String(
                                         error
                                     )
-
                             }
                         );
 
@@ -2539,7 +2599,6 @@ if (
                             "OTIUM - No se pudo registrar el error de imagen:",
                             updateError
                         );
-
                     }
 
                     mostrarMensajeGeneral(
@@ -2554,9 +2613,7 @@ if (
                     restaurarBotonPublicar();
 
                     return;
-
                 }
-
             }
 
 
@@ -2585,12 +2642,12 @@ if (
 
             actualizarEdad();
 
+            actualizarFechaTermino();
+
             window.location.href =
                 "my-events.html";
-
         }
     );
-
 }
 
 
@@ -2619,9 +2676,7 @@ function esUrlValida(
     } catch {
 
         return false;
-
     }
-
 }
 
 
@@ -2637,9 +2692,7 @@ function mostrarMensajeGeneral(
     if (
         !createEventMessage
     ) {
-
         return;
-
     }
 
     createEventMessage.textContent =
@@ -2655,9 +2708,7 @@ function mostrarMensajeGeneral(
         createEventMessage.classList.add(
             tipo
         );
-
     }
-
 }
 
 
@@ -2670,9 +2721,7 @@ function restaurarBotonPublicar() {
     if (
         !publishButton
     ) {
-
         return;
-
     }
 
     publishButton.disabled =
@@ -2680,7 +2729,6 @@ function restaurarBotonPublicar() {
 
     publishButton.textContent =
         "Publicar evento";
-
 }
 
 
@@ -2700,16 +2748,13 @@ function getValue(
     if (
         !element
     ) {
-
         return "";
-
     }
 
     return String(
         element.value ||
         ""
     ).trim();
-
 }
 
 
@@ -2726,34 +2771,27 @@ function formatearBytes(
             bytes
         )
     ) {
-
         return "";
-
     }
 
     if (
         bytes < 1024
     ) {
-
         return `${bytes} B`;
-
     }
 
     if (
         bytes <
         1024 * 1024
     ) {
-
         return `${(
             bytes /
             1024
         ).toFixed(1)} KB`;
-
     }
 
     return `${(
         bytes /
         (1024 * 1024)
     ).toFixed(2)} MB`;
-
 }

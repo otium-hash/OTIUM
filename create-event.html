@@ -307,6 +307,19 @@
         }
 
         /* =====================================================
+           FECHA DE TÉRMINO - MISMO DÍA
+        ===================================================== */
+
+        .same-day-disabled {
+            opacity: 0.65;
+        }
+
+        .same-day-disabled input:disabled {
+            cursor: not-allowed;
+            background: #f2f4f7;
+        }
+
+        /* =====================================================
            CONFIRMACIÓN
         ===================================================== */
 
@@ -499,6 +512,67 @@
         }
 
         /* =====================================================
+           DETALLES ADICIONALES
+        ===================================================== */
+
+        .additional-details {
+            grid-column: 1 / -1;
+            margin-top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #d9e1ea;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .additional-details summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 16px 18px;
+            font-weight: 700;
+            color: #123b63;
+            font-size: 15px;
+            user-select: none;
+        }
+
+        .additional-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .additional-details summary::before {
+            content: "＋";
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .additional-details[open] summary::before {
+            content: "−";
+        }
+
+        .additional-details summary:hover {
+            background: #f5f8fb;
+        }
+
+        .additional-details-content {
+            padding: 0 18px 18px;
+            border-top: 1px solid #e5eaf0;
+        }
+
+        .additional-details-content .form-grid {
+            margin-top: 18px;
+        }
+
+        .basic-help {
+            margin: 6px 0 0;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #667085;
+        }
+
+        /* =====================================================
            ADVERTENCIA FINAL
         ===================================================== */
 
@@ -575,7 +649,8 @@
 
             .form-group.full,
             .section-box,
-            .notice-box {
+            .notice-box,
+            .additional-details {
                 grid-column: auto;
             }
 
@@ -826,29 +901,6 @@
 
 
                     <!-- =================================================
-                         SUBCATEGORÍA
-                    ================================================== -->
-
-                    <div class="form-group">
-
-                        <label for="subcategory">
-                            3. Subcategoría
-                        </label>
-
-                        <select
-                            id="subcategory"
-                            name="subcategory">
-
-                            <option value="">
-                                Primero selecciona una categoría
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- =================================================
                          CIUDAD
                     ================================================== -->
 
@@ -893,13 +945,13 @@
 
 
                     <!-- =================================================
-                         FECHA
+                         FECHA DE INICIO
                     ================================================== -->
 
                     <div class="form-group">
 
                         <label for="date">
-                            Fecha *
+                            Fecha de inicio *
                         </label>
 
                         <input
@@ -912,13 +964,13 @@
 
 
                     <!-- =================================================
-                         HORA
+                         HORA DE INICIO
                     ================================================== -->
 
                     <div class="form-group">
 
                         <label for="time">
-                            Hora
+                            Hora de inicio
                         </label>
 
                         <input
@@ -930,383 +982,575 @@
 
 
                     <!-- =================================================
-                         DIRECCIÓN
+                         LUGAR
                     ================================================== -->
 
                     <div class="form-group full">
 
                         <label for="address">
-                            Dirección / Ubicación
+                            Lugar *
                         </label>
 
                         <input
                             type="text"
                             id="address"
                             name="address"
+                            required
                             autocomplete="street-address"
-                            placeholder="Ej: Movistar Arena">
+                            placeholder="Ej: Parque O'Higgins, Movistar Arena, Teatro Municipal">
+
+                        <p class="basic-help">
+                            Indica dónde se realizará el evento.
+                        </p>
 
                     </div>
 
 
                     <!-- =================================================
-                         EDAD
+                         DETALLES ADICIONALES
                     ================================================== -->
 
-                    <div class="section-box age-section">
+                    <details class="additional-details">
 
-                        <h3>
-                            4. Rango de edad
-                        </h3>
+                        <summary>
+                            Agregar más detalles a tu evento
+                        </summary>
 
-                        <p>
-                            Indica para qué edades está recomendado el evento.
-                            Esta información permitirá a OTIUM generar avisos de interés
-                            personalizados.
-                        </p>
+                        <div class="additional-details-content">
 
-                        <div class="age-options">
-
-                            <label class="radio-option age-option">
-
-                                <input
-                                    type="radio"
-                                    name="ageType"
-                                    id="ageAll"
-                                    value="todas"
-                                    checked>
-
-                                <span>
-
-                                    <span class="option-title">
-                                        👨‍👩‍👧 Todas las edades
-                                    </span>
-
-                                    <span class="option-description">
-                                        El evento no tiene un rango de edad específico.
-                                    </span>
-
-                                </span>
-
-                            </label>
+                            <div class="form-grid">
 
 
-                            <label class="radio-option age-option">
+                                <!-- =====================================
+                                     SUBCATEGORÍA
+                                ====================================== -->
 
-                                <input
-                                    type="radio"
-                                    name="ageType"
-                                    id="ageRange"
-                                    value="rango">
+                                <div class="form-group">
 
-                                <span>
+                                    <label for="subcategory">
+                                        Subcategoría
+                                    </label>
 
-                                    <span class="option-title">
-                                        🎯 Rango de edad
-                                    </span>
+                                    <select
+                                        id="subcategory"
+                                        name="subcategory">
 
-                                    <span class="option-description">
-                                        Especifica la edad mínima y máxima recomendada.
-                                    </span>
+                                        <option value="">
+                                            Primero selecciona una categoría
+                                        </option>
 
-                                </span>
+                                    </select>
 
-                            </label>
-
-                        </div>
+                                </div>
 
 
-                        <div
-                            id="ageRangeFields"
-                            class="age-range">
+                                <!-- =====================================
+                                     FECHA DE TÉRMINO
+                                ====================================== -->
 
-                            <div class="form-group">
+                                <div
+                                    id="endDateGroup"
+                                    class="form-group">
 
-                                <label for="ageMin">
-                                    Edad mínima
-                                </label>
+                                    <label for="endDate">
+                                        Fecha de término
+                                    </label>
 
-                                <input
-                                    type="number"
-                                    id="ageMin"
-                                    name="ageMin"
-                                    min="0"
-                                    max="120"
-                                    step="1"
-                                    placeholder="Ej: 5">
+                                    <input
+                                        type="date"
+                                        id="endDate"
+                                        name="endDate">
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     HORA DE TÉRMINO
+                                ====================================== -->
+
+                                <div class="form-group">
+
+                                    <label for="endTime">
+                                        Hora de término
+                                    </label>
+
+                                    <input
+                                        type="time"
+                                        id="endTime"
+                                        name="endTime">
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     MISMO DÍA
+                                ====================================== -->
+
+                                <div class="form-group full">
+
+                                    <label class="checkbox-option">
+
+                                        <input
+                                            type="checkbox"
+                                            id="sameDay"
+                                            name="sameDay"
+                                            checked>
+
+                                        <span>
+
+                                            <span class="option-title">
+                                                El evento termina el mismo día
+                                            </span>
+
+                                            <span class="option-description">
+                                                La fecha de término será igual a la fecha de inicio.
+                                            </span>
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     EDAD
+                                ====================================== -->
+
+                                <div class="section-box age-section">
+
+                                    <h3>
+                                        4. Rango de edad
+                                    </h3>
+
+                                    <p>
+                                        Indica para qué edades está recomendado el evento.
+                                        Esta información permitirá a OTIUM generar avisos de interés
+                                        personalizados.
+                                    </p>
+
+                                    <div class="age-options">
+
+                                        <label class="radio-option age-option">
+
+                                            <input
+                                                type="radio"
+                                                name="ageType"
+                                                id="ageAll"
+                                                value="todas"
+                                                checked>
+
+                                            <span>
+
+                                                <span class="option-title">
+                                                    👨‍👩‍👧 Todas las edades
+                                                </span>
+
+                                                <span class="option-description">
+                                                    El evento no tiene un rango de edad específico.
+                                                </span>
+
+                                            </span>
+
+                                        </label>
+
+
+                                        <label class="radio-option age-option">
+
+                                            <input
+                                                type="radio"
+                                                name="ageType"
+                                                id="ageRange"
+                                                value="rango">
+
+                                            <span>
+
+                                                <span class="option-title">
+                                                    🎯 Rango de edad
+                                                </span>
+
+                                                <span class="option-description">
+                                                    Especifica la edad mínima y máxima recomendada.
+                                                </span>
+
+                                            </span>
+
+                                        </label>
+
+                                    </div>
+
+
+                                    <div
+                                        id="ageRangeFields"
+                                        class="age-range">
+
+                                        <div class="form-group">
+
+                                            <label for="ageMin">
+                                                Edad mínima
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="ageMin"
+                                                name="ageMin"
+                                                min="0"
+                                                max="120"
+                                                step="1"
+                                                placeholder="Ej: 5">
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label for="ageMax">
+                                                Edad máxima
+                                            </label>
+
+                                            <input
+                                                type="number"
+                                                id="ageMax"
+                                                name="ageMax"
+                                                min="0"
+                                                max="120"
+                                                step="1"
+                                                placeholder="Ej: 9">
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="age-help">
+
+                                        Ejemplo: si el evento está dirigido a niños de
+                                        <strong>5 a 9 años</strong>, selecciona "Rango de edad"
+                                        e ingresa 5 como edad mínima y 9 como edad máxima.
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     DESCRIPCIÓN
+                                ====================================== -->
+
+                                <div class="form-group full">
+
+                                    <label for="description">
+                                        Descripción
+                                    </label>
+
+                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        placeholder="Describe el evento..."></textarea>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     ACCESO
+                                ====================================== -->
+
+                                <div class="section-box">
+
+                                    <h3>
+                                        5. Acceso y entradas
+                                    </h3>
+
+                                    <p>
+                                        Indica si las personas deben pagar para asistir.
+                                    </p>
+
+                                    <div class="access-options">
+
+                                        <label class="radio-option access-option">
+
+                                            <input
+                                                type="radio"
+                                                name="accessType"
+                                                id="accessFree"
+                                                value="gratis"
+                                                checked>
+
+                                            <span>
+
+                                                <span class="option-title">
+                                                    🆓 Gratis
+                                                </span>
+
+                                                <span class="option-description">
+                                                    Entrada liberada o gratuita.
+                                                </span>
+
+                                            </span>
+
+                                        </label>
+
+
+                                        <label class="radio-option access-option">
+
+                                            <input
+                                                type="radio"
+                                                name="accessType"
+                                                id="accessPaid"
+                                                value="pagado">
+
+                                            <span>
+
+                                                <span class="option-title">
+                                                    🎟️ Pagado
+                                                </span>
+
+                                                <span class="option-description">
+                                                    Requiere comprar o pagar una entrada.
+                                                </span>
+
+                                            </span>
+
+                                        </label>
+
+                                    </div>
+
+
+                                    <div
+                                        id="freeEntryBox"
+                                        class="free-entry-box active">
+
+                                        <label for="freeEntry">
+
+                                            <input
+                                                type="checkbox"
+                                                id="freeEntry"
+                                                name="freeEntry"
+                                                checked>
+
+                                            <span>
+                                                Entrada liberada / gratuita
+                                            </span>
+
+                                        </label>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     PRECIO
+                                ====================================== -->
+
+                                <div
+                                    id="priceGroup"
+                                    class="form-group">
+
+                                    <label for="price">
+                                        Precio *
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="price"
+                                        name="price"
+                                        placeholder="Ej: $15.000">
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     ENTRADAS
+                                ====================================== -->
+
+                                <div class="form-group">
+
+                                    <label for="tickets">
+                                        Entradas disponibles
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        id="tickets"
+                                        name="tickets"
+                                        min="0"
+                                        placeholder="Ej: 500">
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     ENLACE
+                                ====================================== -->
+
+                                <div class="form-group full">
+
+                                    <label for="eventLink">
+                                        Enlace del evento / Entradas
+                                    </label>
+
+                                    <input
+                                        type="url"
+                                        id="eventLink"
+                                        name="eventLink"
+                                        placeholder="Ej: https://www.tuevento.cl/entradas">
+
+                                    <small>
+                                        Puedes ingresar el sitio oficial, página de entradas,
+                                        formulario o información del evento.
+                                    </small>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     REDES SOCIALES
+                                ====================================== -->
+
+                                <div class="section-box">
+
+                                    <h3>
+                                        Redes sociales
+                                    </h3>
+
+                                    <p>
+                                        Agrega las redes sociales oficiales del evento,
+                                        organizador o lugar. Estos campos son opcionales.
+                                    </p>
+
+
+                                    <div class="form-grid">
+
+
+                                        <div class="form-group">
+
+                                            <label for="instagram">
+                                                Instagram
+                                            </label>
+
+                                            <input
+                                                type="url"
+                                                id="instagram"
+                                                name="instagram"
+                                                placeholder="Ej: https://www.instagram.com/tu_evento">
+
+                                        </div>
+
+
+                                        <div class="form-group">
+
+                                            <label for="facebook">
+                                                Facebook
+                                            </label>
+
+                                            <input
+                                                type="url"
+                                                id="facebook"
+                                                name="facebook"
+                                                placeholder="Ej: https://www.facebook.com/tu_evento">
+
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     CONFIRMACIÓN PARTICULAR
+                                ====================================== -->
+
+                                <div
+                                    id="attendanceSection"
+                                    class="section-box attendance-section">
+
+                                    <h3>
+                                        6. Confirmación de asistencia
+                                    </h3>
+
+                                    <p>
+                                        Esta opción está disponible para eventos particulares.
+                                    </p>
+
+                                    <div class="checkbox-row">
+
+                                        <label class="checkbox-option">
+
+                                            <input
+                                                type="checkbox"
+                                                id="requiresAttendance"
+                                                name="requiresAttendance">
+
+                                            <span>
+
+                                                <span class="option-title">
+                                                    Recibir confirmación de asistencia
+                                                </span>
+
+                                                <span class="option-description">
+                                                    Permite que los invitados confirmen su asistencia.
+                                                </span>
+
+                                            </span>
+
+                                        </label>
+
+                                    </div>
+
+
+                                    <div
+                                        id="attendanceLinkGroup"
+                                        class="form-group"
+                                        style="margin-top:15px;">
+
+                                        <label for="attendanceLink">
+                                            Enlace para confirmar asistencia
+                                        </label>
+
+                                        <input
+                                            type="url"
+                                            id="attendanceLink"
+                                            name="attendanceLink"
+                                            placeholder="Ej: https://...">
+
+                                        <div class="attendance-help">
+
+                                            Puedes utilizar un formulario o sistema externo
+                                            de confirmación.
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- =====================================
+                                     AVISO
+                                ====================================== -->
+
+                                <div class="notice-box">
+
+                                    <strong>
+                                        Importante:
+                                    </strong>
+
+                                    Verifica que la información publicada sea correcta.
+
+                                    Si el evento es particular, informa claramente
+                                    las condiciones de acceso y el mecanismo de
+                                    confirmación de asistencia.
+
+                                </div>
+
 
                             </div>
 
-
-                            <div class="form-group">
-
-                                <label for="ageMax">
-                                    Edad máxima
-                                </label>
-
-                                <input
-                                    type="number"
-                                    id="ageMax"
-                                    name="ageMax"
-                                    min="0"
-                                    max="120"
-                                    step="1"
-                                    placeholder="Ej: 9">
-
-                            </div>
-
                         </div>
 
-
-                        <div class="age-help">
-
-                            Ejemplo: si el evento está dirigido a niños de
-                            <strong>5 a 9 años</strong>, selecciona "Rango de edad"
-                            e ingresa 5 como edad mínima y 9 como edad máxima.
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         DESCRIPCIÓN
-                    ================================================== -->
-
-                    <div class="form-group full">
-
-                        <label for="description">
-                            Descripción
-                        </label>
-
-                        <textarea
-                            id="description"
-                            name="description"
-                            placeholder="Describe el evento..."></textarea>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         ACCESO
-                    ================================================== -->
-
-                    <div class="section-box">
-
-                        <h3>
-                            5. Acceso y entradas
-                        </h3>
-
-                        <p>
-                            Indica si las personas deben pagar para asistir.
-                        </p>
-
-                        <div class="access-options">
-
-                            <label class="radio-option access-option">
-
-                                <input
-                                    type="radio"
-                                    name="accessType"
-                                    id="accessFree"
-                                    value="gratis"
-                                    checked>
-
-                                <span>
-
-                                    <span class="option-title">
-                                        🆓 Gratis
-                                    </span>
-
-                                    <span class="option-description">
-                                        Entrada liberada o gratuita.
-                                    </span>
-
-                                </span>
-
-                            </label>
-
-
-                            <label class="radio-option access-option">
-
-                                <input
-                                    type="radio"
-                                    name="accessType"
-                                    id="accessPaid"
-                                    value="pagado">
-
-                                <span>
-
-                                    <span class="option-title">
-                                        🎟️ Pagado
-                                    </span>
-
-                                    <span class="option-description">
-                                        Requiere comprar o pagar una entrada.
-                                    </span>
-
-                                </span>
-
-                            </label>
-
-                        </div>
-
-
-                        <div
-                            id="freeEntryBox"
-                            class="free-entry-box active">
-
-                            <label for="freeEntry">
-
-                                <input
-                                    type="checkbox"
-                                    id="freeEntry"
-                                    name="freeEntry"
-                                    checked>
-
-                                <span>
-                                    Entrada liberada / gratuita
-                                </span>
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         PRECIO
-                    ================================================== -->
-
-                    <div
-                        id="priceGroup"
-                        class="form-group">
-
-                        <label for="price">
-                            Precio *
-                        </label>
-
-                        <input
-                            type="text"
-                            id="price"
-                            name="price"
-                            placeholder="Ej: $15.000">
-
-                    </div>
-
-
-                    <!-- =================================================
-                         ENTRADAS
-                    ================================================== -->
-
-                    <div class="form-group">
-
-                        <label for="tickets">
-                            Entradas disponibles
-                        </label>
-
-                        <input
-                            type="number"
-                            id="tickets"
-                            name="tickets"
-                            min="0"
-                            placeholder="Ej: 500">
-
-                    </div>
-
-
-                    <!-- =================================================
-                         LINK
-                    ================================================== -->
-
-                    <div class="form-group full">
-
-                        <label for="eventLink">
-                            Enlace del evento / Entradas
-                        </label>
-
-                        <input
-                            type="url"
-                            id="eventLink"
-                            name="eventLink"
-                            placeholder="Ej: https://www.tuevento.cl/entradas">
-
-                        <small>
-                            Puedes ingresar el sitio oficial, página de entradas,
-                            formulario o información del evento.
-                        </small>
-
-                    </div>
-
-
-                    <!-- =================================================
-                         CONFIRMACIÓN PARTICULAR
-                    ================================================== -->
-
-                    <div
-                        id="attendanceSection"
-                        class="section-box attendance-section">
-
-                        <h3>
-                            6. Confirmación de asistencia
-                        </h3>
-
-                        <p>
-                            Esta opción está disponible para eventos particulares.
-                        </p>
-
-                        <div class="checkbox-row">
-
-                            <label class="checkbox-option">
-
-                                <input
-                                    type="checkbox"
-                                    id="requiresAttendance"
-                                    name="requiresAttendance">
-
-                                <span>
-
-                                    <span class="option-title">
-                                        Recibir confirmación de asistencia
-                                    </span>
-
-                                    <span class="option-description">
-                                        Permite que los invitados confirmen su asistencia.
-                                    </span>
-
-                                </span>
-
-                            </label>
-
-                        </div>
-
-
-                        <div
-                            id="attendanceLinkGroup"
-                            class="form-group"
-                            style="margin-top:15px;">
-
-                            <label for="attendanceLink">
-                                Enlace para confirmar asistencia
-                            </label>
-
-                            <input
-                                type="url"
-                                id="attendanceLink"
-                                name="attendanceLink"
-                                placeholder="Ej: https://...">
-
-                            <div class="attendance-help">
-
-                                Puedes utilizar un formulario o sistema externo
-                                de confirmación.
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    </details>
 
 
                     <!-- =================================================
@@ -1385,26 +1629,7 @@
 
 
                     <!-- =================================================
-                         AVISO
-                    ================================================== -->
-
-                    <div class="notice-box">
-
-                        <strong>
-                            Importante:
-                        </strong>
-
-                        Verifica que la información publicada sea correcta.
-
-                        Si el evento es particular, informa claramente
-                        las condiciones de acceso y el mecanismo de
-                        confirmación de asistencia.
-
-                    </div>
-
-
-                    <!-- =================================================
-                         REGION
+                         REGION TÉCNICA
                     ================================================== -->
 
                     <div class="form-group hidden-field">
@@ -1505,7 +1730,10 @@
          MENÚ
     ====================================================== -->
 
-    <script type="module" src="js/menu.js?v=20260904"></script>
+    <script
+        type="module"
+        src="js/menu.js?v=20260904">
+    </script>
 
 
     <!-- =====================================================
@@ -1765,6 +1993,7 @@
                         primera
                     );
 
+
                     if (
                         !categoria
                     ) {
@@ -1773,10 +2002,12 @@
 
                     }
 
+
                     const opciones =
                         subcategorias[
                             categoria
                         ] || [];
+
 
                     opciones.forEach(
                         (nombre) => {
