@@ -53,3 +53,5 @@ Thumbs.db
 
 # Sistema operativo
 Desktop.ini
+# OTIUM - Configuración local Geoapify
+js/modules/geocoding-config.js

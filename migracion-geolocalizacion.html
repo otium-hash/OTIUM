@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        OTIUM - Geolocalización de eventos
+    </title>
+
+    <script
+        src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js">
+    </script>
+
+    <style>
+
+        body {
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            max-width:
+                900px;
+
+            margin:
+                40px auto;
+
+            padding:
+                20px;
+
+        }
+
+
+        h1 {
+
+            margin-bottom:
+                8px;
+
+        }
+
+
+        .box {
+
+            border:
+                1px solid #ddd;
+
+            border-radius:
+                12px;
+
+            padding:
+                20px;
+
+            margin-top:
+                20px;
+
+        }
+
+
+        button {
+
+            margin-top:
+                15px;
+
+            padding:
+                12px 18px;
+
+            border:
+                0;
+
+            border-radius:
+                8px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        button:disabled {
+
+            opacity:
+                .5;
+
+            cursor:
+                not-allowed;
+
+        }
+
+
+        #status {
+
+            margin-top:
+                20px;
+
+            white-space:
+                pre-wrap;
+
+        }
+
+
+        progress {
+
+            width:
+                100%;
+
+            margin-top:
+                15px;
+
+        }
+
+
+        .ok {
+
+            color:
+                green;
+
+        }
+
+
+        .warn {
+
+            color:
+                #a66a00;
+
+        }
+
+
+        .error {
+
+            color:
+                #b00020;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <h1>
+        OTIUM - Geolocalización de eventos
+    </h1>
+
+
+    <p>
+
+        Selecciona el archivo Excel de eventos.
+        OTIUM utilizará Geoapify para intentar
+        obtener las coordenadas geográficas.
+
+    </p>
+
+
+    <p>
+
+        <strong>
+            Este proceso no modifica Firestore.
+        </strong>
+
+        Solo genera un nuevo archivo Excel
+        con las coordenadas.
+
+    </p>
+
+
+    <div class="box">
+
+        <label for="excelFile">
+
+            <strong>
+                Archivo Excel:
+            </strong>
+
+        </label>
+
+
+        <br><br>
+
+
+        <input
+            id="excelFile"
+            type="file"
+            accept=".xlsx,.xls">
+
+
+        <br>
+
+
+        <button
+            id="processButton"
+            disabled>
+
+            Geolocalizar y generar Excel
+
+        </button>
+
+
+        <progress
+            id="progress"
+            value="0"
+            max="100">
+        </progress>
+
+
+        <div id="status"></div>
+
+    </div>
+
+
+    <script
+        type="module"
+        src="geocodificar-eventos-excel.js">
+    </script>
+
+</body>
+
+</html>

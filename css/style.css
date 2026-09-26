@@ -1674,7 +1674,7 @@ main {
 
     background: #fff;
 
-    overflow: hidden;
+    overflow: visible;
 }
 
 
@@ -1755,7 +1755,32 @@ main {
     margin-top: 3px;
 }
 
+.calendar-more {
+    display: block;
+    width: 100%;
 
+    margin-top: 2px;
+    padding: 5px 6px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+
+    color: #173b68;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    line-height: 1.2;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.calendar-more:hover {
+    background: #e9eef5;
+}
 /* ===================================
    ADVERTENCIA PUBLICACIÓN
 =================================== */

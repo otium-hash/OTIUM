@@ -30,7 +30,7 @@ export const firebaseConfig = {
 
     apiKey: "AIzaSyAn33voku5AiWtQzIlaSPYKE7Gd4nA-dTI",
 
-    authDomain: "otium-e0e7e.firebaseapp.com",
+    authDomain: "otiumgo.net",
 
     projectId: "otium-e0e7e",
 

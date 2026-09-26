@@ -8,6 +8,14 @@ import {
 } from "./modules/database.js";
 
 import {
+    GEOAPIFY_API_KEY
+} from "./modules/geocoding-config.js";
+
+import {
+    geocodificarEvento
+} from "./modules/geocoding.js";
+
+import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
@@ -346,7 +354,480 @@ function obtenerBotonUbicacion() {
 const locationButton =
     obtenerBotonUbicacion();
 
+/* =====================================================
+   UBICACIÓN MANUAL / GEOLOCALIZACIÓN AUTOMÁTICA
+===================================================== */
 
+const locationManualBox =
+    document.getElementById(
+        "locationManualBox"
+    );
+
+const locationStatus =
+    document.getElementById(
+        "locationStatus"
+    );
+
+const latitudeVisible =
+    document.getElementById(
+        "latitudeVisible"
+    );
+
+const longitudeVisible =
+    document.getElementById(
+        "longitudeVisible"
+    );
+
+const geocodeLocationButton =
+    document.getElementById(
+        "geocodeLocationButton"
+    );
+
+const latitudeHidden =
+    document.getElementById(
+        "latitude"
+    );
+
+const longitudeHidden =
+    document.getElementById(
+        "longitude"
+    );
+
+
+function mostrarPanelUbicacionManual() {
+
+    if (
+        locationManualBox
+    ) {
+
+        locationManualBox.classList.add(
+            "visible"
+        );
+    }
+}
+
+
+function actualizarEstadoUbicacion(
+    mensaje,
+    tipo = ""
+) {
+
+    if (
+        !locationStatus
+    ) {
+        return;
+    }
+
+    locationStatus.textContent =
+        mensaje;
+
+    locationStatus.style.color =
+        tipo === "success"
+            ? "#198754"
+            : tipo === "error"
+                ? "#dc3545"
+                : "#667085";
+}
+
+
+function sincronizarCoordenadas(
+    latitude,
+    longitude
+) {
+
+    if (
+        latitudeHidden
+    ) {
+
+        latitudeHidden.value =
+            latitude;
+    }
+
+    if (
+        longitudeHidden
+    ) {
+
+        longitudeHidden.value =
+            longitude;
+    }
+
+    if (
+        latitudeVisible
+    ) {
+
+        latitudeVisible.value =
+            latitude;
+    }
+
+    if (
+        longitudeVisible
+    ) {
+
+        longitudeVisible.value =
+            longitude;
+    }
+
+    if (
+        form
+    ) {
+
+        form.dataset.latitude =
+            latitude;
+
+        form.dataset.longitude =
+            longitude;
+    }
+}
+
+
+function obtenerCoordenadasManuales() {
+
+    const lat =
+        latitudeVisible
+            ? latitudeVisible.value.trim()
+            : "";
+
+    const lng =
+        longitudeVisible
+            ? longitudeVisible.value.trim()
+            : "";
+
+    if (
+        lat === "" &&
+        lng === ""
+    ) {
+
+        return null;
+    }
+
+    const numeroLat =
+        Number(lat);
+
+    const numeroLng =
+        Number(lng);
+
+    if (
+        !Number.isFinite(numeroLat) ||
+        !Number.isFinite(numeroLng)
+    ) {
+
+        throw new Error(
+            "Las coordenadas ingresadas no son válidas."
+        );
+    }
+
+    if (
+        numeroLat < -90 ||
+        numeroLat > 90
+    ) {
+
+        throw new Error(
+            "La latitud debe estar entre -90 y 90."
+        );
+    }
+
+    if (
+        numeroLng < -180 ||
+        numeroLng > 180
+    ) {
+
+        throw new Error(
+            "La longitud debe estar entre -180 y 180."
+        );
+    }
+
+    return {
+        latitude: numeroLat,
+        longitude: numeroLng
+    };
+}
+
+
+/* =====================================================
+   COORDENADAS MANUALES
+===================================================== */
+
+latitudeVisible?.addEventListener(
+    "input",
+    () => {
+
+        if (
+            latitudeVisible.value === "" &&
+            longitudeVisible?.value === ""
+        ) {
+
+            actualizarEstadoUbicacion(
+                "Pendiente de ubicación"
+            );
+
+            return;
+        }
+
+        mostrarPanelUbicacionManual();
+
+        try {
+
+            const coordenadas =
+                obtenerCoordenadasManuales();
+
+            if (
+                coordenadas
+            ) {
+
+                sincronizarCoordenadas(
+                    coordenadas.latitude,
+                    coordenadas.longitude
+                );
+
+                actualizarEstadoUbicacion(
+                    "Ubicación manual",
+                    "success"
+                );
+            }
+
+        } catch {
+
+            actualizarEstadoUbicacion(
+                "Coordenadas pendientes de validar",
+                "error"
+            );
+        }
+    }
+);
+
+
+longitudeVisible?.addEventListener(
+    "input",
+    () => {
+
+        if (
+            latitudeVisible?.value === "" &&
+            longitudeVisible.value === ""
+        ) {
+
+            actualizarEstadoUbicacion(
+                "Pendiente de ubicación"
+            );
+
+            return;
+        }
+
+        mostrarPanelUbicacionManual();
+
+        try {
+
+            const coordenadas =
+                obtenerCoordenadasManuales();
+
+            if (
+                coordenadas
+            ) {
+
+                sincronizarCoordenadas(
+                    coordenadas.latitude,
+                    coordenadas.longitude
+                );
+
+                actualizarEstadoUbicacion(
+                    "Ubicación manual",
+                    "success"
+                );
+            }
+
+        } catch {
+
+            actualizarEstadoUbicacion(
+                "Coordenadas pendientes de validar",
+                "error"
+            );
+        }
+    }
+);
+
+
+/* =====================================================
+   UBICAR EVENTO AUTOMÁTICAMENTE
+===================================================== */
+
+geocodeLocationButton?.addEventListener(
+    "click",
+    async (event) => {
+
+        event.preventDefault();
+
+        console.log(
+            "OTIUM - Botón Ubicar automáticamente presionado."
+        );
+
+        const ciudad =
+            document.getElementById(
+                "city"
+            )?.value.trim() || "";
+
+        const direccion =
+            document.getElementById(
+                "address"
+            )?.value.trim() || "";
+
+        const region =
+            document.getElementById(
+                "region"
+            )?.value.trim() || "";
+
+        console.log(
+            "OTIUM - Datos para geocodificación:",
+            {
+                ciudad,
+                direccion,
+                region
+            }
+        );
+
+        if (
+            !ciudad &&
+            !direccion
+        ) {
+
+            actualizarEstadoUbicacion(
+                "Ingresa primero la ciudad o dirección del evento.",
+                "error"
+            );
+
+            mostrarMensajeUbicacion(
+                "Ingresa primero la ciudad o dirección del evento.",
+                "error"
+            );
+
+            return;
+        }
+
+        const textoOriginal =
+            geocodeLocationButton.textContent;
+
+        geocodeLocationButton.disabled =
+            true;
+
+        geocodeLocationButton.textContent =
+            "🔎 Buscando ubicación...";
+
+        actualizarEstadoUbicacion(
+            "Buscando ubicación automáticamente..."
+        );
+
+        try {
+
+            const resultado =
+                await geocodificarEvento({
+                    direccion:
+                        direccion,
+
+                    ciudad:
+                        ciudad,
+
+                    region:
+                        region
+                });
+
+            console.log(
+                "OTIUM - Resultado Geoapify:",
+                resultado
+            );
+
+            if (
+                !resultado ||
+                !Number.isFinite(
+                    Number(resultado.lat)
+                ) ||
+                !Number.isFinite(
+                    Number(resultado.lng)
+                )
+            ) {
+
+                throw new Error(
+                    "Geoapify no encontró una ubicación válida."
+                );
+            }
+
+            const latitude =
+                Number(
+                    resultado.lat
+                );
+
+            const longitude =
+                Number(
+                    resultado.lng
+                );
+
+            sincronizarCoordenadas(
+                latitude,
+                longitude
+            );
+
+            mostrarPanelUbicacionManual();
+
+            let mensaje =
+                "Ubicación encontrada automáticamente.";
+
+            if (
+                resultado.origen ===
+                "ciudad"
+            ) {
+
+                mensaje =
+                    "No se encontró la dirección exacta. Se ubicó el evento aproximadamente en la ciudad.";
+            }
+
+            if (
+                resultado.origen ===
+                "comuna"
+            ) {
+
+                mensaje =
+                    "No se encontró la dirección exacta. Se ubicó el evento aproximadamente en la comuna.";
+            }
+
+            actualizarEstadoUbicacion(
+                mensaje,
+                "success"
+            );
+
+            mostrarMensajeUbicacion(
+                mensaje,
+                "success"
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "OTIUM - Error geocodificando evento:",
+                error
+            );
+
+            mostrarPanelUbicacionManual();
+
+            actualizarEstadoUbicacion(
+                "No se pudo encontrar automáticamente. Puedes ingresar las coordenadas manualmente.",
+                "error"
+            );
+
+            mostrarMensajeUbicacion(
+                "No se pudo encontrar automáticamente. Puedes ingresar las coordenadas manualmente.",
+                "error"
+            );
+
+        } finally {
+
+            geocodeLocationButton.disabled =
+                false;
+
+            geocodeLocationButton.textContent =
+                textoOriginal ||
+                "🔎 Ubicar automáticamente";
+        }
+    }
+);
 /* =====================================================
    AUTENTICACIÓN
 ===================================================== */
@@ -1466,9 +1947,8 @@ function obtenerCoordenadas() {
     );
 }
 
-
 /* =====================================================
-   GEOCODIFICACIÓN INVERSA
+   GEOCODIFICACIÓN INVERSA - GEOAPIFY
 ===================================================== */
 
 async function obtenerDireccion(
@@ -1476,10 +1956,18 @@ async function obtenerDireccion(
     longitude
 ) {
 
+    if (
+        !GEOAPIFY_API_KEY
+    ) {
+
+        throw new Error(
+            "No está configurada la clave de Geoapify."
+        );
+    }
+
     const url =
-        "https://nominatim.openstreetmap.org/reverse" +
-        "?format=jsonv2" +
-        "&lat=" +
+        "https://api.geoapify.com/v1/geocode/reverse" +
+        "?lat=" +
         encodeURIComponent(
             latitude
         ) +
@@ -1487,8 +1975,11 @@ async function obtenerDireccion(
         encodeURIComponent(
             longitude
         ) +
-        "&addressdetails=1" +
-        "&accept-language=es";
+        "&lang=es" +
+        "&apiKey=" +
+        encodeURIComponent(
+            GEOAPIFY_API_KEY
+        );
 
     const response =
         await fetch(
@@ -1509,32 +2000,47 @@ async function obtenerDireccion(
     ) {
 
         throw new Error(
-            "No se pudo obtener la dirección."
+            "No se pudo obtener la dirección mediante Geoapify."
         );
     }
 
     const data =
         await response.json();
 
-    const address =
-        data.address ||
-        {};
+    const properties =
+        data.features &&
+        data.features.length > 0
+            ? data.features[0].properties
+            : {};
+
+    if (
+        !properties ||
+        (
+            properties.lat === undefined &&
+            properties.lon === undefined
+        )
+    ) {
+
+        throw new Error(
+            "Geoapify no encontró información para estas coordenadas."
+        );
+    }
 
     const ciudad =
-        address.city ||
-        address.town ||
-        address.municipality ||
-        address.village ||
-        address.suburb ||
+        properties.city ||
+        properties.town ||
+        properties.municipality ||
+        properties.village ||
+        properties.suburb ||
         "";
 
     const region =
-        address.state ||
-        address.region ||
+        properties.state ||
+        properties.region ||
         "";
 
     let direccionCompleta =
-        data.display_name ||
+        properties.formatted ||
         "";
 
     if (
@@ -1543,43 +2049,53 @@ async function obtenerDireccion(
 
         const partes = [];
 
+        const calle =
+            properties.street ||
+            properties.road ||
+            "";
+
+        const numero =
+            properties.housenumber ||
+            properties.house_number ||
+            "";
+
         if (
-            address.road
+            calle
         ) {
 
-            let calle =
-                address.road;
+            let calleCompleta =
+                calle;
 
             if (
-                address.house_number
+                numero
             ) {
 
-                calle +=
+                calleCompleta +=
                     " " +
-                    address.house_number;
+                    numero;
             }
 
             partes.push(
-                calle
+                calleCompleta
             );
         }
 
         if (
-            address.neighbourhood
+            properties.neighbourhood
         ) {
 
             partes.push(
-                address.neighbourhood
+                properties.neighbourhood
             );
         }
 
         if (
-            address.suburb &&
-            address.suburb !== ciudad
+            properties.suburb &&
+            properties.suburb !== ciudad
         ) {
 
             partes.push(
-                address.suburb
+                properties.suburb
             );
         }
 
@@ -1602,11 +2118,11 @@ async function obtenerDireccion(
         }
 
         if (
-            address.country
+            properties.country
         ) {
 
             partes.push(
-                address.country
+                properties.country
             );
         }
 
@@ -1622,8 +2138,8 @@ async function obtenerDireccion(
             direccionCompleta,
 
         displayName:
-            data.display_name ||
-            "",
+            properties.formatted ||
+            direccionCompleta,
 
         ciudad:
             ciudad,
@@ -1641,8 +2157,6 @@ async function obtenerDireccion(
             data
     };
 }
-
-
 /* =====================================================
    MENSAJE UBICACIÓN
 ===================================================== */

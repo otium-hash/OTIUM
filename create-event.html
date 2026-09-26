@@ -401,7 +401,247 @@
         .location-coordinates {
             display: none;
         }
+.location-manual-box {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 0;
+    border: 1px solid #dbe3ec;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+}
 
+.location-manual-box.visible {
+    display: block;
+}
+
+.location-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    color: #102a43;
+    font-weight: 700;
+    list-style: none;
+}
+
+.location-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.location-toggle::after {
+    content: "⌄";
+    font-size: 18px;
+    color: #667085;
+    transition: transform 0.2s ease;
+}
+
+.location-manual-box[open] .location-toggle::after {
+    transform: rotate(180deg);
+}
+
+.location-toggle-hint {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: #667085;
+}
+
+.location-details-content {
+    padding: 0 16px 16px;
+    border-top: 1px solid #edf1f5;
+}
+
+.location-details-content .location-secondary-button,
+.location-details-content .location-button {
+    width: fit-content;
+}
+
+.location-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 15px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.location-status-row strong {
+    color: #102a43;
+    font-size: 13px;
+}
+
+#locationStatus {
+    font-size: 12px;
+    font-weight: 700;
+    color: #667085;
+}
+
+.location-manual-help {
+    margin: 14px 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}.location-manual-box {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 0;
+    border: 1px solid #dbe3ec;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.location-manual-box.visible {
+    display: block;
+}
+
+.location-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    color: #102a43;
+    font-weight: 700;
+    list-style: none;
+}
+
+.location-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.location-toggle::after {
+    content: "⌄";
+    font-size: 18px;
+    color: #667085;
+    transition: transform 0.2s ease;
+}
+
+.location-manual-box[open] .location-toggle::after {
+    transform: rotate(180deg);
+}
+
+.location-toggle-hint {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: #667085;
+}
+
+.location-details-content {
+    padding: 0 16px 16px;
+    border-top: 1px solid #edf1f5;
+}
+
+.location-details-content .location-secondary-button,
+.location-details-content .location-button {
+    width: fit-content;
+}
+
+.location-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 15px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.location-status-row strong {
+    color: #102a43;
+    font-size: 13px;
+}
+
+#locationStatus {
+    font-size: 12px;
+    font-weight: 700;
+    color: #667085;
+}
+
+.location-manual-help {
+    margin: 14px 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.location-manual-box.visible {
+    display: block;
+}
+
+.location-manual-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.location-manual-header strong {
+    color: #102a43;
+}
+
+#locationStatus {
+    font-size: 12px;
+    font-weight: 700;
+    color: #667085;
+}
+
+.location-manual-help {
+    margin: 0 0 15px;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.location-coordinate-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.location-secondary-button {
+    margin-top: 5px;
+    padding: 10px 15px;
+    border: 1px solid #d0d5dd;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #102a43;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.location-secondary-button:hover {
+    border-color: #ff7445;
+    color: #ff7445;
+}
+
+.location-secondary-button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+@media (max-width: 700px) {
+
+    .location-coordinate-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .location-manual-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+}
         /* =====================================================
            IMAGEN
         ===================================================== */
@@ -899,113 +1139,239 @@
 
                     </div>
 
+<!-- =================================================
+     LUGAR Y CIUDAD
+================================================== -->
 
-                    <!-- =================================================
-                         CIUDAD
-                    ================================================== -->
+<div class="form-grid">
 
-                    <div class="form-group">
+    <!-- =============================================
+         LUGAR / DIRECCIÓN
+    ============================================== -->
 
-                        <label for="city">
-                            Ciudad *
-                        </label>
+    <div class="form-group">
 
-                        <input
-                            type="text"
-                            id="city"
-                            name="city"
-                            required
-                            autocomplete="address-level2"
-                            placeholder="Ej: Santiago">
+        <label for="address">
+            Lugar / dirección *
+        </label>
 
-                        <div class="location-wrapper">
+        <input
+            type="text"
+            id="address"
+            name="address"
+            required
+            autocomplete="street-address"
+            placeholder="Ej: Parque O'Higgins, Movistar Arena, Teatro Municipal">
 
-                            <button
-                                type="button"
-                                id="useLocationButton"
-                                class="location-button">
+        <p class="basic-help">
+            Indica dónde se realizará el evento.
+        </p>
 
-                                📍 Usar mi ubicación actual
-
-                            </button>
-
-                            <p
-                                id="locationMessage"
-                                class="location-message">
-                            </p>
-
-                            <span
-                                id="locationCoordinates"
-                                class="location-coordinates">
-                            </span>
-
-                        </div>
-
-                    </div>
+    </div>
 
 
-                    <!-- =================================================
-                         FECHA DE INICIO
-                    ================================================== -->
+    <!-- =============================================
+         CIUDAD
+    ============================================== -->
 
-                    <div class="form-group">
+    <div class="form-group">
 
-                        <label for="date">
-                            Fecha de inicio *
-                        </label>
+        <label for="city">
+            Ciudad *
+        </label>
 
-                        <input
-                            type="date"
-                            id="date"
-                            name="date"
-                            required>
+        <input
+            type="text"
+            id="city"
+            name="city"
+            required
+            autocomplete="address-level2"
+            placeholder="Ej: Santiago">
 
-                    </div>
+    </div>
 
-
-                    <!-- =================================================
-                         HORA DE INICIO
-                    ================================================== -->
-
-                    <div class="form-group">
-
-                        <label for="time">
-                            Hora de inicio
-                        </label>
-
-                        <input
-                            type="time"
-                            id="time"
-                            name="time">
-
-                    </div>
+</div>
 
 
-                    <!-- =================================================
-                         LUGAR
-                    ================================================== -->
+<!-- =================================================
+     UBICACIÓN DEL EVENTO
+================================================== -->
 
-                    <div class="form-group full">
+<details
+    id="locationManualBox"
+    class="location-manual-box">
 
-                        <label for="address">
-                            Lugar *
-                        </label>
+    <summary class="location-toggle">
 
-                        <input
-                            type="text"
-                            id="address"
-                            name="address"
-                            required
-                            autocomplete="street-address"
-                            placeholder="Ej: Parque O'Higgins, Movistar Arena, Teatro Municipal">
+        <span>
+            📍 Ubicación del evento
+        </span>
 
-                        <p class="basic-help">
-                            Indica dónde se realizará el evento.
-                        </p>
+        <span class="location-toggle-hint">
+            Opcional
+        </span>
 
-                    </div>
+    </summary>
 
 
+    <div class="location-details-content">
+
+        <p class="location-manual-help">
+
+            Puedes generar automáticamente la ubicación del evento
+            para mostrarlo correctamente en el mapa.
+
+        </p>
+
+
+        <!-- =========================================
+             GENERAR UBICACIÓN AUTOMÁTICAMENTE
+        ========================================== -->
+
+        <button
+            type="button"
+            id="geocodeLocationButton"
+            class="location-secondary-button">
+
+            🔎 Generar ubicación automáticamente
+
+        </button>
+
+
+        <!-- =========================================
+             USAR UBICACIÓN ACTUAL
+        ========================================== -->
+
+        <button
+            type="button"
+            id="useLocationButton"
+            class="location-button">
+
+            📍 Usar mi ubicación actual
+
+        </button>
+
+
+        <!-- =========================================
+             MENSAJE
+        ========================================== -->
+
+        <p
+            id="locationMessage"
+            class="location-message">
+        </p>
+
+
+        <span
+            id="locationCoordinates"
+            class="location-coordinates">
+        </span>
+
+
+        <!-- =========================================
+             ESTADO
+        ========================================== -->
+
+        <div class="location-status-row">
+
+            <strong>
+                Estado de ubicación
+            </strong>
+
+            <span id="locationStatus">
+                Pendiente de ubicación
+            </span>
+
+        </div>
+
+
+        <!-- =========================================
+             COORDENADAS
+        ========================================== -->
+
+        <div class="location-coordinate-grid">
+
+            <div class="form-group">
+
+                <label for="latitudeVisible">
+                    Latitud
+                </label>
+
+                <input
+                    type="number"
+                    id="latitudeVisible"
+                    name="latitudeVisible"
+                    step="any"
+                    placeholder="Ej: -33.0244535">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="longitudeVisible">
+                    Longitud
+                </label>
+
+                <input
+                    type="number"
+                    id="longitudeVisible"
+                    name="longitudeVisible"
+                    step="any"
+                    placeholder="Ej: -71.5517636">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</details>
+
+
+<!-- =================================================
+     FECHA Y HORA
+================================================== -->
+
+<div class="form-grid">
+
+    <!-- =============================================
+         FECHA DE INICIO
+    ============================================== -->
+
+    <div class="form-group">
+
+        <label for="date">
+            Fecha de inicio *
+        </label>
+
+        <input
+            type="date"
+            id="date"
+            name="date"
+            required>
+
+    </div>
+
+
+    <!-- =============================================
+         HORA DE INICIO
+    ============================================== -->
+
+    <div class="form-group">
+
+        <label for="time">
+            Hora de inicio
+        </label>
+
+        <input
+            type="time"
+            id="time"
+            name="time">
+
+    </div>
+
+</div>
                     <!-- =================================================
                          DETALLES ADICIONALES
                     ================================================== -->

@@ -6,6 +6,7 @@ document.head.appendChild(css);
 
 /* =========================================================
    OTIUM - MAPA EN HOME
+
    Geolocalización de eventos mediante coordenadas
    existentes o Nominatim / OpenStreetMap.
 
@@ -15,6 +16,8 @@ document.head.appendChild(css);
    - No modifica eventos.js.
    - Las coordenadas encontradas se guardan solamente
      en localStorage para evitar repetir consultas.
+   - La ubicación del usuario tiene prioridad para centrar
+     el mapa.
 ========================================================= */
 
 
@@ -22,17 +25,16 @@ document.head.appendChild(css);
    CONFIGURACIÓN
 ========================================================= */
 
-const GEOCODING_CACHE_KEY = "otium_geocoding_cache_v1";
-
-/*
-   Nominatim solicita no realizar consultas masivas
-   ni simultáneas.
-
-   Dejamos aproximadamente 1,2 segundos entre consultas
-   nuevas que no estén en caché.
-*/
+const GEOCODING_CACHE_KEY =
+    "otium_geocoding_cache_v1";
 
 const GEOCODING_DELAY = 1200;
+
+const DEFAULT_LATITUDE = -33.4489;
+const DEFAULT_LONGITUDE = -70.6693;
+
+const DEFAULT_ZOOM = 5;
+const USER_ZOOM = 12;
 
 
 /* =========================================================
@@ -41,9 +43,14 @@ const GEOCODING_DELAY = 1200;
 
 function esperar(ms) {
 
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
+    return new Promise(
+        resolve => {
+            setTimeout(
+                resolve,
+                ms
+            );
+        }
+    );
 
 }
 
@@ -65,7 +72,10 @@ function cargarCacheGeocodificacion() {
             return {};
         }
 
-        const cache = JSON.parse(contenido);
+        const cache =
+            JSON.parse(
+                contenido
+            );
 
         if (
             !cache ||
@@ -120,9 +130,14 @@ function guardarCacheGeocodificacion(cache) {
 
 function normalizarTexto(valor) {
 
-    return String(valor || "")
+    return String(
+        valor || ""
+    )
         .trim()
-        .replace(/\s+/g, " ");
+        .replace(
+            /\s+/g,
+            " "
+        );
 
 }
 
@@ -137,21 +152,20 @@ function obtenerCoordenadasExistentes(evento) {
         return null;
     }
 
+    const lat =
+        Number(
+            evento.latitud ??
+            evento.latitude ??
+            evento.lat
+        );
 
-    const lat = Number(
-        evento.latitud ??
-        evento.latitude ??
-        evento.lat
-    );
-
-
-    const lng = Number(
-        evento.longitud ??
-        evento.longitude ??
-        evento.lng ??
-        evento.lon
-    );
-
+    const lng =
+        Number(
+            evento.longitud ??
+            evento.longitude ??
+            evento.lng ??
+            evento.lon
+        );
 
     if (
         !Number.isFinite(lat) ||
@@ -161,12 +175,6 @@ function obtenerCoordenadasExistentes(evento) {
         return null;
 
     }
-
-
-    /*
-       Validación básica para evitar coordenadas
-       imposibles.
-    */
 
     if (
         lat < -90 ||
@@ -178,7 +186,6 @@ function obtenerCoordenadasExistentes(evento) {
         return null;
 
     }
-
 
     return {
         lat,
@@ -205,32 +212,31 @@ function obtenerDatosUbicacion(evento) {
 
     }
 
+    const direccion =
+        normalizarTexto(
+            evento.direccion ||
+            evento.address ||
+            ""
+        );
 
-    const direccion = normalizarTexto(
-        evento.direccion ||
-        evento.address ||
-        ""
-    );
+    const ciudad =
+        normalizarTexto(
+            evento.ciudad ||
+            evento.city ||
+            ""
+        );
 
+    const comuna =
+        normalizarTexto(
+            evento.comuna ||
+            ""
+        );
 
-    const ciudad = normalizarTexto(
-        evento.ciudad ||
-        evento.city ||
-        ""
-    );
-
-
-    const comuna = normalizarTexto(
-        evento.comuna ||
-        ""
-    );
-
-
-    const region = normalizarTexto(
-        evento.region ||
-        ""
-    );
-
+    const region =
+        normalizarTexto(
+            evento.region ||
+            ""
+        );
 
     return {
         direccion,
@@ -253,15 +259,17 @@ function construirConsultasGeocodificacion(evento) {
         ciudad,
         comuna,
         region
-    } = obtenerDatosUbicacion(evento);
-
+    } =
+        obtenerDatosUbicacion(
+            evento
+        );
 
     const consultas = [];
 
 
-    /*
-       1. Dirección completa.
-    */
+    /* -----------------------------------------------------
+       1. Dirección completa
+    ----------------------------------------------------- */
 
     const consultaCompleta = [
         direccion,
@@ -273,8 +281,10 @@ function construirConsultasGeocodificacion(evento) {
         .filter(Boolean)
         .join(", ");
 
-
-    if (direccion && ciudad) {
+    if (
+        direccion &&
+        ciudad
+    ) {
 
         consultas.push(
             consultaCompleta
@@ -283,13 +293,15 @@ function construirConsultasGeocodificacion(evento) {
     }
 
 
-    /*
-       2. Dirección + ciudad + región.
-       Puede funcionar mejor cuando la comuna
-       viene vacía o no es reconocida.
-    */
+    /* -----------------------------------------------------
+       2. Dirección + ciudad + región
+    ----------------------------------------------------- */
 
-    if (direccion && ciudad && region) {
+    if (
+        direccion &&
+        ciudad &&
+        region
+    ) {
 
         const consultaDireccionRegion = [
             direccion,
@@ -299,7 +311,6 @@ function construirConsultasGeocodificacion(evento) {
         ]
             .filter(Boolean)
             .join(", ");
-
 
         if (
             !consultas.includes(
@@ -316,9 +327,9 @@ function construirConsultasGeocodificacion(evento) {
     }
 
 
-    /*
-       3. Ciudad + comuna + región.
-    */
+    /* -----------------------------------------------------
+       3. Ciudad + comuna + región
+    ----------------------------------------------------- */
 
     if (ciudad) {
 
@@ -331,7 +342,6 @@ function construirConsultasGeocodificacion(evento) {
             .filter(Boolean)
             .join(", ");
 
-
         if (
             !consultas.includes(
                 consultaCiudad
@@ -347,12 +357,14 @@ function construirConsultasGeocodificacion(evento) {
     }
 
 
-    /*
-       4. Último respaldo:
-          solamente ciudad + región.
-    */
+    /* -----------------------------------------------------
+       4. Ciudad + región
+    ----------------------------------------------------- */
 
-    if (ciudad && region) {
+    if (
+        ciudad &&
+        region
+    ) {
 
         const consultaCiudadRegion = [
             ciudad,
@@ -362,7 +374,6 @@ function construirConsultasGeocodificacion(evento) {
             .filter(Boolean)
             .join(", ");
 
-
         if (
             !consultas.includes(
                 consultaCiudadRegion
@@ -378,10 +389,9 @@ function construirConsultasGeocodificacion(evento) {
     }
 
 
-    /*
-       5. Si solamente existe ciudad,
-          todavía podemos intentar ciudad + Chile.
-    */
+    /* -----------------------------------------------------
+       5. Ciudad + Chile
+    ----------------------------------------------------- */
 
     if (
         ciudad &&
@@ -395,7 +405,6 @@ function construirConsultasGeocodificacion(evento) {
             .filter(Boolean)
             .join(", ");
 
-
         if (
             !consultas.includes(
                 consultaSoloCiudad
@@ -409,7 +418,6 @@ function construirConsultasGeocodificacion(evento) {
         }
 
     }
-
 
     return consultas;
 
@@ -426,23 +434,18 @@ async function consultarNominatim(consulta) {
         return null;
     }
 
-
-    const cache = cargarCacheGeocodificacion();
-
-
-    /*
-       La clave se basa en la consulta exacta.
-    */
+    const cache =
+        cargarCacheGeocodificacion();
 
     const cacheKey =
-        normalizarTexto(consulta)
-            .toLowerCase();
+        normalizarTexto(
+            consulta
+        ).toLowerCase();
 
 
-    /*
-       Si ya tenemos resultado en cache,
-       no hacemos una nueva petición.
-    */
+    /* -----------------------------------------------------
+       CACHE
+    ----------------------------------------------------- */
 
     if (
         Object.prototype.hasOwnProperty.call(
@@ -454,30 +457,30 @@ async function consultarNominatim(consulta) {
         const resultadoCache =
             cache[cacheKey];
 
-
         if (
             resultadoCache &&
             Number.isFinite(
-                Number(resultadoCache.lat)
+                Number(
+                    resultadoCache.lat
+                )
             ) &&
             Number.isFinite(
-                Number(resultadoCache.lng)
+                Number(
+                    resultadoCache.lng
+                )
             )
         ) {
 
             return {
-                lat: Number(resultadoCache.lat),
-                lng: Number(resultadoCache.lng)
+                lat: Number(
+                    resultadoCache.lat
+                ),
+                lng: Number(
+                    resultadoCache.lng
+                )
             };
 
         }
-
-
-        /*
-           También guardamos resultados fallidos
-           para no repetir continuamente una consulta
-           que Nominatim no pudo resolver.
-        */
 
         if (
             resultadoCache &&
@@ -491,10 +494,9 @@ async function consultarNominatim(consulta) {
     }
 
 
-    /*
-       Esperamos antes de realizar una consulta
-       nueva a Nominatim.
-    */
+    /* -----------------------------------------------------
+       ESPERA PARA NOMINATIM
+    ----------------------------------------------------- */
 
     await esperar(
         GEOCODING_DELAY
@@ -518,14 +520,16 @@ async function consultarNominatim(consulta) {
             });
 
 
-        const respuesta = await fetch(
-            url,
-            {
-                headers: {
-                    "Accept": "application/json"
+        const respuesta =
+            await fetch(
+                url,
+                {
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    }
                 }
-            }
-        );
+            );
 
 
         if (!respuesta.ok) {
@@ -546,25 +550,20 @@ async function consultarNominatim(consulta) {
 
 
         if (
-            !Array.isArray(resultados) ||
+            !Array.isArray(
+                resultados
+            ) ||
             !resultados.length
         ) {
-
-            /*
-               Guardamos que esta búsqueda no
-               encontró resultados.
-            */
 
             cache[cacheKey] = {
                 notFound: true,
                 timestamp: Date.now()
             };
 
-
             guardarCacheGeocodificacion(
                 cache
             );
-
 
             return null;
 
@@ -576,11 +575,14 @@ async function consultarNominatim(consulta) {
 
 
         const lat =
-            Number(resultado.lat);
-
+            Number(
+                resultado.lat
+            );
 
         const lng =
-            Number(resultado.lon);
+            Number(
+                resultado.lon
+            );
 
 
         if (
@@ -598,10 +600,6 @@ async function consultarNominatim(consulta) {
             lng
         };
 
-
-        /*
-           Guardar resultado en cache.
-        */
 
         cache[cacheKey] = {
             lat,
@@ -638,16 +636,14 @@ async function consultarNominatim(consulta) {
 
 async function geocodificarEvento(evento) {
 
-    /*
-       1. Si ya existen coordenadas,
-          utilizarlas directamente.
-    */
+    /* -----------------------------------------------------
+       1. Usar coordenadas existentes
+    ----------------------------------------------------- */
 
     const coordenadasExistentes =
         obtenerCoordenadasExistentes(
             evento
         );
-
 
     if (coordenadasExistentes) {
 
@@ -656,16 +652,14 @@ async function geocodificarEvento(evento) {
     }
 
 
-    /*
-       2. Construir diferentes niveles
-          de búsqueda.
-    */
+    /* -----------------------------------------------------
+       2. Construir consultas
+    ----------------------------------------------------- */
 
     const consultas =
         construirConsultasGeocodificacion(
             evento
         );
-
 
     if (!consultas.length) {
 
@@ -674,10 +668,9 @@ async function geocodificarEvento(evento) {
     }
 
 
-    /*
-       3. Intentar cada consulta hasta
-          encontrar una ubicación válida.
-    */
+    /* -----------------------------------------------------
+       3. Intentar consultas
+    ----------------------------------------------------- */
 
     for (
         const consulta of consultas
@@ -688,7 +681,6 @@ async function geocodificarEvento(evento) {
                 consulta
             );
 
-
         if (coordenadas) {
 
             return coordenadas;
@@ -697,8 +689,137 @@ async function geocodificarEvento(evento) {
 
     }
 
-
     return null;
+
+}
+
+
+/* =========================================================
+   OBTENER UBICACIÓN DEL USUARIO
+========================================================= */
+
+function obtenerUbicacionUsuario() {
+
+    return new Promise(
+        resolve => {
+
+            if (
+                !navigator.geolocation
+            ) {
+
+                console.warn(
+                    "OTIUM - La geolocalización no está disponible."
+                );
+
+                resolve(null);
+
+                return;
+
+            }
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                position => {
+
+                    const lat =
+                        Number(
+                            position.coords.latitude
+                        );
+
+                    const lng =
+                        Number(
+                            position.coords.longitude
+                        );
+
+
+                    if (
+                        !Number.isFinite(lat) ||
+                        !Number.isFinite(lng)
+                    ) {
+
+                        resolve(null);
+
+                        return;
+
+                    }
+
+
+                    console.log(
+                        "OTIUM - Ubicación del usuario:",
+                        lat,
+                        lng
+                    );
+
+
+                    resolve({
+                        lat,
+                        lng
+                    });
+
+                },
+
+                error => {
+
+                    console.warn(
+                        "OTIUM - No fue posible obtener la ubicación del usuario:",
+                        error
+                    );
+
+                    resolve(null);
+
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 300000
+                }
+
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   AGREGAR MARCADOR DE USUARIO
+========================================================= */
+
+function agregarMarcadorUsuario(
+    map,
+    ubicacion
+) {
+
+    if (
+        !map ||
+        !ubicacion
+    ) {
+
+        return;
+
+    }
+
+
+    const marcadorUsuario =
+        L.marker(
+            [
+                ubicacion.lat,
+                ubicacion.lng
+            ]
+        )
+            .addTo(map);
+
+
+    marcadorUsuario.bindPopup(
+        `
+        <div class="map-popup-title">
+            Tu ubicación
+        </div>
+        `
+    );
 
 }
 
@@ -713,7 +834,6 @@ async function cargarEventosMapa() {
         document.getElementById(
             "homeMap"
         );
-
 
     const status =
         document.getElementById(
@@ -731,9 +851,9 @@ async function cargarEventosMapa() {
     }
 
 
-    /*
-       Crear mapa.
-    */
+    /* -----------------------------------------------------
+       CREAR MAPA
+    ----------------------------------------------------- */
 
     const map =
         L.map(
@@ -742,15 +862,19 @@ async function cargarEventosMapa() {
                 scrollWheelZoom: false,
                 zoomControl: true
             }
-        ).setView(
-            [-33.4489, -70.6693],
-            5
-        );
+        )
+            .setView(
+                [
+                    DEFAULT_LATITUDE,
+                    DEFAULT_LONGITUDE
+                ],
+                DEFAULT_ZOOM
+            );
 
 
-    /*
-       OpenStreetMap.
-    */
+    /* -----------------------------------------------------
+       OPENSTREETMAP
+    ----------------------------------------------------- */
 
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -762,12 +886,23 @@ async function cargarEventosMapa() {
     ).addTo(map);
 
 
+    /*
+       Solicitamos la ubicación inmediatamente.
+
+       La consulta se ejecuta en paralelo mientras
+       se cargan y geocodifican los eventos.
+    */
+
+    const promesaUbicacionUsuario =
+        obtenerUbicacionUsuario();
+
+
     let eventos = [];
 
 
-    /*
-       Cargar eventos desde Firestore.
-    */
+    /* -----------------------------------------------------
+       CARGAR EVENTOS DESDE FIRESTORE
+    ----------------------------------------------------- */
 
     try {
 
@@ -802,11 +937,11 @@ async function cargarEventosMapa() {
     }
 
 
-    /*
-       Aseguramos que eventos sea un array.
-    */
-
-    if (!Array.isArray(eventos)) {
+    if (
+        !Array.isArray(
+            eventos
+        )
+    ) {
 
         eventos = [];
 
@@ -820,20 +955,13 @@ async function cargarEventosMapa() {
     let eventosSinUbicacion = 0;
 
 
-    /*
-       Procesar eventos uno por uno.
-       Esto permite utilizar await para
-       la geocodificación.
-    */
+    /* -----------------------------------------------------
+       PROCESAR EVENTOS
+    ----------------------------------------------------- */
 
     for (
         const evento of eventos
     ) {
-
-        /*
-           Obtener coordenadas existentes
-           o geocodificar automáticamente.
-        */
 
         const coordenadas =
             await geocodificarEvento(
@@ -853,14 +981,9 @@ async function cargarEventosMapa() {
         const lat =
             coordenadas.lat;
 
-
         const lng =
             coordenadas.lng;
 
-
-        /*
-           Datos del evento.
-        */
 
         const titulo =
             evento.title ||
@@ -895,40 +1018,49 @@ async function cargarEventosMapa() {
             "";
 
 
-        /*
-           Crear marcador.
-        */
+        /* -------------------------------------------------
+           MARCADOR DEL EVENTO
+        ------------------------------------------------- */
 
         const marker =
             L.marker(
-                [lat, lng]
+                [
+                    lat,
+                    lng
+                ]
             ).addTo(map);
 
 
-        /*
-           Construir información del popup.
-        */
-
         const metaCiudad =
             ciudad
-                ? escapeHtml(ciudad)
+                ? escapeHtml(
+                    ciudad
+                )
                 : "";
 
 
         const metaDireccion =
             direccion
-                ? `<div>${escapeHtml(direccion)}</div>`
+                ? `
+                    <div>
+                        ${escapeHtml(direccion)}
+                    </div>
+                  `
                 : "";
 
 
         const metaFecha =
             fecha
-                ? `<div>${escapeHtml(fecha)}</div>`
+                ? `
+                    <div>
+                        ${escapeHtml(fecha)}
+                    </div>
+                  `
                 : "";
 
 
-        marker.bindPopup(`
-
+        marker.bindPopup(
+            `
             <div class="map-popup-title">
                 ${escapeHtml(titulo)}
             </div>
@@ -952,20 +1084,18 @@ async function cargarEventosMapa() {
                         >
                             Ver evento
                         </a>
-                    `
+                      `
                     : ""
             }
+            `
+        );
 
-        `);
-
-
-        /*
-           Agregar coordenadas a los límites
-           del mapa.
-        */
 
         bounds.push(
-            [lat, lng]
+            [
+                lat,
+                lng
+            ]
         );
 
 
@@ -975,17 +1105,71 @@ async function cargarEventosMapa() {
 
 
     /* =====================================================
-       AJUSTAR MAPA A LOS EVENTOS
+       UBICACIÓN DEL USUARIO
     ===================================================== */
 
-    if (bounds.length) {
+    const ubicacionUsuario =
+        await promesaUbicacionUsuario;
+
+
+    if (ubicacionUsuario) {
+
+        /*
+           LA UBICACIÓN DEL USUARIO TIENE PRIORIDAD.
+
+           No usamos fitBounds() en este caso.
+        */
+
+        map.setView(
+            [
+                ubicacionUsuario.lat,
+                ubicacionUsuario.lng
+            ],
+            USER_ZOOM
+        );
+
+
+        agregarMarcadorUsuario(
+            map,
+            ubicacionUsuario
+        );
+
+
+    } else if (
+        bounds.length
+    ) {
+
+        /*
+           RESPALDO:
+
+           Si el usuario no autorizó o no se pudo
+           obtener su ubicación, mostramos los eventos.
+        */
 
         map.fitBounds(
             bounds,
             {
-                padding: [30, 30],
+                padding: [
+                    30,
+                    30
+                ],
                 maxZoom: 13
             }
+        );
+
+    } else {
+
+        /*
+           Si tampoco hay eventos con ubicación,
+           dejamos Santiago como centro.
+        */
+
+        map.setView(
+            [
+                DEFAULT_LATITUDE,
+                DEFAULT_LONGITUDE
+            ],
+            DEFAULT_ZOOM
         );
 
     }
@@ -997,9 +1181,13 @@ async function cargarEventosMapa() {
 
     if (status) {
 
-        if (marcadores > 0) {
+        if (
+            marcadores > 0
+        ) {
 
-            if (eventosSinUbicacion > 0) {
+            if (
+                eventosSinUbicacion > 0
+            ) {
 
                 status.textContent =
                     `${marcadores} eventos con ubicación · ${eventosSinUbicacion} sin ubicación`;
@@ -1021,14 +1209,14 @@ async function cargarEventosMapa() {
     }
 
 
-    /*
-       Leaflet necesita recalcular el tamaño
-       cuando el contenedor está dentro de una
-       sección que puede haber terminado de renderizar.
-    */
+    /* -----------------------------------------------------
+       RECALCULAR TAMAÑO DE LEAFLET
+    ----------------------------------------------------- */
 
     setTimeout(
-        () => map.invalidateSize(),
+        () => {
+            map.invalidateSize();
+        },
         250
     );
 
@@ -1041,7 +1229,9 @@ async function cargarEventosMapa() {
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
+    return String(
+        value ?? ""
+    )
 
         .replaceAll(
             "&",
