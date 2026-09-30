@@ -1,26 +1,28 @@
 /* =========================================================
-OTIUM HOME
-Diseño reconstruido según referencia visual OTIUM
+   OTIUM HOME
+   Diseño reconstruido según referencia visual OTIUM
 
-CORRECCIÓN 20260916:
+   CORRECCIÓN 20260916:
 
-- Carrusel independiente del buscador.
-- Buscador debajo del carrusel.
-- Desktop conserva el diseño actual.
-- Se eliminan alturas exageradas del carrusel en móvil.
-- Las imágenes originales de fondo del Hero se mantienen
-  en desktop.
-- En móvil las imágenes originales de fondo se eliminan
-  visualmente para evitar que dominen el espacio.
-- Los banners de Firestore conservan su proporción.
-- Eventos destacados utilizan las clases reales generadas
-  por home.js:
-    .event-card
-    .event-card-image
-    .event-card-image img
-    .event-card-content
-- Las imágenes de eventos destacados quedan contenidas
-  dentro de sus respectivas tarjetas.
+   - Carrusel independiente del buscador.
+   - Buscador debajo del carrusel.
+   - Desktop conserva el diseño actual.
+   - Se eliminan alturas exageradas del carrusel en móvil.
+   - Las imágenes originales de fondo del Hero se mantienen
+     en desktop.
+   - En móvil las imágenes originales de fondo se eliminan
+     visualmente para evitar que dominen el espacio.
+   - Los banners de Firestore conservan su proporción.
+   - Eventos destacados utilizan las clases reales generadas
+     por home.js:
+       .event-card
+       .event-card-image
+       .event-card-image img
+       .event-card-content
+   - Las imágenes de eventos destacados quedan contenidas
+     dentro de sus respectivas tarjetas.
+   - En móvil categorías y destacados se presentan
+     horizontalmente para reducir el desplazamiento vertical.
 ========================================================= */
 
 :root {
@@ -77,7 +79,7 @@ body.otium-home main {
 
 
 /* =========================================================
-HERO / CARRUSEL
+   HERO / CARRUSEL
 ========================================================= */
 
 .home-hero {
@@ -106,7 +108,7 @@ HERO / CARRUSEL
 
 
 /* =========================================================
-IMÁGENES DEL CARRUSEL
+   IMÁGENES DEL CARRUSEL
 ========================================================= */
 
 .hero-slide-image {
@@ -121,7 +123,7 @@ IMÁGENES DEL CARRUSEL
 
 
 /* =========================================================
-BANNERS DE FIRESTORE
+   BANNERS DE FIRESTORE
 ========================================================= */
 
 .hero-slide.hero-slide-banner .hero-slide-image {
@@ -142,7 +144,7 @@ BANNERS DE FIRESTORE
 
 
 /* =========================================================
-SLIDES ORIGINALES
+   SLIDES ORIGINALES
 ========================================================= */
 
 .hero-slide-1 {
@@ -157,7 +159,7 @@ SLIDES ORIGINALES
 
 
 /* =========================================================
-OVERLAY ORIGINAL DEL HERO
+   OVERLAY ORIGINAL DEL HERO
 ========================================================= */
 
 .hero-overlay {
@@ -181,7 +183,7 @@ OVERLAY ORIGINAL DEL HERO
 
 
 /* =========================================================
-CONTENIDO HERO
+   CONTENIDO HERO
 ========================================================= */
 
 .hero-content {
@@ -237,7 +239,7 @@ CONTENIDO HERO
 
 
 /* =========================================================
-CONTROLES DEL HERO
+   CONTROLES DEL HERO
 ========================================================= */
 
 .hero-arrow {
@@ -270,7 +272,7 @@ CONTROLES DEL HERO
 
 
 /* =========================================================
-PUNTOS DEL CARRUSEL
+   PUNTOS DEL CARRUSEL
 ========================================================= */
 
 .hero-dots {
@@ -301,7 +303,7 @@ PUNTOS DEL CARRUSEL
 
 
 /* =========================================================
-BUSCADOR
+   BUSCADOR
 ========================================================= */
 
 .hero-search-section {
@@ -377,7 +379,7 @@ BUSCADOR
 
 
 /* =========================================================
-SECCIONES
+   SECCIONES
 ========================================================= */
 
 .home-section {
@@ -415,7 +417,7 @@ SECCIONES
 
 
 /* =========================================================
-ENCABEZADOS
+   ENCABEZADOS
 ========================================================= */
 
 .section-heading {
@@ -460,7 +462,7 @@ ENCABEZADOS
 
 
 /* =========================================================
-CATEGORÍAS
+   CATEGORÍAS
 ========================================================= */
 
 .category-row {
@@ -569,24 +571,8 @@ CATEGORÍAS
 
 
 /* =========================================================
-EVENTOS DESTACADOS
+   EVENTOS DESTACADOS
 ========================================================= */
-
-/*
-   IMPORTANTE:
-
-   home.js genera las tarjetas con:
-
-   .event-card
-   .event-card-image
-   .event-card-image img
-   .event-card-content
-
-   Las reglas antiguas .featured-card / .event-image /
-   .event-body no coincidían con el HTML generado por JS.
-
-   Esta sección corrige esa diferencia.
-*/
 
 .featured-grid {
     display: grid;
@@ -597,7 +583,7 @@ EVENTOS DESTACADOS
 
 
 /* =========================================================
-TARJETA
+   TARJETA
 ========================================================= */
 
 .event-card {
@@ -633,7 +619,7 @@ TARJETA
 
 
 /* =========================================================
-IMAGEN DE EVENTO DESTACADO
+   IMAGEN DE EVENTO DESTACADO
 ========================================================= */
 
 .event-card-image {
@@ -656,16 +642,6 @@ IMAGEN DE EVENTO DESTACADO
             #0b6fd2
         );
 }
-
-
-/*
-   La imagen queda completamente contenida
-   dentro de .event-card-image.
-
-   position:absolute + inset:0 evita que una imagen
-   con dimensiones propias pueda modificar el tamaño
-   de la tarjeta.
-*/
 
 .event-card-image img {
     position: absolute;
@@ -691,11 +667,6 @@ IMAGEN DE EVENTO DESTACADO
     border: 0;
 }
 
-
-/*
-   Oscurecimiento inferior de la imagen.
-*/
-
 .event-card-image::after {
     content: "";
 
@@ -713,7 +684,7 @@ IMAGEN DE EVENTO DESTACADO
 
 
 /* =========================================================
-CONTENIDO DE LA TARJETA
+   CONTENIDO DE LA TARJETA
 ========================================================= */
 
 .event-card-content {
@@ -729,7 +700,7 @@ CONTENIDO DE LA TARJETA
 
 
 /* =========================================================
-CATEGORÍA
+   CATEGORÍA
 ========================================================= */
 
 .event-category {
@@ -753,7 +724,7 @@ CATEGORÍA
 
 
 /* =========================================================
-TÍTULO
+   TÍTULO
 ========================================================= */
 
 .event-card-content h3 {
@@ -777,7 +748,7 @@ TÍTULO
 
 
 /* =========================================================
-DESCRIPCIÓN
+   DESCRIPCIÓN
 ========================================================= */
 
 .event-card-content p {
@@ -801,7 +772,7 @@ DESCRIPCIÓN
 
 
 /* =========================================================
-FECHA / PRECIO
+   FECHA / PRECIO
 ========================================================= */
 
 .event-card-meta {
@@ -824,7 +795,7 @@ FECHA / PRECIO
 
 
 /* =========================================================
-ESTADO SIN EVENTOS
+   ESTADO SIN EVENTOS
 ========================================================= */
 
 .empty-message {
@@ -859,7 +830,7 @@ ESTADO SIN EVENTOS
 
 
 /* =========================================================
-PROMOCIÓN
+   PROMOCIÓN
 ========================================================= */
 
 .promotion-grid {
@@ -963,7 +934,7 @@ PROMOCIÓN
 
 
 /* =========================================================
-BENEFICIOS
+   BENEFICIOS
 ========================================================= */
 
 .benefits-grid {
@@ -1013,7 +984,7 @@ BENEFICIOS
 
 
 /* =========================================================
-SPONSOR
+   SPONSOR
 ========================================================= */
 
 .sponsor-banner {
@@ -1049,7 +1020,7 @@ SPONSOR
 
 
 /* =========================================================
-FOOTER
+   FOOTER
 ========================================================= */
 
 .home-footer {
@@ -1098,7 +1069,7 @@ FOOTER
 
 
 /* =========================================================
-RESPONSIVE
+   RESPONSIVE
 ========================================================= */
 
 @media (max-width: 1250px) {
@@ -1114,7 +1085,7 @@ RESPONSIVE
 
 
 /* =========================================================
-TABLET
+   TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -1146,13 +1117,7 @@ TABLET
     }
 
     /*
-       IMPORTANTE:
-
-       Antes:
-       height: 640px;
-
-       Ahora:
-       altura mucho más contenida.
+       Altura contenida del Hero.
     */
 
     .home-hero {
@@ -1201,7 +1166,7 @@ TABLET
 
 
 /* =========================================================
-MÓVIL
+   MÓVIL
 ========================================================= */
 
 @media (max-width: 650px) {
@@ -1212,16 +1177,10 @@ MÓVIL
 
     /*
        =====================================================
-       CAMBIO PRINCIPAL
+       HERO
 
-       Antes:
-       height: 670px;
-
-       Ahora:
-       360px.
-
-       Esto evita que el Hero ocupe casi toda la pantalla
-       antes de llegar al buscador.
+       Se mantiene compacto para que el usuario llegue
+       rápidamente al buscador y al contenido.
        =====================================================
     */
 
@@ -1233,11 +1192,6 @@ MÓVIL
     /*
        En móvil eliminamos las imágenes originales de fondo
        del Hero.
-
-       Las imágenes de Unsplash dejan de ocupar visualmente
-       el fondo.
-
-       El fondo queda limpio y el contenido sigue funcionando.
     */
 
     .hero-slide-1,
@@ -1332,7 +1286,9 @@ MÓVIL
     }
 
     /*
+       =====================================================
        BUSCADOR
+       =====================================================
     */
 
     .hero-search-section {
@@ -1343,39 +1299,200 @@ MÓVIL
         width: calc(100% - 28px);
     }
 
+
     /*
-       CATEGORÍAS
+       =====================================================
+       ENCABEZADOS DE SECCIÓN
+       =====================================================
+    */
+
+    .section-heading {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .section-heading h2 {
+        font-size: 21px;
+    }
+
+    .section-kicker {
+        font-size: 9px;
+    }
+
+    .section-link {
+        font-size: 11px;
+    }
+
+    .section-link span {
+        font-size: 17px;
+    }
+
+
+    /*
+       =====================================================
+       CATEGORÍAS — CARRUSEL HORIZONTAL
+
+       En lugar de 2 columnas x 4 filas, las 8 categorías
+       quedan en una sola fila desplazable.
+
+       Se muestra aproximadamente 2,5 categorías por pantalla.
+       =====================================================
     */
 
     .category-row {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-wrap: nowrap;
+
+        gap: 10px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        width: calc(100vw - 14px);
+        margin-left: 0;
+
+        padding: 2px 14px 8px 0;
+
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: none;
     }
 
+    .category-row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .category-card {
+        flex: 0 0 118px;
+
+        width: 118px;
+        min-width: 118px;
+
+        height: 82px;
+        min-height: 82px;
+
+        padding: 9px;
+
+        border-radius: 11px;
+
+        scroll-snap-align: start;
+    }
+
+    .category-icon {
+        width: 27px;
+        height: 27px;
+
+        border-radius: 8px;
+
+        font-size: 15px;
+    }
+
+    .category-card strong {
+        font-size: 11px;
+        line-height: 1.1;
+    }
+
+
     /*
-       EVENTOS DESTACADOS
+       =====================================================
+       EVENTOS DESTACADOS — CARRUSEL HORIZONTAL
+
+       En lugar de 2 columnas x 3 filas, los 6 eventos
+       quedan en una sola fila desplazable.
+
+       Cada tarjeta ocupa aproximadamente 78% del ancho
+       disponible, dejando visible parte de la siguiente.
+       =====================================================
     */
 
     .featured-grid {
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-wrap: nowrap;
+
+        gap: 12px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        width: calc(100vw - 14px);
+        margin-left: 0;
+
+        padding: 2px 14px 10px 0;
+
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: none;
     }
 
-    .event-card-image {
-        height: 125px;
-        min-height: 125px;
-        max-height: 125px;
-        flex-basis: 125px;
+    .featured-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .featured-grid .event-card {
+        flex: 0 0 calc(78vw);
+
+        width: calc(78vw);
+        min-width: calc(78vw);
+
+        max-width: 330px;
+
+        scroll-snap-align: start;
     }
 
     /*
+       Tarjeta destacada un poco más grande que antes,
+       aprovechando el ancho disponible.
+    */
+
+    .event-card-image {
+        height: 150px;
+        min-height: 150px;
+        max-height: 150px;
+        flex-basis: 150px;
+    }
+
+    .event-card-content {
+        padding: 11px;
+    }
+
+    .event-card-content h3 {
+        font-size: 14px;
+    }
+
+    .event-card-content p {
+        font-size: 10px;
+    }
+
+    /*
+       Estados especiales del contenedor.
+       El mensaje de carga y "sin eventos" deben ocupar
+       todo el ancho disponible.
+    */
+
+    .featured-grid .featured-loading,
+    .featured-grid .empty-message {
+        flex: 0 0 100%;
+        min-width: 100%;
+    }
+
+
+    /*
+       =====================================================
        BENEFICIOS
+       =====================================================
     */
 
     .benefits-grid {
         grid-template-columns: 1fr;
     }
 
+
     /*
+       =====================================================
        PROMOCIONES
+       =====================================================
     */
 
     .promotion-card {
@@ -1386,8 +1503,11 @@ MÓVIL
         width: 100%;
     }
 
+
     /*
+       =====================================================
        SPONSOR
+       =====================================================
     */
 
     .sponsor-banner {
@@ -1395,8 +1515,11 @@ MÓVIL
         align-items: flex-start;
     }
 
+
     /*
+       =====================================================
        FOOTER
+       =====================================================
     */
 
     .footer-content {
@@ -1414,7 +1537,7 @@ MÓVIL
 
 
 /* =========================================================
-MÓVILES PEQUEÑOS
+   MÓVILES PEQUEÑOS
 ========================================================= */
 
 @media (max-width: 400px) {
@@ -1440,11 +1563,36 @@ MÓVILES PEQUEÑOS
         font-size: 9px;
     }
 
+    /*
+       Categorías ligeramente más compactas en teléfonos
+       pequeños.
+    */
+
+    .category-card {
+        flex-basis: 110px;
+        width: 110px;
+        min-width: 110px;
+
+        height: 78px;
+        min-height: 78px;
+    }
+
+    /*
+       Destacados: mantenemos una tarjeta grande,
+       pero dejamos visible una parte de la siguiente.
+    */
+
+    .featured-grid .event-card {
+        flex-basis: 82vw;
+        width: 82vw;
+        min-width: 82vw;
+    }
+
     .event-card-image {
-        height: 115px;
-        min-height: 115px;
-        max-height: 115px;
-        flex-basis: 115px;
+        height: 135px;
+        min-height: 135px;
+        max-height: 135px;
+        flex-basis: 135px;
     }
 
     .event-card-content {
