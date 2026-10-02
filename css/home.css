@@ -1299,7 +1299,45 @@ body.otium-home main {
         width: calc(100% - 28px);
     }
 
+/* =====================================================
+   BUSCADOR MÓVIL COMPACTO
+   Solo búsqueda + botón en una línea
+   ===================================================== */
 
+.hero-search {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 50px;
+    padding: 4px;
+    border-radius: 14px;
+}
+
+.hero-search .search-location,
+.hero-search .search-date {
+    display: none;
+}
+
+.hero-search .search-main {
+    min-height: 42px;
+    padding: 0 12px;
+    border-bottom: 0;
+    border-right: 0;
+}
+
+.hero-search .search-main input {
+    font-size: 13px;
+}
+
+.hero-search .search-main .search-icon {
+    font-size: 19px;
+}
+
+.hero-search .search-button {
+    min-height: 42px;
+    margin: 0;
+    padding: 0 15px;
+    border-radius: 11px;
+    font-size: 13px;
+}
     /*
        =====================================================
        ENCABEZADOS DE SECCIÓN
