@@ -21,6 +21,9 @@ import {
     getFirestore
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
+import {
+    getAnalytics
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
 
 /* =====================================================
    CONFIGURACIÓN DEL PROYECTO
@@ -38,7 +41,9 @@ export const firebaseConfig = {
 
     messagingSenderId: "175356882678",
 
-    appId: "1:175356882678:web:65673abbcab96d1e7746d7"
+    appId: "1:175356882678:web:65673abbcab96d1e7746d7",
+
+    measurementId: "G-EBBWHN71TP"
 
 };
 
@@ -49,6 +54,12 @@ export const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 
+/* =====================================================
+   GOOGLE ANALYTICS
+===================================================== */
+
+export const analytics =
+    getAnalytics(app);
 
 /* =====================================================
    FIREBASE AUTHENTICATION
