@@ -1413,67 +1413,88 @@ body.otium-home main {
 
     /*
        =====================================================
-       CATEGORÍAS — CARRUSEL HORIZONTAL
+       CATEGORÍAS — MÓVIL COMPACTO
 
-       En lugar de 2 columnas x 4 filas, las 8 categorías
-       quedan en una sola fila desplazable.
+       En móvil las categorías dejan de ser un carrusel
+       horizontal y pasan a una rejilla muy compacta.
 
-       Se muestra aproximadamente 2,5 categorías por pantalla.
+       Objetivo:
+       - 4 categorías por fila.
+       - Icono pequeño + texto.
+       - Sin desplazamiento horizontal.
+       - Muy poco espacio vertical.
+       - Mantener intacto el diseño de escritorio.
        =====================================================
     */
 
     .category-row {
-        display: flex;
-        flex-wrap: nowrap;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px 6px;
 
-        gap: 10px;
+        width: 100%;
+        margin: 0;
 
-        overflow-x: auto;
-        overflow-y: hidden;
+        padding: 0;
 
-        width: calc(100vw - 14px);
-        margin-left: 0;
-
-        padding: 2px 14px 8px 0;
-
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
-
-        scrollbar-width: none;
-    }
-
-    .category-row::-webkit-scrollbar {
-        display: none;
+        overflow: visible;
     }
 
     .category-card {
-        flex: 0 0 118px;
+        width: 100%;
+        min-width: 0;
+        height: 52px;
+        min-height: 52px;
 
-        width: 118px;
-        min-width: 118px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
 
-        height: 82px;
-        min-height: 82px;
+        gap: 6px;
+        padding: 5px 4px;
 
-        padding: 9px;
+        border: 0;
+        border-radius: 8px;
 
-        border-radius: 11px;
+        background: transparent;
+        box-shadow: none;
 
-        scroll-snap-align: start;
+        scroll-snap-align: none;
+    }
+
+    .category-card::before {
+        display: none;
+    }
+
+    .category-card:hover {
+        transform: none;
+        border-color: transparent;
+        background: rgba(255,255,255,.035);
     }
 
     .category-icon {
+        flex: 0 0 27px;
+
         width: 27px;
         height: 27px;
 
         border-radius: 8px;
 
-        font-size: 15px;
+        font-size: 14px;
     }
 
     .category-card strong {
-        font-size: 11px;
+        min-width: 0;
+
+        overflow: hidden;
+
+        font-size: 10px;
         line-height: 1.1;
+        font-weight: 700;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
 
@@ -1647,17 +1668,32 @@ body.otium-home main {
     }
 
     /*
-       Categorías ligeramente más compactas en teléfonos
-       pequeños.
+       Categorías todavía más compactas en teléfonos
+       pequeños. Se mantiene la misma rejilla de 4 columnas.
     */
 
-    .category-card {
-        flex-basis: 110px;
-        width: 110px;
-        min-width: 110px;
+    .category-row {
+        gap: 6px 4px;
+    }
 
-        height: 78px;
-        min-height: 78px;
+    .category-card {
+        height: 48px;
+        min-height: 48px;
+
+        gap: 5px;
+        padding: 4px 2px;
+    }
+
+    .category-icon {
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        font-size: 13px;
+    }
+
+    .category-card strong {
+        font-size: 9px;
     }
 
     /*
