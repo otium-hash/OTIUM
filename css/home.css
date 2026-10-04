@@ -4,11 +4,7 @@
 
    Diseño reconstruido según referencia visual OTIUM
 
-
-
    CORRECCIÓN 20260916:
-
-
 
    - Carrusel independiente del buscador.
 
@@ -48,9 +44,7 @@
 
      horizontalmente para reducir el desplazamiento vertical.
 
-========================================================= */
-
-
+\========================================================= */
 
 :root {
 
@@ -78,23 +72,17 @@
 
 }
 
-
-
-* {
+\* {
 
     box-sizing: border-box;
 
 }
-
-
 
 html {
 
     scroll-behavior: smooth;
 
 }
-
-
 
 body.otium-home {
 
@@ -134,8 +122,6 @@ body.otium-home {
 
 }
 
-
-
 body.otium-home main {
 
     padding-top: 0 !important;
@@ -143,8 +129,6 @@ body.otium-home main {
     min-height: 0;
 
 }
-
-
 
 .otium-container {
 
@@ -154,17 +138,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    HERO / CARRUSEL
 
-========================================================= */
-
-
+\========================================================= */
 
 .home-hero {
 
@@ -179,8 +157,6 @@ body.otium-home main {
     background: #03091b;
 
 }
-
-
 
 .hero-slide {
 
@@ -202,8 +178,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-slide.active {
 
     opacity: 1;
@@ -212,17 +186,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    IMÁGENES DEL CARRUSEL
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-slide-image {
 
@@ -242,17 +210,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    BANNERS DE FIRESTORE
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-slide.hero-slide-banner .hero-slide-image {
 
@@ -268,15 +230,11 @@ body.otium-home main {
 
 }
 
-
-
 .hero-slide.hero-slide-banner {
 
     background: #03091b;
 
 }
-
-
 
 .hero-slide.hero-slide-banner .hero-slide-overlay {
 
@@ -284,17 +242,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    SLIDES ORIGINALES
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-slide-1 {
 
@@ -304,8 +256,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-slide-2 {
 
     background-image:
@@ -314,25 +264,17 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    OVERLAY ORIGINAL DEL HERO
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-overlay {
 
     position: absolute;
 
     inset: 0;
-
-
 
     background:
 
@@ -362,17 +304,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    CONTENIDO HERO
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-content {
 
@@ -388,8 +324,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-copy {
 
     width: min(560px, 100%);
@@ -397,8 +331,6 @@ body.otium-home main {
     margin-top: -30px;
 
 }
-
-
 
 .hero-eyebrow {
 
@@ -416,8 +348,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-copy h1 {
 
     margin: 0;
@@ -431,8 +361,6 @@ body.otium-home main {
     font-weight: 800;
 
 }
-
-
 
 .hero-copy h1 span {
 
@@ -458,8 +386,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-copy p {
 
     max-width: 520px;
@@ -474,17 +400,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    CONTROLES DEL HERO
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-arrow {
 
@@ -516,15 +436,11 @@ body.otium-home main {
 
 }
 
-
-
 .hero-prev {
 
     left: 22px;
 
 }
-
-
 
 .hero-next {
 
@@ -532,25 +448,17 @@ body.otium-home main {
 
 }
 
-
-
 .hero-arrow:hover {
 
     background: rgba(24, 151, 255, .55);
 
 }
 
-
-
-
-
 /* =========================================================
 
    PUNTOS DEL CARRUSEL
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-dots {
 
@@ -570,8 +478,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-dot {
 
     width: 9px;
@@ -590,8 +496,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-dot.active {
 
     width: 28px;
@@ -602,17 +506,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    BUSCADOR
 
-========================================================= */
-
-
+\========================================================= */
 
 .hero-search-section {
 
@@ -626,8 +524,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-search-wrap {
 
     position: relative;
@@ -639,8 +535,6 @@ body.otium-home main {
     margin: -1px auto 0;
 
 }
-
-
 
 .hero-search {
 
@@ -662,8 +556,6 @@ body.otium-home main {
 
 }
 
-
-
 .search-field {
 
     display: flex;
@@ -680,15 +572,11 @@ body.otium-home main {
 
 }
 
-
-
 .search-field span {
 
     font-size: 22px;
 
 }
-
-
 
 .search-field input {
 
@@ -708,15 +596,11 @@ body.otium-home main {
 
 }
 
-
-
 .search-field input::placeholder {
 
     color: #7b8493;
 
 }
-
-
 
 .search-button {
 
@@ -746,33 +630,23 @@ body.otium-home main {
 
 }
 
-
-
 .search-button:hover {
 
     filter: brightness(1.08);
 
 }
 
-
-
-
-
 /* =========================================================
 
    SECCIONES
 
-========================================================= */
-
-
+\========================================================= */
 
 .home-section {
 
     padding: 30px 0;
 
 }
-
-
 
 .categories-section {
 
@@ -790,8 +664,6 @@ body.otium-home main {
 
 }
 
-
-
 .featured-section {
 
     background: #020b20;
@@ -800,8 +672,6 @@ body.otium-home main {
 
 }
 
-
-
 .promotion-section {
 
     background: #020b20;
@@ -809,8 +679,6 @@ body.otium-home main {
     padding-top: 12px;
 
 }
-
-
 
 .benefits-section {
 
@@ -822,25 +690,17 @@ body.otium-home main {
 
 }
 
-
-
 .sponsor-home-section {
 
     background: #030d24;
 
 }
 
-
-
-
-
 /* =========================================================
 
    ENCABEZADOS
 
-========================================================= */
-
-
+\========================================================= */
 
 .section-heading {
 
@@ -855,8 +715,6 @@ body.otium-home main {
     margin-bottom: 17px;
 
 }
-
-
 
 .section-kicker {
 
@@ -874,8 +732,6 @@ body.otium-home main {
 
 }
 
-
-
 .section-heading h2 {
 
     margin: 0;
@@ -885,8 +741,6 @@ body.otium-home main {
     letter-spacing: -.025em;
 
 }
-
-
 
 .section-link {
 
@@ -900,8 +754,6 @@ body.otium-home main {
 
 }
 
-
-
 .section-link span {
 
     margin-left: 5px;
@@ -912,25 +764,17 @@ body.otium-home main {
 
 }
 
-
-
 .section-link:hover {
 
     color: #24bfff;
 
 }
 
-
-
-
-
 /* =========================================================
 
    CATEGORÍAS
 
-========================================================= */
-
-
+\========================================================= */
 
 .category-row {
 
@@ -941,8 +785,6 @@ body.otium-home main {
     gap: 11px;
 
 }
-
-
 
 .category-card {
 
@@ -984,8 +826,6 @@ body.otium-home main {
 
 }
 
-
-
 .category-card::before {
 
     content: "";
@@ -1006,17 +846,13 @@ body.otium-home main {
 
 }
 
-
-
-.category-card > * {
+.category-card > \* {
 
     position: relative;
 
     z-index: 1;
 
 }
-
-
 
 .category-card:hover {
 
@@ -1025,8 +861,6 @@ body.otium-home main {
     border-color: #3f9cff;
 
 }
-
-
 
 .category-icon {
 
@@ -1048,8 +882,6 @@ body.otium-home main {
 
 }
 
-
-
 .category-card strong {
 
     font-size: 13px;
@@ -1057,8 +889,6 @@ body.otium-home main {
     line-height: 1.12;
 
 }
-
-
 
 .cat-concert {
 
@@ -1068,8 +898,6 @@ body.otium-home main {
 
 }
 
-
-
 .cat-theater {
 
     background-image:
@@ -1077,8 +905,6 @@ body.otium-home main {
         url("https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=500&q=75");
 
 }
-
-
 
 .cat-food {
 
@@ -1088,8 +914,6 @@ body.otium-home main {
 
 }
 
-
-
 .cat-sport {
 
     background-image:
@@ -1097,8 +921,6 @@ body.otium-home main {
         url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=75");
 
 }
-
-
 
 .cat-night {
 
@@ -1108,8 +930,6 @@ body.otium-home main {
 
 }
 
-
-
 .cat-market {
 
     background-image:
@@ -1117,8 +937,6 @@ body.otium-home main {
         url("https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=500&q=75");
 
 }
-
-
 
 .cat-family {
 
@@ -1128,8 +946,6 @@ body.otium-home main {
 
 }
 
-
-
 .cat-nature {
 
     background-image:
@@ -1138,17 +954,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    EVENTOS DESTACADOS
 
-========================================================= */
-
-
+\========================================================= */
 
 .featured-grid {
 
@@ -1162,17 +972,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    TARJETA
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card {
 
@@ -1182,19 +986,13 @@ body.otium-home main {
 
     overflow: hidden;
 
-
-
     display: flex;
 
     flex-direction: column;
 
-
-
     border: 1px solid rgba(93, 127, 197, .43);
 
     border-radius: 13px;
-
-
 
     background: linear-gradient(
 
@@ -1206,11 +1004,7 @@ body.otium-home main {
 
     );
 
-
-
     cursor: pointer;
-
-
 
     transition:
 
@@ -1222,8 +1016,6 @@ body.otium-home main {
 
 }
 
-
-
 .event-card:hover {
 
     transform: translateY(-3px);
@@ -1234,43 +1026,27 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    IMAGEN DE EVENTO DESTACADO
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card-image {
 
     position: relative;
 
-
-
     width: 100%;
 
     height: 145px;
-
-
 
     min-height: 145px;
 
     max-height: 145px;
 
-
-
     flex: 0 0 145px;
 
-
-
     overflow: hidden;
-
-
 
     background:
 
@@ -1286,71 +1062,47 @@ body.otium-home main {
 
 }
 
-
-
 .event-card-image img {
 
     position: absolute;
 
     inset: 0;
 
-
-
     display: block;
-
-
 
     width: 100%;
 
     height: 100%;
 
-
-
     min-width: 0;
 
     min-height: 0;
-
-
 
     max-width: none;
 
     max-height: none;
 
-
-
     object-fit: cover;
 
     object-position: center center;
-
-
 
     margin: 0;
 
     padding: 0;
 
-
-
     border: 0;
 
 }
-
-
 
 .event-card-image::after {
 
     content: "";
 
-
-
     position: absolute;
 
     inset: 0;
 
-
-
     pointer-events: none;
-
-
 
     background: linear-gradient(
 
@@ -1364,17 +1116,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    CONTENIDO DE LA TARJETA
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card-content {
 
@@ -1384,47 +1130,29 @@ body.otium-home main {
 
     overflow: hidden;
 
-
-
     display: flex;
 
     flex-direction: column;
-
-
 
     padding: 11px;
 
 }
 
-
-
-
-
 /* =========================================================
 
    CATEGORÍA
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-category {
 
     display: inline-block;
 
-
-
     max-width: 100%;
-
-
 
     margin-bottom: 5px;
 
-
-
     overflow: hidden;
-
-
 
     color: #b8c8e6;
 
@@ -1432,11 +1160,7 @@ body.otium-home main {
 
     font-weight: 600;
 
-
-
     line-height: 1.3;
-
-
 
     text-overflow: ellipsis;
 
@@ -1444,17 +1168,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    TÍTULO
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card-content h3 {
 
@@ -1462,21 +1180,13 @@ body.otium-home main {
 
     max-width: 100%;
 
-
-
     margin: 0;
 
-
-
     color: #fff;
-
-
 
     font-size: 14px;
 
     line-height: 1.25;
-
-
 
     display: -webkit-box;
 
@@ -1486,23 +1196,15 @@ body.otium-home main {
 
     line-clamp: 2;
 
-
-
     overflow: hidden;
 
 }
-
-
-
-
 
 /* =========================================================
 
    DESCRIPCIÓN
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card-content p {
 
@@ -1510,21 +1212,13 @@ body.otium-home main {
 
     max-width: 100%;
 
-
-
     margin: 7px 0 0;
 
-
-
     color: #8fa1c3;
-
-
 
     font-size: 10px;
 
     line-height: 1.4;
-
-
 
     display: -webkit-box;
 
@@ -1534,23 +1228,15 @@ body.otium-home main {
 
     line-clamp: 3;
 
-
-
     overflow: hidden;
 
 }
-
-
-
-
 
 /* =========================================================
 
    FECHA / PRECIO
 
-========================================================= */
-
-
+\========================================================= */
 
 .event-card-meta {
 
@@ -1560,23 +1246,15 @@ body.otium-home main {
 
     gap: 6px;
 
-
-
     margin-top: 9px;
 
-
-
     color: #9cafce;
-
-
 
     font-size: 10px;
 
     line-height: 1.4;
 
 }
-
-
 
 .event-card-meta span {
 
@@ -1586,87 +1264,51 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    ESTADO SIN EVENTOS
 
-========================================================= */
-
-
+\========================================================= */
 
 .empty-message {
 
     grid-column: 1 / -1;
 
-
-
     margin: 0;
-
-
 
     padding: 45px;
 
-
-
     border-radius: 15px;
-
-
 
     text-align: center;
 
-
-
     color: #91a3c7;
-
-
 
     background: #07152f;
 
 }
-
-
 
 .featured-loading {
 
     grid-column: 1 / -1;
 
-
-
     padding: 45px;
-
-
 
     border-radius: 15px;
 
-
-
     text-align: center;
 
-
-
     color: #91a3c7;
-
-
 
     background: #07152f;
 
 }
 
-
-
-
-
 /* =========================================================
 
    PROMOCIÓN
 
-========================================================= */
-
-
+\========================================================= */
 
 .promotion-grid {
 
@@ -1677,8 +1319,6 @@ body.otium-home main {
     gap: 14px;
 
 }
-
-
 
 .promotion-card {
 
@@ -1708,8 +1348,6 @@ body.otium-home main {
 
 }
 
-
-
 .promotion-brand {
 
     border-color: rgba(42, 128, 255, .55);
@@ -1725,8 +1363,6 @@ body.otium-home main {
     );
 
 }
-
-
 
 .promotion-icon {
 
@@ -1756,8 +1392,6 @@ body.otium-home main {
 
 }
 
-
-
 .promotion-brand .promotion-icon {
 
     background: linear-gradient(
@@ -1772,15 +1406,11 @@ body.otium-home main {
 
 }
 
-
-
 .promotion-copy {
 
     flex: 1;
 
 }
-
-
 
 .promotion-copy h3 {
 
@@ -1789,8 +1419,6 @@ body.otium-home main {
     font-size: 17px;
 
 }
-
-
 
 .promotion-copy p {
 
@@ -1803,8 +1431,6 @@ body.otium-home main {
     line-height: 1.5;
 
 }
-
-
 
 .promotion-button {
 
@@ -1832,8 +1458,6 @@ body.otium-home main {
 
 }
 
-
-
 .promotion-button.orange {
 
     background: linear-gradient(
@@ -1847,8 +1471,6 @@ body.otium-home main {
     );
 
 }
-
-
 
 .promotion-button.blue {
 
@@ -1864,17 +1486,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    BENEFICIOS
 
-========================================================= */
-
-
+\========================================================= */
 
 .benefits-grid {
 
@@ -1892,8 +1508,6 @@ body.otium-home main {
 
 }
 
-
-
 .benefit {
 
     min-height: 92px;
@@ -1909,8 +1523,6 @@ body.otium-home main {
     background: #071633;
 
 }
-
-
 
 .benefit-icon {
 
@@ -1930,15 +1542,11 @@ body.otium-home main {
 
 }
 
-
-
 .benefit:nth-child(4) .benefit-icon {
 
     color: #ed477d;
 
 }
-
-
 
 .benefit strong {
 
@@ -1949,8 +1557,6 @@ body.otium-home main {
     font-size: 12px;
 
 }
-
-
 
 .benefit span {
 
@@ -1964,17 +1570,11 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    SPONSOR
 
-========================================================= */
-
-
+\========================================================= */
 
 .sponsor-banner {
 
@@ -2010,8 +1610,6 @@ body.otium-home main {
 
 }
 
-
-
 .sponsor-banner span {
 
     display: block;
@@ -2028,25 +1626,17 @@ body.otium-home main {
 
 }
 
-
-
 .sponsor-banner strong {
 
     font-size: 21px;
 
 }
 
-
-
-
-
 /* =========================================================
 
    FOOTER
 
-========================================================= */
-
-
+\========================================================= */
 
 .home-footer {
 
@@ -2057,8 +1647,6 @@ body.otium-home main {
     border-top: 1px solid rgba(77, 115, 190, .2);
 
 }
-
-
 
 .footer-content {
 
@@ -2072,15 +1660,11 @@ body.otium-home main {
 
 }
 
-
-
 .footer-content strong {
 
     font-size: 22px;
 
 }
-
-
 
 .footer-content p {
 
@@ -2092,8 +1676,6 @@ body.otium-home main {
 
 }
 
-
-
 .footer-links {
 
     display: flex;
@@ -2101,8 +1683,6 @@ body.otium-home main {
     gap: 18px;
 
 }
-
-
 
 .footer-links a {
 
@@ -2114,15 +1694,11 @@ body.otium-home main {
 
 }
 
-
-
 .footer-links a:hover {
 
     color: #fff;
 
 }
-
-
 
 .footer-content small {
 
@@ -2134,29 +1710,19 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    RESPONSIVE
 
-========================================================= */
-
-
+\========================================================= */
 
 @media (max-width: 1250px) {
-
-
 
     .category-row {
 
         grid-template-columns: repeat(4, 1fr);
 
     }
-
-
 
     .featured-grid {
 
@@ -2166,21 +1732,13 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    TABLET
 
-========================================================= */
-
-
+\========================================================= */
 
 @media (max-width: 900px) {
-
-
 
     body.otium-home {
 
@@ -2188,15 +1746,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Buscador responsive.
 
     */
-
-
 
     .hero-search {
 
@@ -2210,8 +1764,6 @@ body.otium-home main {
 
     }
 
-
-
     .search-field {
 
         min-height: 48px;
@@ -2222,8 +1774,6 @@ body.otium-home main {
 
     }
 
-
-
     .search-button {
 
         min-height: 45px;
@@ -2232,15 +1782,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Altura contenida del Hero.
 
     */
-
-
 
     .home-hero {
 
@@ -2250,15 +1796,11 @@ body.otium-home main {
 
     }
 
-
-
     .hero-content {
 
         height: 100%;
 
     }
-
-
 
     .hero-copy {
 
@@ -2266,15 +1808,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Los banners de Firestore se muestran completos.
 
     */
-
-
 
     .hero-slide.hero-slide-banner .hero-slide-image {
 
@@ -2284,23 +1822,17 @@ body.otium-home main {
 
     }
 
-
-
     .hero-dots {
 
         bottom: 18px;
 
     }
 
-
-
     .hero-search-section {
 
         padding: 0 0 24px;
 
     }
-
-
 
     .hero-search-wrap {
 
@@ -2310,15 +1842,11 @@ body.otium-home main {
 
     }
 
-
-
     .promotion-grid {
 
         grid-template-columns: 1fr;
 
     }
-
-
 
     .benefits-grid {
 
@@ -2328,26 +1856,21 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    MÓVIL
 
-========================================================= */
-
-
+\========================================================= */
 
 @media (max-width: 650px) {
 
     /* En móvil eliminamos el kicker "EXPLORA" para simplificar la sección. */
+
     .categories-section .section-kicker {
+
         display: none;
+
     }
-
-
 
     .otium-container {
 
@@ -2355,15 +1878,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        =====================================================
 
        HERO
-
-
 
        Se mantiene compacto para que el usuario llegue
 
@@ -2373,8 +1892,6 @@ body.otium-home main {
 
     */
 
-
-
     .home-hero {
 
         height: 330px;
@@ -2383,8 +1900,6 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        En móvil eliminamos las imágenes originales de fondo
@@ -2392,8 +1907,6 @@ body.otium-home main {
        del Hero.
 
     */
-
-
 
     .hero-slide-1,
 
@@ -2405,8 +1918,6 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Si existe un banner de Firestore, este sí conserva
@@ -2415,15 +1926,11 @@ body.otium-home main {
 
     */
 
-
-
     .hero-slide.hero-slide-banner {
 
         background: #03091b;
 
     }
-
-
 
     .hero-slide.hero-slide-banner .hero-slide-image {
 
@@ -2437,15 +1944,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Contenido del Hero.
 
     */
-
-
 
     .hero-content {
 
@@ -2455,8 +1958,6 @@ body.otium-home main {
 
     }
 
-
-
     .hero-copy {
 
         margin-top: -25px;
@@ -2464,8 +1965,6 @@ body.otium-home main {
         width: calc(100% - 35px);
 
     }
-
-
 
     .hero-eyebrow {
 
@@ -2477,8 +1976,6 @@ body.otium-home main {
 
     }
 
-
-
     .hero-copy h1 {
 
         font-size: 40px;
@@ -2486,8 +1983,6 @@ body.otium-home main {
         line-height: 1;
 
     }
-
-
 
     .hero-copy p {
 
@@ -2501,15 +1996,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Flechas más pequeñas.
 
     */
-
-
 
     .hero-arrow {
 
@@ -2523,15 +2014,11 @@ body.otium-home main {
 
     }
 
-
-
     .hero-prev {
 
         left: 8px;
 
     }
-
-
 
     .hero-next {
 
@@ -2539,15 +2026,11 @@ body.otium-home main {
 
     }
 
-
-
     /*
 
        Puntos.
 
     */
-
-
 
     .hero-dots {
 
@@ -2557,8 +2040,6 @@ body.otium-home main {
 
     }
 
-
-
     .hero-dot {
 
         width: 8px;
@@ -2567,15 +2048,11 @@ body.otium-home main {
 
     }
 
-
-
     .hero-dot.active {
 
         width: 24px;
 
     }
-
-
 
     /*
 
@@ -2587,8 +2064,6 @@ body.otium-home main {
 
     */
 
-
-
     .hero-search-section {
 
         padding-top: 0;
@@ -2596,8 +2071,6 @@ body.otium-home main {
         padding-bottom: 10px;
 
     }
-
-
 
     .hero-search-wrap {
 
@@ -2607,23 +2080,15 @@ body.otium-home main {
 
     }
 
-
-
-
-
     /* =====================================================
 
        AJUSTE DE ESPACIADO VERTICAL — SOLO MÓVIL
-
-
 
        Reduce el espacio entre el menú, carrusel, buscador
 
        y las distintas secciones sin alterar desktop/tablet.
 
        ===================================================== */
-
-
 
     .home-section {
 
@@ -2633,8 +2098,6 @@ body.otium-home main {
 
     }
 
-
-
     .categories-section {
 
         padding-top: 12px;
@@ -2642,8 +2105,6 @@ body.otium-home main {
         padding-bottom: 12px;
 
     }
-
-
 
     .featured-section {
 
@@ -2653,8 +2114,6 @@ body.otium-home main {
 
     }
 
-
-
     .otium-map-section {
 
         padding-top: 12px;
@@ -2662,8 +2121,6 @@ body.otium-home main {
         padding-bottom: 12px;
 
     }
-
-
 
     .promotion-section {
 
@@ -2673,8 +2130,6 @@ body.otium-home main {
 
     }
 
-
-
     .benefits-section {
 
         padding-top: 10px;
@@ -2683,17 +2138,11 @@ body.otium-home main {
 
     }
 
-
-
     .section-heading {
 
         margin-bottom: 10px;
 
     }
-
-
-
-
 
 /* =====================================================
 
@@ -2702,8 +2151,6 @@ body.otium-home main {
    Solo búsqueda + botón en una línea
 
    ===================================================== */
-
-
 
 .hero-search {
 
@@ -2717,8 +2164,6 @@ body.otium-home main {
 
 }
 
-
-
 .hero-search .search-location,
 
 .hero-search .search-date {
@@ -2726,8 +2171,6 @@ body.otium-home main {
     display: none;
 
 }
-
-
 
 .hero-search .search-main {
 
@@ -2741,23 +2184,17 @@ body.otium-home main {
 
 }
 
-
-
 .hero-search .search-main input {
 
     font-size: 13px;
 
 }
 
-
-
 .hero-search .search-main .search-icon {
 
     font-size: 19px;
 
 }
-
-
 
 .hero-search .search-button {
 
@@ -2783,8 +2220,6 @@ body.otium-home main {
 
     */
 
-
-
     .section-heading {
 
         gap: 10px;
@@ -2793,15 +2228,11 @@ body.otium-home main {
 
     }
 
-
-
     .section-heading h2 {
 
         font-size: 21px;
 
     }
-
-
 
     .section-kicker {
 
@@ -2809,15 +2240,11 @@ body.otium-home main {
 
     }
 
-
-
     .section-link {
 
         font-size: 11px;
 
     }
-
-
 
     .section-link span {
 
@@ -2825,49 +2252,59 @@ body.otium-home main {
 
     }
 
-
-
-
-
     /*
+
        =====================================================
+
        CATEGORÍAS — MÓVIL
 
        - 4 categorías por fila.
+
        - Icono arriba + texto debajo.
+
        - Sin superposición entre icono y texto.
+
        - Sin desplazamiento horizontal.
+
        - Diseño desktop intacto.
+
        =====================================================
+
     */
 
     .category-row {
+
         display: grid;
+
         grid-template-columns: repeat(4, minmax(0, 1fr));
+
         gap: 10px 6px;
 
         width: 100%;
+
         margin: 0;
+
         padding: 0;
 
         overflow: visible;
+
     }
 
-    .category-card {
+        .category-card {
         width: 100%;
         min-width: 0;
-        height: 66px;
-        min-height: 66px;
+        height: 48px;
+        min-height: 48px;
 
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
 
-        gap: 5px;
-        padding: 4px 2px;
+        gap: 0;
+        padding: 6px 4px;
 
-        border: 0;
+        border: 1px solid rgba(99, 137, 220, .25);
         border-radius: 10px;
 
         background: rgba(255,255,255,.025);
@@ -2878,46 +2315,48 @@ body.otium-home main {
     }
 
     .category-card::before {
+
         display: none;
+
     }
 
     .category-card:hover {
+
         transform: none;
+
         border-color: transparent;
+
         background: rgba(255,255,255,.06);
+
     }
 
-    .category-icon {
-        flex: 0 0 auto;
-
-        width: 27px;
-        height: 27px;
-
-        display: grid;
-        place-items: center;
-
-        border-radius: 8px;
-        font-size: 14px;
-        line-height: 1;
+        .category-icon {
+        display: none !important;
     }
 
     .category-card strong {
+
         display: block;
 
         width: 100%;
+
         min-width: 0;
 
         overflow: hidden;
 
         font-size: 10px;
+
         line-height: 1.1;
+
         font-weight: 700;
 
         text-align: center;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
 
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+    }
 
     /*
 
@@ -2925,13 +2364,9 @@ body.otium-home main {
 
        EVENTOS DESTACADOS — CARRUSEL HORIZONTAL
 
-
-
        En lugar de 2 columnas x 3 filas, los 6 eventos
 
        quedan en una sola fila desplazable.
-
-
 
        Cada tarjeta ocupa aproximadamente 78% del ancho
 
@@ -2941,47 +2376,31 @@ body.otium-home main {
 
     */
 
-
-
     .featured-grid {
 
         display: flex;
 
         flex-wrap: nowrap;
 
-
-
         gap: 12px;
-
-
 
         overflow-x: auto;
 
         overflow-y: hidden;
 
-
-
         width: calc(100vw - 14px);
 
         margin-left: 0;
 
-
-
         padding: 2px 14px 10px 0;
-
-
 
         scroll-snap-type: x proximity;
 
         -webkit-overflow-scrolling: touch;
 
-
-
         scrollbar-width: none;
 
     }
-
-
 
     .featured-grid::-webkit-scrollbar {
 
@@ -2989,29 +2408,19 @@ body.otium-home main {
 
     }
 
-
-
     .featured-grid .event-card {
 
         flex: 0 0 calc(78vw);
-
-
 
         width: calc(78vw);
 
         min-width: calc(78vw);
 
-
-
         max-width: 330px;
-
-
 
         scroll-snap-align: start;
 
     }
-
-
 
     /*
 
@@ -3020,8 +2429,6 @@ body.otium-home main {
        aprovechando el ancho disponible.
 
     */
-
-
 
     .event-card-image {
 
@@ -3035,15 +2442,11 @@ body.otium-home main {
 
     }
 
-
-
     .event-card-content {
 
         padding: 11px;
 
     }
-
-
 
     .event-card-content h3 {
 
@@ -3051,15 +2454,11 @@ body.otium-home main {
 
     }
 
-
-
     .event-card-content p {
 
         font-size: 10px;
 
     }
-
-
 
     /*
 
@@ -3071,8 +2470,6 @@ body.otium-home main {
 
     */
 
-
-
     .featured-grid .featured-loading,
 
     .featured-grid .empty-message {
@@ -3082,10 +2479,6 @@ body.otium-home main {
         min-width: 100%;
 
     }
-
-
-
-
 
     /*
 
@@ -3097,17 +2490,11 @@ body.otium-home main {
 
     */
 
-
-
     .benefits-grid {
 
         grid-template-columns: 1fr;
 
     }
-
-
-
-
 
     /*
 
@@ -3119,25 +2506,17 @@ body.otium-home main {
 
     */
 
-
-
     .promotion-card {
 
         flex-wrap: wrap;
 
     }
 
-
-
     .promotion-button {
 
         width: 100%;
 
     }
-
-
-
-
 
     /*
 
@@ -3149,8 +2528,6 @@ body.otium-home main {
 
     */
 
-
-
     .sponsor-banner {
 
         flex-direction: column;
@@ -3158,10 +2535,6 @@ body.otium-home main {
         align-items: flex-start;
 
     }
-
-
-
-
 
     /*
 
@@ -3173,23 +2546,17 @@ body.otium-home main {
 
     */
 
-
-
     .footer-content {
 
         grid-template-columns: 1fr;
 
     }
 
-
-
     .footer-links {
 
         flex-wrap: wrap;
 
     }
-
-
 
     .footer-content small {
 
@@ -3199,21 +2566,13 @@ body.otium-home main {
 
 }
 
-
-
-
-
 /* =========================================================
 
    MÓVILES PEQUEÑOS
 
-========================================================= */
-
-
+\========================================================= */
 
 @media (max-width: 400px) {
-
-
 
     .home-hero {
 
@@ -3223,15 +2582,11 @@ body.otium-home main {
 
     }
 
-
-
     .hero-copy {
 
         width: calc(100% - 25px);
 
     }
-
-
 
     .hero-copy h1 {
 
@@ -3239,15 +2594,11 @@ body.otium-home main {
 
     }
 
-
-
     .hero-copy p {
 
         font-size: 13px;
 
     }
-
-
 
     .hero-eyebrow {
 
@@ -3255,38 +2606,37 @@ body.otium-home main {
 
     }
 
-
-
     /*
+
        Categorías para teléfonos pequeños.
+
        Se mantiene la misma rejilla de 4 columnas.
+
     */
 
     .category-row {
+
         gap: 8px 4px;
+
     }
 
-    .category-card {
-        height: 62px;
-        min-height: 62px;
+        .category-card {
+        height: 46px;
+        min-height: 46px;
 
-        gap: 4px;
-        padding: 3px 2px;
+        gap: 0;
+        padding: 5px 3px;
     }
 
-    .category-icon {
-        width: 24px;
-        height: 24px;
-
-        border-radius: 7px;
-        font-size: 13px;
+        .category-icon {
+        display: none !important;
     }
 
     .category-card strong {
+
         font-size: 9px;
+
     }
-
-
 
     /*
 
@@ -3295,8 +2645,6 @@ body.otium-home main {
        pero dejamos visible una parte de la siguiente.
 
     */
-
-
 
     .featured-grid .event-card {
 
@@ -3307,8 +2655,6 @@ body.otium-home main {
         min-width: 82vw;
 
     }
-
-
 
     .event-card-image {
 
@@ -3322,15 +2668,11 @@ body.otium-home main {
 
     }
 
-
-
     .event-card-content {
 
         padding: 9px;
 
     }
-
-
 
     .event-card-content h3 {
 
