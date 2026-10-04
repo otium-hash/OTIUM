@@ -815,6 +815,8 @@ function sincronizarCoordenadas(
         Number(longitude)
     );
 }
+}
+
 /* =====================================================
    CONTROL DEL PANEL DE UBICACIÓN
 ===================================================== */
@@ -2176,42 +2178,14 @@ async function usarUbicacionActual() {
                 direccion.region;
         }
 
-        const latitudeElement =
-            document.getElementById(
-                "latitude"
-            );
+        /* =====================================================
+   ACTUALIZAR COORDENADAS Y MAPA
+===================================================== */
 
-        const longitudeElement =
-            document.getElementById(
-                "longitude"
-            );
-
-        if (
-            latitudeElement
-        ) {
-
-            latitudeElement.value =
-                lat;
-        }
-
-        if (
-            longitudeElement
-        ) {
-
-            longitudeElement.value =
-                lon;
-        }
-
-        if (
-            form
-        ) {
-
-            form.dataset.latitude =
-                lat;
-
-            form.dataset.longitude =
-                lon;
-        }
+sincronizarCoordenadas(
+    lat,
+    lon
+);
 
         mostrarMensajeUbicacion(
             "Ubicación obtenida correctamente.",
