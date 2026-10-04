@@ -17,6 +17,14 @@
         rel="stylesheet"
         href="css/style.css">
 
+<!-- =====================================================
+     LEAFLET - MAPA DE UBICACIÓN DEL EVENTO
+===================================================== -->
+
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
     <style>
 
         /* =====================================================
@@ -639,6 +647,55 @@
     .location-manual-header {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+}
+
+/* =====================================================
+   MAPA DE UBICACIÓN DEL EVENTO
+===================================================== */
+
+.event-location-map-section {
+    margin-top: 18px;
+}
+
+.event-location-map-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.event-location-map-header strong {
+    color: #102a43;
+    font-size: 14px;
+}
+
+.event-location-map-header span {
+    color: #667085;
+    font-size: 12px;
+}
+
+.event-location-map {
+    width: 100%;
+    height: 320px;
+    border: 1px solid #dbe3ec;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f5f7fa;
+}
+
+.event-location-map-help {
+    margin: 8px 0 0;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+
+    .event-location-map {
+        height: 260px;
     }
 
 }
@@ -1284,7 +1341,35 @@
 
         </div>
 
+<!-- =========================================
+     MAPA DE UBICACIÓN
+========================================== -->
 
+<div class="event-location-map-section">
+
+    <div class="event-location-map-header">
+
+        <strong>
+            Ubicación en el mapa
+        </strong>
+
+        <span>
+            Puedes mover el marcador si es necesario.
+        </span>
+
+    </div>
+
+    <div
+        id="eventLocationMap"
+        class="event-location-map">
+    </div>
+
+    <p class="event-location-map-help">
+        Haz clic en el mapa o arrastra el marcador para ajustar
+        exactamente la ubicación del evento.
+    </p>
+
+</div>
         <!-- =========================================
              COORDENADAS
         ========================================== -->
@@ -2115,7 +2200,13 @@
     <!-- =====================================================
          CREATE EVENT
     ====================================================== -->
+<!-- =====================================================
+     LEAFLET JS
+===================================================== -->
 
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
     <script
         type="module"
         src="js/create-event.js?v=20260901">

@@ -392,20 +392,53 @@ const longitudeHidden =
     document.getElementById(
         "longitude"
     );
+/* =====================================================
+   MAPA LEAFLET - UBICACIÓN DEL EVENTO
+===================================================== */
 
+const eventLocationMapElement =
+    document.getElementById(
+        "eventLocationMap"
+    );
+
+let eventLocationMap =
+    null;
+
+let eventLocationMarker =
+    null;
 
 function mostrarPanelUbicacionManual() {
 
     if (
-        locationManualBox
+        !locationManualBox
     ) {
-
-        locationManualBox.classList.add(
-            "visible"
-        );
+        return;
     }
-}
 
+    locationManualBox.classList.add(
+        "visible"
+    );
+
+    /*
+     * Abrimos el panel automáticamente cuando
+     * encontramos una ubicación.
+     */
+    locationManualBox.open = true;
+
+    /*
+     * El navegador necesita un pequeño momento
+     * para renderizar el <details> antes de
+     * calcular correctamente el tamaño del mapa.
+     */
+    setTimeout(
+        () => {
+
+            inicializarMapaUbicacion();
+
+        },
+        50
+    );
+}
 
 function actualizarEstadoUbicacion(
     mensaje,
@@ -429,6 +462,305 @@ function actualizarEstadoUbicacion(
                 : "#667085";
 }
 
+/* =====================================================
+   INICIALIZAR MAPA DE UBICACIÓN
+===================================================== */
+
+function inicializarMapaUbicacion() {
+
+    if (
+        !eventLocationMapElement
+    ) {
+        return;
+    }
+
+    /*
+     * Si Leaflet todavía no está disponible,
+     * no hacemos nada.
+     */
+    if (
+        typeof L === "undefined"
+    ) {
+
+        console.error(
+            "OTIUM - Leaflet no está disponible."
+        );
+
+        return;
+    }
+
+    /*
+     * Si el mapa ya existe solamente
+     * actualizamos su tamaño.
+     */
+    if (
+        eventLocationMap
+    ) {
+
+        eventLocationMap.invalidateSize();
+
+        return;
+    }
+
+    const lat =
+        latitudeVisible
+            ? Number(
+                latitudeVisible.value
+            )
+            : NaN;
+
+    const lng =
+        longitudeVisible
+            ? Number(
+                longitudeVisible.value
+            )
+            : NaN;
+
+    /*
+     * Coordenadas iniciales.
+     *
+     * Chile central como referencia mientras
+     * todavía no existe una ubicación.
+     */
+    const centroInicial =
+        Number.isFinite(lat) &&
+        Number.isFinite(lng)
+            ? [lat, lng]
+            : [-33.0472, -71.6127];
+
+    const zoomInicial =
+        Number.isFinite(lat) &&
+        Number.isFinite(lng)
+            ? 16
+            : 5;
+
+    eventLocationMap =
+        L.map(
+            eventLocationMapElement,
+            {
+                scrollWheelZoom: true
+            }
+        ).setView(
+            centroInicial,
+            zoomInicial
+        );
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 19,
+            attribution:
+                '&copy; OpenStreetMap contributors'
+        }
+    ).addTo(
+        eventLocationMap
+    );
+
+    /*
+     * Si ya tenemos coordenadas,
+     * crear marcador.
+     */
+    if (
+        Number.isFinite(lat) &&
+        Number.isFinite(lng)
+    ) {
+
+        crearOMoverMarcador(
+            lat,
+            lng
+        );
+    }
+
+    /*
+     * Permitir seleccionar directamente
+     * una ubicación haciendo clic.
+     */
+    eventLocationMap.on(
+        "click",
+        (event) => {
+
+            const latitud =
+                event.latlng.lat;
+
+            const longitud =
+                event.latlng.lng;
+
+            sincronizarCoordenadas(
+                latitud,
+                longitud
+            );
+
+            actualizarEstadoUbicacion(
+                "Ubicación ajustada manualmente",
+                "success"
+            );
+
+            mostrarMensajeUbicacion(
+                "Ubicación ajustada manualmente en el mapa.",
+                "success"
+            );
+        }
+    );
+
+    /*
+     * Solucionar el problema habitual de Leaflet
+     * cuando se inicializa dentro de <details>.
+     */
+    setTimeout(
+        () => {
+
+            eventLocationMap.invalidateSize();
+
+        },
+        100
+    );
+}
+
+
+/* =====================================================
+   CREAR / MOVER MARCADOR
+===================================================== */
+
+function crearOMoverMarcador(
+    latitude,
+    longitude
+) {
+
+    if (
+        !eventLocationMap
+    ) {
+        return;
+    }
+
+    const coordenadas = [
+        latitude,
+        longitude
+    ];
+
+    if (
+        !eventLocationMarker
+    ) {
+
+        eventLocationMarker =
+            L.marker(
+                coordenadas,
+                {
+                    draggable: true
+                }
+            ).addTo(
+                eventLocationMap
+            );
+
+        eventLocationMarker.bindPopup(
+            "Ubicación del evento"
+        );
+
+        /*
+         * Cuando el usuario mueve el marcador,
+         * guardamos las nuevas coordenadas.
+         */
+        eventLocationMarker.on(
+            "dragend",
+            () => {
+
+                const posicion =
+                    eventLocationMarker.getLatLng();
+
+                sincronizarCoordenadas(
+                    posicion.lat,
+                    posicion.lng
+                );
+
+                actualizarEstadoUbicacion(
+                    "Ubicación ajustada manualmente",
+                    "success"
+                );
+
+                mostrarMensajeUbicacion(
+                    "Ubicación ajustada manualmente en el mapa.",
+                    "success"
+                );
+            }
+        );
+
+    } else {
+
+        eventLocationMarker.setLatLng(
+            coordenadas
+        );
+    }
+
+    eventLocationMap.setView(
+        coordenadas,
+        16
+    );
+}
+
+
+/* =====================================================
+   ACTUALIZAR MAPA
+===================================================== */
+
+function actualizarMapaUbicacion(
+    latitude,
+    longitude
+) {
+
+    if (
+        !Number.isFinite(
+            Number(latitude)
+        ) ||
+        !Number.isFinite(
+            Number(longitude)
+        )
+    ) {
+        return;
+    }
+
+    /*
+     * Si todavía no existe el mapa,
+     * lo inicializamos.
+     */
+    if (
+        !eventLocationMap
+    ) {
+
+        if (
+            locationManualBox
+        ) {
+            locationManualBox.open =
+                true;
+        }
+
+        setTimeout(
+            () => {
+
+                inicializarMapaUbicacion();
+
+                if (
+                    eventLocationMap
+                ) {
+
+                    crearOMoverMarcador(
+                        Number(latitude),
+                        Number(longitude)
+                    );
+                }
+
+            },
+            50
+        );
+
+        return;
+    }
+
+    crearOMoverMarcador(
+        Number(latitude),
+        Number(longitude)
+    );
+
+    eventLocationMap.invalidateSize();
+}
 
 function sincronizarCoordenadas(
     latitude,
@@ -476,9 +808,46 @@ function sincronizarCoordenadas(
 
         form.dataset.longitude =
             longitude;
-    }
-}
 
+           // Actualizar también el mapa
+    actualizarMapaUbicacion(
+        Number(latitude),
+        Number(longitude)
+    );
+}
+/* =====================================================
+   CONTROL DEL PANEL DE UBICACIÓN
+===================================================== */
+
+locationManualBox?.addEventListener(
+    "toggle",
+    () => {
+
+        if (
+            locationManualBox.open
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (
+                        eventLocationMap
+                    ) {
+
+                        eventLocationMap.invalidateSize();
+
+                    } else {
+
+                        inicializarMapaUbicacion();
+
+                    }
+
+                },
+                50
+            );
+        }
+    }
+);
 
 function obtenerCoordenadasManuales() {
 
