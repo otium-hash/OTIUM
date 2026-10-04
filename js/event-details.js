@@ -18,6 +18,7 @@
    - Mantener enlaces.
    - Mantener promoción.
    - Mantener invitaciones.
+   - Integrar geocodificación mediante Geoapify.
 ===================================================== */
 
 import {
@@ -31,6 +32,10 @@ import {
     auth,
     db
 } from "./modules/firebase-config.js";
+
+import {
+    geocodificarEvento
+} from "./modules/geocoding.js";
 
 import {
     onAuthStateChanged
@@ -806,7 +811,7 @@ function formatearEdad(
    RENDER EVENTO
 ===================================================== */
 
-function renderEvent(event) {
+async function renderEvent(event) {
 
     if (!event) {
         return;
@@ -1142,10 +1147,6 @@ function renderEvent(event) {
 
     /* =================================================
        FECHA
-
-       Se utiliza la nueva fechaInicio /
-       fechaTermino y se mantiene compatibilidad
-       con fecha antigua.
     ================================================= */
 
     if (eventDate) {
@@ -1428,39 +1429,163 @@ function renderEvent(event) {
 
     /* =================================================
        MAPA
+
+       Las coordenadas existentes tienen prioridad.
+
+       Si el evento no tiene latitud/longitud,
+       utilizamos el sistema de geocodificación
+       existente de OTIUM mediante Geoapify.
+
+       Orden de búsqueda del geocodificador:
+       1. Dirección
+       2. Ciudad
+       3. Comuna
     ================================================= */
+
+    let coordenadasMapa = null;
+
+
+    /* -------------------------------------------------
+       1. UTILIZAR COORDENADAS EXISTENTES
+    ------------------------------------------------- */
 
     if (
         Number.isFinite(lat) &&
         Number.isFinite(lng) &&
         lat !== 0 &&
-        lng !== 0 &&
+        lng !== 0
+    ) {
+
+        coordenadasMapa = {
+            lat,
+            lng
+        };
+
+        console.log(
+            "OTIUM - Usando coordenadas existentes:",
+            coordenadasMapa
+        );
+
+    } else {
+
+        /* -------------------------------------------------
+           2. GEOCODIFICAR SI NO EXISTEN COORDENADAS
+        ------------------------------------------------- */
+
+        try {
+
+            console.log(
+                "OTIUM - Evento sin coordenadas. Intentando geocodificar ubicación..."
+            );
+
+
+            const resultadoGeocoding =
+                await geocodificarEvento(event);
+
+
+            if (
+                resultadoGeocoding &&
+                Number.isFinite(
+                    Number(resultadoGeocoding.lat)
+                ) &&
+                Number.isFinite(
+                    Number(resultadoGeocoding.lng)
+                )
+            ) {
+
+                coordenadasMapa = {
+
+                    lat:
+                        Number(
+                            resultadoGeocoding.lat
+                        ),
+
+                    lng:
+                        Number(
+                            resultadoGeocoding.lng
+                        )
+                };
+
+
+                console.log(
+                    "OTIUM - Ubicación geocodificada:",
+                    coordenadasMapa,
+                    "origen:",
+                    resultadoGeocoding.origen ||
+                    "desconocido"
+                );
+
+            } else {
+
+                console.warn(
+                    "OTIUM - Geoapify no encontró coordenadas para el evento."
+                );
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "OTIUM - No fue posible geocodificar la ubicación del evento:",
+                error
+            );
+        }
+    }
+
+
+    /* -------------------------------------------------
+       3. MOSTRAR MAPA
+    ------------------------------------------------- */
+
+    if (
+        coordenadasMapa &&
+        Number.isFinite(
+            coordenadasMapa.lat
+        ) &&
+        Number.isFinite(
+            coordenadasMapa.lng
+        ) &&
         eventMap &&
         mapSection
     ) {
+
+        const mapLat =
+            coordenadasMapa.lat;
+
+        const mapLng =
+            coordenadasMapa.lng;
+
 
         mapSection.style.display =
             "block";
 
 
+        /*
+           Área visible del mapa alrededor
+           del punto del evento.
+        */
+
         const bbox =
-            `${lng - 0.01}%2C${lat - 0.01}%2C${lng + 0.01}%2C${lat + 0.01}`;
+            `${mapLng - 0.01}%2C${mapLat - 0.01}%2C${mapLng + 0.01}%2C${mapLat + 0.01}`;
 
 
         eventMap.innerHTML = `
             <iframe
                 title="Ubicación del evento"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${mapLat}%2C${mapLng}"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade">
             </iframe>
         `;
 
 
+        /* -------------------------------------------------
+           ENLACE GOOGLE MAPS
+        ------------------------------------------------- */
+
         if (mapLink) {
 
             mapLink.href =
-                `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                `https://www.google.com/maps/search/?api=1&query=${mapLat},${mapLng}`;
 
             mapLink.target =
                 "_blank";
@@ -1469,10 +1594,32 @@ function renderEvent(event) {
                 "noopener noreferrer";
         }
 
+
     } else if (mapSection) {
+
+        /*
+           Si no fue posible obtener coordenadas,
+           ocultamos el mapa para evitar mostrar
+           una ubicación incorrecta.
+        */
 
         mapSection.style.display =
             "none";
+
+
+        if (eventMap) {
+
+            eventMap.innerHTML =
+                "";
+        }
+
+
+        if (mapLink) {
+
+            mapLink.removeAttribute(
+                "href"
+            );
+        }
     }
 
 
@@ -1650,7 +1797,7 @@ async function loadEvent() {
         );
 
 
-        renderEvent(
+        await renderEvent(
             currentEvent
         );
 
