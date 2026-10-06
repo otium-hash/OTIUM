@@ -216,6 +216,7 @@ function getEventDateValue(event) {
     if (!event) return "";
 
     return (
+        event.fechaInicio ??
         event.fecha ??
         event.date ??
         event.fechaEvento ??
@@ -224,7 +225,6 @@ function getEventDateValue(event) {
     );
 
 }
-
 
 function parseEventDate(event) {
 
@@ -613,22 +613,25 @@ function getFilteredCleanupEvents() {
     calculateDuplicates();
 
 
+    let filteredEvents;
+
+
     if (
         cleanupFilter ===
         "todos"
     ) {
 
-        return [...events];
+        filteredEvents = [...events];
 
     }
 
 
-    if (
+    else if (
         cleanupFilter ===
         "duplicados"
     ) {
 
-        return events.filter(
+        filteredEvents = events.filter(
             event =>
                 cleanupDuplicateIds.has(
                     getEventId(event)
@@ -638,14 +641,53 @@ function getFilteredCleanupEvents() {
     }
 
 
-    return events.filter(
-        event =>
-            getEventStatus(event) ===
-            cleanupFilter
+    else {
+
+        filteredEvents = events.filter(
+            event =>
+                getEventStatus(event) ===
+                cleanupFilter
+        );
+
+    }
+
+
+    /*
+       Orden alfabético por nombre
+       Ignora mayúsculas/minúsculas
+       y considera correctamente números.
+    */
+
+    return filteredEvents.sort(
+        (a, b) => {
+
+            const nombreA =
+                String(
+                    a?.nombre ??
+                    a?.name ??
+                    ""
+                ).trim();
+
+            const nombreB =
+                String(
+                    b?.nombre ??
+                    b?.name ??
+                    ""
+                ).trim();
+
+            return nombreA.localeCompare(
+                nombreB,
+                "es",
+                {
+                    sensitivity: "base",
+                    numeric: true
+                }
+            );
+
+        }
     );
 
 }
-
 
 /* =====================================================
    SPONSORS
