@@ -80,6 +80,9 @@ const publicFilter =
 const privateFilter =
     document.getElementById("privateFilter");
 
+const ageFilter =
+    document.getElementById("ageFilter");
+
 const clearFiltersButton =
     document.getElementById("clearFilters");
 
@@ -738,7 +741,24 @@ function esParticular(evento) {
     );
 
 }
+/* =====================================================
+   PÚBLICO OBJETIVO / RANGO DE EDAD
+===================================================== */
 
+function obtenerPublicoEdad(evento) {
+
+    return (
+        evento.publicoEdad ||
+        evento.edadPublico ||
+        evento.rangoEdad ||
+        evento.edad ||
+        ""
+    )
+        .toString()
+        .trim()
+        .toLowerCase();
+
+}
 
 /* =====================================================
    FECHA LOCAL
@@ -1332,6 +1352,10 @@ function aplicarFiltros() {
             ? priceFilter.value
             : "";
 
+    const edadSeleccionada =
+        ageFilter
+            ? ageFilter.value.trim().toLowerCase()
+            : "";
 
     let filtrados =
         [...eventos];
@@ -1451,7 +1475,32 @@ function aplicarFiltros() {
 
     }
 
+/* =================================================
+   EDAD / PÚBLICO OBJETIVO
+================================================= */
 
+if (edadSeleccionada) {
+
+    filtrados =
+        filtrados.filter(
+            (evento) => {
+
+                const publicoEdad =
+                    obtenerPublicoEdad(evento);
+
+                if (!publicoEdad) {
+                    return false;
+                }
+
+                return (
+                    publicoEdad ===
+                    edadSeleccionada
+                );
+
+            }
+        );
+
+}
     /* =================================================
        FECHA
     ================================================= */
@@ -1719,7 +1768,7 @@ function obtenerImagenEvento(evento) {
 
         /*
            Ruta relativa válida.
-           
+
            Evitamos aceptar frases con espacios,
            como "Chile es TUYO / agenda de eventos".
         */
@@ -2070,7 +2119,7 @@ function renderizar(lista) {
 
             /* =================================================
                FALLBACK DE IMAGEN
-               
+
                Si una URL aparentemente válida responde
                con error, se utiliza la imagen por defecto.
             ================================================= */
@@ -2264,7 +2313,14 @@ if (privateFilter) {
 
 }
 
+if (ageFilter) {
 
+    ageFilter.addEventListener(
+        "change",
+        aplicarFiltros
+    );
+
+}
 /* =====================================================
    LIMPIAR FILTROS
 ===================================================== */
@@ -2359,6 +2415,11 @@ if (clearFiltersButton) {
 
             }
 
+            if (ageFilter) {
+
+                ageFilter.value = "";
+
+            }
 
             aplicarFiltros();
 
