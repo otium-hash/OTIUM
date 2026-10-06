@@ -710,14 +710,16 @@ function obtenerFechaLimiteLimpieza(
  * - firestoreId
  * - todos los campos almacenados
  */
-function mapearEvento(
-    docSnap
-) {
+function mapearEvento(docSnap) {
+
     return {
+        ...docSnap.data(),
+
         id: docSnap.id,
-        firestoreId: docSnap.id,
-        ...docSnap.data()
+
+        firestoreId: docSnap.id
     };
+
 }
 
 
