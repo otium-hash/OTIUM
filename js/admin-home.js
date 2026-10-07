@@ -143,7 +143,6 @@ function isValidImageUrl(value) {
     try {
 
         const url = new URL(value);
-
         return (
             url.protocol === "http:" ||
             url.protocol === "https:"
@@ -157,7 +156,6 @@ function isValidImageUrl(value) {
 
 }
 
-
 /* =====================================================
    EVENTOS
 ===================================================== */
@@ -167,8 +165,11 @@ function getEventId(event) {
     if (!event) return "";
 
     return String(
-        event.id ??
         event.firestoreId ??
+        event.documentId ??
+        event.docId ??
+        event._id ??
+        event.id ??
         event.eventId ??
         event.uid ??
         ""
@@ -205,8 +206,6 @@ function getEventImage(event) {
     );
 
 }
-
-
 /* =====================================================
    DATOS DE FECHA DEL EVENTO
 ===================================================== */
@@ -5509,8 +5508,22 @@ function bindCleanupSelection() {
 
             if (checkbox) {
 
+                const row =
+                    checkbox.closest(
+                        "[data-cleanup-event-id]"
+                    );
+
+
                 const id =
+                    row?.dataset.cleanupEventId ||
                     checkbox.value;
+
+
+                if (!id) {
+
+                    return;
+
+                }
 
 
                 if (
@@ -5534,10 +5547,10 @@ function bindCleanupSelection() {
 
                 updateCleanupSelectionUI();
 
+
                 return;
 
             }
-
 
             const selectAll =
                 event.target.closest(
@@ -5954,7 +5967,6 @@ async function deleteSelectedEvents() {
     const ids =
         [...cleanupSelected]
             .filter(Boolean);
-
 
     if (!ids.length) {
 
